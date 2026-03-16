@@ -1,0 +1,6 @@
+.env
+__pycache__/
+*.pyc
+diary.txt
+highscores.txt
+.DS_Store

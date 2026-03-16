@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flashcards — Python Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0f0f1a;--card:#1a1a2e;--border:#27273a;--blue:#00d4ff;--green:#00ff88;--purple:#a855f7;--orange:#ff9f43;--red:#ff4757;--text:#e4e4e7;--dim:#71717a;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 20px;}
+    h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+    .subtitle{color:var(--dim);font-size:0.9rem;margin-bottom:24px;}
+    .nav-bar{display:flex;gap:12px;margin-bottom:32px;flex-wrap:wrap;justify-content:center;}
+    .nav-bar button{padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--dim);cursor:pointer;font-size:0.8rem;font-family:'Inter',sans-serif;transition:all .2s;}
+    .nav-bar button:hover,.nav-bar button.active{border-color:var(--blue);color:var(--blue);background:rgba(0,212,255,0.08);}
+    .back-link{color:var(--dim);text-decoration:none;font-size:0.85rem;margin-bottom:24px;display:inline-block;}
+    .back-link:hover{color:var(--blue);}
+
+    /* Card area */
+    .card-area{width:100%;max-width:520px;perspective:1000px;margin-bottom:24px;}
+    .flashcard{width:100%;min-height:280px;position:relative;cursor:pointer;transition:transform 0.6s;transform-style:preserve-3d;}
+    .flashcard.flipped{transform:rotateY(180deg);}
+    .flashcard .front,.flashcard .back{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px;text-align:center;}
+    .flashcard .front{background:linear-gradient(135deg,var(--card),rgba(0,212,255,0.06));border:1px solid var(--border);}
+    .flashcard .back{background:linear-gradient(135deg,var(--card),rgba(0,255,136,0.06));border:1px solid rgba(0,255,136,0.2);transform:rotateY(180deg);}
+    .flashcard .label{font-size:0.7rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;}
+    .front .label{color:var(--blue);}
+    .back .label{color:var(--green);}
+    .flashcard .question{font-size:1.3rem;font-weight:700;line-height:1.5;}
+    .flashcard .answer{font-size:1.1rem;color:var(--text);line-height:1.6;}
+    .flashcard .answer code{background:rgba(0,212,255,0.1);padding:2px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:0.95rem;color:var(--blue);}
+    .tap-hint{color:var(--dim);font-size:0.75rem;margin-top:12px;}
+
+    /* Controls */
+    .controls{display:flex;gap:16px;margin-bottom:24px;}
+    .ctrl-btn{padding:14px 32px;border-radius:12px;border:none;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+    .ctrl-btn.wrong{background:rgba(255,71,87,0.15);color:var(--red);border:1px solid rgba(255,71,87,0.3);}
+    .ctrl-btn.wrong:hover{background:rgba(255,71,87,0.25);transform:translateY(-2px);}
+    .ctrl-btn.correct{background:rgba(0,255,136,0.15);color:var(--green);border:1px solid rgba(0,255,136,0.3);}
+    .ctrl-btn.correct:hover{background:rgba(0,255,136,0.25);transform:translateY(-2px);}
+
+    /* Progress */
+    .progress-info{display:flex;gap:24px;color:var(--dim);font-size:0.85rem;margin-bottom:16px;}
+    .mastery-dots{display:flex;gap:4px;margin-left:6px;}
+    .mastery-dot{width:10px;height:10px;border-radius:50%;background:var(--border);}
+    .mastery-dot.filled{background:var(--green);box-shadow:0 0 6px rgba(0,255,136,0.4);}
+    .done-msg{text-align:center;padding:60px;color:var(--green);font-size:1.2rem;font-weight:700;}
+  </style>
+</head>
+<body>
+
+<a href="/" class="back-link">&larr; Back to lessons</a>
+<h1>🃏 Flashcards</h1>
+<p class="subtitle">Tap to flip. Track your mastery.</p>
+
+<div class="nav-bar" id="chapter-nav"></div>
+<div class="progress-info" id="progress-info"></div>
+<div class="card-area"><div class="flashcard" id="flashcard" onclick="flipCard()">
+  <div class="front"><span class="label">Question</span><div class="question" id="fc-question"></div><div class="tap-hint">tap to reveal</div></div>
+  <div class="back"><span class="label">Answer</span><div class="answer" id="fc-answer"></div></div>
+</div></div>
+<div class="controls" id="controls" style="display:none;">
+  <button class="ctrl-btn wrong" onclick="markCard('wrong')">&#10007; Again</button>
+  <button class="ctrl-btn correct" onclick="markCard('correct')">&#10003; Got it</button>
+</div>
+<div class="done-msg" id="done-msg" style="display:none;"></div>
+
+<script>
+const FLASHCARDS = {
+  ch1: [
+    {id:"ch1_1",q:"What is a <b>procedure</b>?",a:"A subroutine that performs an action but does <b>NOT return</b> a value."},
+    {id:"ch1_2",q:"What is a <b>function</b>?",a:"A subroutine that performs a calculation and <b>returns a value</b>."},
+    {id:"ch1_3",q:"What is a <b>parameter</b>?",a:"A variable listed in the function definition that receives a value when the function is called. E.g. <code>def greet(name)</code>"},
+    {id:"ch1_4",q:"What does <code>return</code> do?",a:"Sends a value back to where the function was called. Without it, the function returns <code>None</code>."},
+  ],
+  ch2: [
+    {id:"ch2_1",q:"What is a <b>1D array</b>?",a:"An ordered collection of items stored under one name, accessed by index. E.g. <code>fruits = [\"apple\", \"banana\"]</code>"},
+    {id:"ch2_2",q:"What index does the <b>first</b> item have?",a:"Index <code>0</code> (not 1!)"},
+    {id:"ch2_3",q:"What does <code>append()</code> do?",a:"Adds an item to the <b>end</b> of a list."},
+    {id:"ch2_4",q:"What does <code>len(myList)</code> return?",a:"The number of items in the list."},
+    {id:"ch2_5",q:"What does <code>myList[1:3]</code> do?",a:"<b>Slicing</b> — returns items at index 1 and 2 (not 3). The end is exclusive."},
+  ],
+  ch3: [
+    {id:"ch3_1",q:"What is a <b>2D array</b>?",a:"A list of lists — like a table with rows and columns. Access with <code>grid[row][col]</code>"},
+    {id:"ch3_2",q:"How do you access row 2, col 1 of <code>grid</code>?",a:"<code>grid[2][1]</code> — row first, then column."},
+    {id:"ch3_3",q:"How many loops to visit every cell?",a:"<b>Two</b> nested loops — one for rows, one for columns."},
+  ],
+  ch4: [
+    {id:"ch4_1",q:"What is a <b>record</b>?",a:"A data structure that groups <b>different types</b> of data about one thing. In Python: a dictionary."},
+    {id:"ch4_2",q:"Array vs Record?",a:"Array: many items of the <b>same type</b>, access by index.<br>Record: <b>different types</b> about one thing, access by field name."},
+    {id:"ch4_3",q:"How to access a field in a Python dictionary?",a:"<code>person[\"name\"]</code> — use the key name in square brackets."},
+  ],
+  ch5: [
+    {id:"ch5_1",q:"What does mode <code>\"w\"</code> do?",a:"Opens file for <b>writing</b> — <b>erases</b> existing content first!"},
+    {id:"ch5_2",q:"What does mode <code>\"a\"</code> do?",a:"Opens file for <b>appending</b> — adds to the end without erasing."},
+    {id:"ch5_3",q:"What does <code>readlines()</code> return?",a:"A <b>list of strings</b> — one string per line in the file."},
+    {id:"ch5_4",q:"Why must you <b>close</b> a file?",a:"To save changes and free system resources. Unclosed files can cause data loss."},
+  ],
+  ch6: [
+    {id:"ch6_1",q:"How do you generate a random integer 1-6?",a:"<code>import random</code><br><code>random.randint(1, 6)</code>"},
+    {id:"ch6_2",q:"How to pick a random item from a list?",a:"<code>random.choice(myList)</code>"},
+    {id:"ch6_3",q:"What does <code>random.shuffle()</code> do?",a:"Rearranges the list items in a random order <b>in-place</b>."},
+  ],
+  ch7: [
+    {id:"ch7_1",q:"What is a <b>local</b> variable?",a:"A variable created inside a function. It only exists while that function runs."},
+    {id:"ch7_2",q:"What is a <b>global</b> variable?",a:"A variable created outside all functions. Accessible everywhere in the program."},
+    {id:"ch7_3",q:"What does the <code>global</code> keyword do?",a:"Tells a function to use the global version of a variable instead of creating a local one."},
+    {id:"ch7_4",q:"What are the 3 structures in structured programming?",a:"<b>Sequence</b> (line by line), <b>Selection</b> (if/else), <b>Iteration</b> (loops)."},
+  ],
+  ch8: [
+    {id:"ch8_1",q:"What is <b>validation</b>?",a:"Checking that input data is reasonable, the right length, and within acceptable limits."},
+    {id:"ch8_2",q:"What is <b>authentication</b>?",a:"Verifying a user's identity — typically by checking username + password."},
+    {id:"ch8_3",q:"Name the 3 types of validation check.",a:"<b>Presence</b> (not empty), <b>Range</b> (within limits), <b>Length</b> (enough characters)."},
+    {id:"ch8_4",q:"What does GIGO stand for?",a:"<b>Garbage In, Garbage Out</b> — bad input = bad output."},
+    {id:"ch8_5",q:"What is a <b>boundary</b> test?",a:"Testing the exact edge/limit values. E.g. if age must be ≥18, test with 18 and 17."},
+  ],
+  ch9: [
+    {id:"ch9_1",q:"What is <b>machine code</b>?",a:"Binary instructions (0s and 1s) that the processor directly executes."},
+    {id:"ch9_2",q:"What is <b>assembly language</b>?",a:"Low-level language using <b>mnemonics</b> (e.g. ADD, MOV) instead of binary. One-to-one with machine code."},
+    {id:"ch9_3",q:"Compiler vs Interpreter?",a:"<b>Compiler</b>: translates entire program at once into an executable.<br><b>Interpreter</b>: translates and runs line by line."},
+    {id:"ch9_4",q:"What is an <b>assembler</b>?",a:"A translator that converts assembly language into machine code (one-to-one)."},
+    {id:"ch9_5",q:"High-level vs low-level languages?",a:"<b>High</b>: human-readable, portable, needs translating (Python).<br><b>Low</b>: close to hardware, fast, processor-specific (assembly)."},
+  ],
+};
+
+const CHAPTER_LABELS = {ch1:"Subroutines",ch2:"1D Arrays",ch3:"2D Arrays",ch4:"Records",ch5:"Files",ch6:"Random",ch7:"Scope",ch8:"Validation",ch9:"Languages"};
+
+let currentChapter = "ch1";
+let deck = [];
+let cardIndex = 0;
+let mastery = {};
+let studentName = localStorage.getItem('student-name') || '';
+
+async function init() {
+  if (!studentName) {
+    document.querySelector('.subtitle').textContent = 'Please log in first. Redirecting...';
+    setTimeout(() => { window.location.href = '/'; }, 1500);
+    return;
+  }
+  // Load mastery
+  try {
+    const res = await fetch(`/api/flashcards/${studentName}`);
+    const data = await res.json();
+    mastery = data.mastery || {};
+  } catch(e) { console.warn('Flashcard API error:', e); }
+  renderNav();
+  loadDeck(currentChapter);
+}
+
+function renderNav() {
+  const nav = document.getElementById('chapter-nav');
+  nav.innerHTML = Object.keys(FLASHCARDS).map(ch =>
+    `<button class="${ch===currentChapter?'active':''}" onclick="loadDeck('${ch}')">${CHAPTER_LABELS[ch]||ch}</button>`
+  ).join('');
+}
+
+function loadDeck(ch) {
+  currentChapter = ch;
+  renderNav();
+  // Sort: lowest mastery first
+  deck = [...FLASHCARDS[ch]].sort((a,b) => (parseInt(mastery[a.id])||0) - (parseInt(mastery[b.id])||0));
+  cardIndex = 0;
+  document.getElementById('done-msg').style.display = 'none';
+  showCard();
+}
+
+function showCard() {
+  const fc = document.getElementById('flashcard');
+  const controls = document.getElementById('controls');
+  fc.classList.remove('flipped');
+  controls.style.display = 'none';
+
+  if (cardIndex >= deck.length) {
+    fc.style.display = 'none';
+    document.getElementById('done-msg').style.display = 'block';
+    document.getElementById('done-msg').innerHTML = '🎉 Deck complete! Pick another chapter or review again.';
+    document.getElementById('progress-info').innerHTML = '';
+    return;
+  }
+  fc.style.display = '';
+  const card = deck[cardIndex];
+  document.getElementById('fc-question').innerHTML = card.q;
+  document.getElementById('fc-answer').innerHTML = card.a;
+
+  const level = parseInt(mastery[card.id]) || 0;
+  const dots = Array.from({length:5},(_,i)=>`<div class="mastery-dot ${i<level?'filled':''}"></div>`).join('');
+  document.getElementById('progress-info').innerHTML =
+    `<span>Card ${cardIndex+1} / ${deck.length}</span><span>Mastery: <span class="mastery-dots">${dots}</span></span>`;
+}
+
+function flipCard() {
+  const fc = document.getElementById('flashcard');
+  if (!fc.classList.contains('flipped')) {
+    fc.classList.add('flipped');
+    document.getElementById('controls').style.display = 'flex';
+  }
+}
+
+async function markCard(result) {
+  const card = deck[cardIndex];
+  // Update local
+  let level = parseInt(mastery[card.id]) || 0;
+  if (result === 'correct') level = Math.min(level + 1, 5);
+  else level = Math.max(level - 1, 0);
+  mastery[card.id] = level;
+
+  // Update server
+  try {
+    await fetch(`/api/flashcards/${studentName}`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ card_id: card.id, result })
+    });
+  } catch(e) { console.warn('Flashcard API error:', e); }
+
+  cardIndex++;
+  showCard();
+}
+
+init();
+</script>
+</body>
+</html>

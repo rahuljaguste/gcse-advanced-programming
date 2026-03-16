@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vihaan Learns Python - Advanced Programming</title>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Syntax Highlighting -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet">
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="features.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐍</text></svg>">
+</head>
+<body>
+
+<!-- Login Overlay -->
+<div id="login-overlay">
+  <div class="login-box">
+    <h2>🐍 Python Pro</h2>
+    <p>Enter your name to start learning</p>
+    <form id="login-form">
+      <input type="text" id="student-name-input" placeholder="Your name..." autocomplete="off" required>
+      <div id="login-error" style="display:none;color:#ff4757;font-size:0.8rem;margin-bottom:10px;"></div>
+      <button type="submit">Let's Go!</button>
+    </form>
+  </div>
+</div>
+
+<!-- Mobile Menu Toggle -->
+<button id="menu-toggle">☰</button>
+
+<!-- ===== SIDEBAR ===== -->
+<nav id="sidebar">
+  <div class="logo">
+    <h1>🐍 Python Pro</h1>
+    <p>GCSE Advanced Programming</p>
+    <div class="student-info">
+      Logged in as: <strong id="student-display"></strong>
+      <button id="logout-btn" title="Switch student">switch</button>
+    </div>
+  </div>
+  <div class="progress-bar-container">
+    <label>Progress: 0%</label>
+    <div class="progress-bar"><div class="progress-fill"></div></div>
+  </div>
+  <div id="badge-container"></div>
+  <ul class="nav-list">
+    <li class="nav-item active" data-chapter="home">
+      <span class="emoji">🏠</span> Home <span class="check"></span>
+    </li>
+    <li class="nav-item" data-chapter="ch1">
+      <span class="emoji">🔧</span> Subroutines <span class="check"></span>
+    </li>
+    <li class="nav-item" data-chapter="ch2">
+      <span class="emoji">📦</span> 1D Arrays <span class="check"></span>
+    </li>
+    <li class="nav-item" data-chapter="ch3">
+      <span class="emoji">🎬</span> 2D Arrays <span class="check"></span>
+    </li>
+    <li class="nav-item" data-chapter="ch4">
+      <span class="emoji">🪪</span> Records <span class="check"></span>
+    </li>
+    <li class="nav-item" data-chapter="ch5">
+      <span class="emoji">📁</span> External Files <span class="check"></span>
+    </li>
+    <li class="nav-item" data-chapter="ch6">
+      <span class="emoji">🎲</span> Random Numbers <span class="check"></span>
+    </li>
+    <li class="nav-item" data-chapter="ch7">
+      <span class="emoji">🏠</span> Scope &amp; Structure <span class="check"></span>
+    </li>
+    <li class="nav-item" data-chapter="ch8">
+      <span class="emoji">🔐</span> Validation &amp; Auth <span class="check"></span>
+    </li>
+    <li class="nav-item" data-chapter="ch9">
+      <span class="emoji">🌍</span> Languages (Theory) <span class="check"></span>
+    </li>
+    <li class="nav-item" data-chapter="ch10">
+      <span class="emoji">🚀</span> Final Project <span class="check"></span>
+    </li>
+    <li class="nav-divider"></li>
+    <li class="nav-item nav-link" onclick="window.location.href='/assignments'">
+      <span class="emoji">📝</span> Assignments
+    </li>
+    <li class="nav-item nav-link" onclick="window.location.href='/flashcards'">
+      <span class="emoji">🃏</span> Flashcards
+    </li>
+    <li class="nav-item nav-link" onclick="window.location.href='/cheatsheet'">
+      <span class="emoji">📋</span> Cheat Sheet
+    </li>
+    <li class="nav-item nav-link" onclick="window.location.href='/playground'">
+      <span class="emoji">🧪</span> Playground
+    </li>
+  </ul>
+</nav>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main id="content">
+
+<!-- ==================== HOME ==================== -->
+<section id="home" class="chapter active">
+  <h2>Welcome, <span id="welcome-name"></span>! 🐍</h2>
+  <p>This is your personal guide to mastering Python programming for GCSE Computer Science (Topic 3: Advanced Programming). Work through each chapter in order, complete the quizzes, and tackle the assignments.</p>
+
+  <div class="card tip">
+    <p><strong>How to use this site:</strong></p>
+    <ul>
+      <li>Click a chapter in the sidebar to start learning</li>
+      <li>Read the analogy first — it'll make the concept click</li>
+      <li>Type the code examples yourself (don't just read them!)</li>
+      <li>Take the quiz to check your understanding</li>
+      <li>Do the assignment — the starter file is in the <code>assignments/</code> folder</li>
+      <li>Click "Mark as Complete" when you're done</li>
+    </ul>
+  </div>
+
+  <h3>Your Learning Path</h3>
+  <div class="welcome-grid">
+    <div class="welcome-card" data-chapter="ch1"><div class="wc-emoji">🔧</div><div class="wc-title">Ch 1: Subroutines</div><div class="wc-sub">Procedures &amp; Functions</div></div>
+    <div class="welcome-card" data-chapter="ch2"><div class="wc-emoji">📦</div><div class="wc-title">Ch 2: 1D Arrays</div><div class="wc-sub">Lists &amp; Collections</div></div>
+    <div class="welcome-card" data-chapter="ch3"><div class="wc-emoji">🎬</div><div class="wc-title">Ch 3: 2D Arrays</div><div class="wc-sub">Tables &amp; Grids</div></div>
+    <div class="welcome-card" data-chapter="ch4"><div class="wc-emoji">🪪</div><div class="wc-title">Ch 4: Records</div><div class="wc-sub">Grouping Data</div></div>
+    <div class="welcome-card" data-chapter="ch5"><div class="wc-emoji">📁</div><div class="wc-title">Ch 5: External Files</div><div class="wc-sub">Read &amp; Write Files</div></div>
+    <div class="welcome-card" data-chapter="ch6"><div class="wc-emoji">🎲</div><div class="wc-title">Ch 6: Random</div><div class="wc-sub">Games &amp; Chance</div></div>
+    <div class="welcome-card" data-chapter="ch7"><div class="wc-emoji">🏠</div><div class="wc-title">Ch 7: Scope</div><div class="wc-sub">Local vs Global</div></div>
+    <div class="welcome-card" data-chapter="ch8"><div class="wc-emoji">🔐</div><div class="wc-title">Ch 8: Validation</div><div class="wc-sub">Auth &amp; Testing</div></div>
+    <div class="welcome-card" data-chapter="ch9"><div class="wc-emoji">🌍</div><div class="wc-title">Ch 9: Languages</div><div class="wc-sub">How Code Runs</div></div>
+    <div class="welcome-card" data-chapter="ch10"><div class="wc-emoji">🚀</div><div class="wc-title">Ch 10: Project</div><div class="wc-sub">Build Something Real</div></div>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 1: SUBROUTINES ==================== -->
+<section id="ch1" class="chapter">
+  <h2>Chapter 1: Subroutines</h2>
+  <p>Procedures &amp; Functions</p>
+
+  <div class="card big-idea">"Don't repeat yourself. Package reusable instructions into named blocks."</div>
+
+  <div class="card analogy">
+    <p>Imagine you're teaching someone to make pizza. You wouldn't explain "how to make dough" every single time. You'd say <strong>"Step 1: Make the dough"</strong> and they'd follow that recipe.</p>
+    <p>A <strong>procedure</strong> is like a recipe step — "do this thing" (no answer expected back).</p>
+    <p>A <strong>function</strong> is like asking a question that gives back an answer — "How many slices do we need for 4 people?" → returns 8.</p>
+  </div>
+
+  <h3>Key Concepts</h3>
+  <table>
+    <tr><th>Term</th><th>What it is</th><th>Pizza Example</th></tr>
+    <tr><td><strong>Procedure</strong></td><td>Block of code that does something (no return value)</td><td><code>make_dough()</code> — just makes it</td></tr>
+    <tr><td><strong>Function</strong></td><td>Block of code that calculates and <strong>returns</strong> a value</td><td><code>slices_needed(people)</code> → returns a number</td></tr>
+    <tr><td><strong>Parameter</strong></td><td>Input the subroutine needs to work</td><td><code>people</code> in <code>slices_needed(people)</code></td></tr>
+    <tr><td><strong>Return value</strong></td><td>The answer a function gives back</td><td>The number 8</td></tr>
+    <tr><td><strong>Calling</strong></td><td>Running the subroutine by its name</td><td><code>make_dough()</code></td></tr>
+  </table>
+
+  <h3>Live Demo — Type This!</h3>
+  <div class="code-block">
+    <div class="code-header"><span>python — pizza_shop.py</span><button class="copy-btn">Copy</button></div>
+    <pre><code># PROCEDURE — does something, returns nothing
+def greet(name):
+    print(f"Hey {name}! Welcome to the pizza shop!")
+
+# FUNCTION — calculates and returns a value
+def slices_needed(people):
+    return people * 2  # 2 slices per person
+
+# USING THEM
+greet("Vihaan")
+total = slices_needed(4)
+print(f"We need {total} slices!")
+
+# A function can use another function
+def pizzas_needed(people):
+    slices = slices_needed(people)
+    return slices // 8  # 8 slices per pizza
+
+pizzas = pizzas_needed(5)
+print(f"Order {pizzas} pizzas!")
+# Think about it: why does this say 1 not 2?
+# What about the remaining 2 slices?</code></pre>
+  </div>
+
+  <h3>Pseudocode (Important for Exams!)</h3>
+  <div class="code-block">
+    <div class="code-header"><span>pseudocode</span><button class="copy-btn">Copy</button></div>
+    <pre><code>SUBROUTINE greet(name)
+    OUTPUT "Hey " + name + "! Welcome to the pizza shop!"
+END SUBROUTINE
+
+FUNCTION slices_needed(people)
+    RETURN people * 2
+END FUNCTION
+
+greet("Vihaan")
+total ← slices_needed(4)
+OUTPUT "We need " + total + " slices!"</code></pre>
+  </div>
+
+  <h3>Quiz</h3>
+  <div class="quiz">
+    <h4>Test Your Knowledge</h4>
+
+    <div class="quiz-question" data-answer="b">
+      <p>1. What is the main difference between a procedure and a function?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">A procedure is faster than a function</button>
+        <button class="quiz-option" data-value="b">A function returns a value, a procedure does not</button>
+        <button class="quiz-option" data-value="c">A procedure can take parameters, a function cannot</button>
+        <button class="quiz-option" data-value="d">There is no difference</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="c">
+      <p>2. What does the <code>return</code> keyword do?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Prints a value to the screen</button>
+        <button class="quiz-option" data-value="b">Stops the program</button>
+        <button class="quiz-option" data-value="c">Sends a value back to where the function was called</button>
+        <button class="quiz-option" data-value="d">Starts the function again</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="b">
+      <p>3. In <code>def add(a, b): return a + b</code> — what are <code>a</code> and <code>b</code>?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Variables</button>
+        <button class="quiz-option" data-value="b">Parameters</button>
+        <button class="quiz-option" data-value="c">Return values</button>
+        <button class="quiz-option" data-value="d">Functions</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="a">
+      <p>4. What happens if you forget <code>return</code> in a function?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">The function returns None (nothing)</button>
+        <button class="quiz-option" data-value="b">Python throws an error</button>
+        <button class="quiz-option" data-value="c">The function runs forever</button>
+        <button class="quiz-option" data-value="d">It automatically returns the last value</button>
+      </div>
+    </div>
+
+    <div class="quiz-score"></div>
+    <button class="quiz-reset">Try Again</button>
+  </div>
+
+  <h3>Assignment: Pocket Money Calculator</h3>
+  <div class="card assignment">
+    <p>Build a pocket money calculator using procedures and functions!</p>
+    <ul>
+      <li>Write a <strong>procedure</strong> <code>show_menu()</code> that prints available chores and their values</li>
+      <li>Write a <strong>function</strong> <code>calculate_pay(chores_done)</code> that returns total pay</li>
+      <li>Write a <strong>function</strong> <code>add_bonus(total)</code> that adds 20% if total is over £5</li>
+      <li>Main program: ask user which chores they did, calculate and display total</li>
+    </ul>
+    <p><a class="assignment-link" href="/assignments" style="color:var(--accent-pink);font-weight:600;">Open in Assignments →</a></p>
+  </div>
+
+  <button class="chapter-complete-btn" data-chapter="ch1">✓ Mark as Complete</button>
+  <div class="nav-buttons">
+    <button class="nav-btn hidden">← Previous</button>
+    <button class="nav-btn" data-target="ch2">Next: 1D Arrays →</button>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 2: 1D ARRAYS ==================== -->
+<section id="ch2" class="chapter">
+  <h2>Chapter 2: 1D Arrays</h2>
+  <p>Data Structures &amp; Lists</p>
+
+  <div class="card big-idea">"Store a collection of related items under ONE name instead of making dozens of variables."</div>
+
+  <div class="card analogy">
+    <p>Your phone's <strong>contact list</strong> is an array. Instead of writing each friend's name on a separate piece of paper (separate variables), you have ONE list called "Contacts" and each person has a position number.</p>
+    <p>The first contact is at position <strong>0</strong> (not 1!), the second at position <strong>1</strong>, and so on.</p>
+  </div>
+
+  <h3>Key Concepts</h3>
+  <table>
+    <tr><th>Concept</th><th>Meaning</th><th>Example</th></tr>
+    <tr><td><strong>Array/List</strong></td><td>Ordered collection under one name</td><td><code>friends = ["Aarav", "Zain", "Lily"]</code></td></tr>
+    <tr><td><strong>Index</strong></td><td>Position number (starts at 0!)</td><td><code>friends[0]</code> → <code>"Aarav"</code></td></tr>
+    <tr><td><strong>Length</strong></td><td>How many items</td><td><code>len(friends)</code> → <code>3</code></td></tr>
+    <tr><td><strong>Append</strong></td><td>Add to the end</td><td><code>friends.append("Mia")</code></td></tr>
+    <tr><td><strong>Remove</strong></td><td>Delete a specific item</td><td><code>friends.remove("Zain")</code></td></tr>
+    <tr><td><strong>Slicing</strong></td><td>Cut out a portion</td><td><code>friends[0:2]</code> → first two items</td></tr>
+  </table>
+
+  <h3>Live Demo — Type This!</h3>
+  <div class="code-block">
+    <div class="code-header"><span>python — arrays_demo.py</span><button class="copy-btn">Copy</button></div>
+    <pre><code># Imagine these are scores from a game
+scores = [45, 78, 92, 33, 61]
+
+# Find the highest score (THE MANUAL WAY — understand this for exams!)
+max_score = 0
+for i in range(len(scores)):
+    if scores[i] > max_score:
+        max_score = scores[i]
+print(f"Highest score: {max_score}")
+
+# Now the Python shortcut
+print(f"Highest (shortcut): {max(scores)}")
+
+# Slicing — get top 3 after sorting
+scores.sort(reverse=True)
+top_3 = scores[0:3]
+print(f"Top 3 scores: {top_3}")
+
+# Looping and displaying nicely
+friends = ["Aarav", "Zain", "Lily", "Mia"]
+for i in range(len(friends)):
+    print(f"Position {i}: {friends[i]}")</code></pre>
+  </div>
+
+  <h3>Pseudocode</h3>
+  <div class="code-block">
+    <div class="code-header"><span>pseudocode</span><button class="copy-btn">Copy</button></div>
+    <pre><code>scores ← [45, 78, 92, 33, 61]
+
+max_score ← 0
+FOR index ← 0 TO LEN(scores) - 1
+    IF scores[index] > max_score THEN
+        max_score ← scores[index]
+    END IF
+END FOR
+OUTPUT "Highest score: " + max_score</code></pre>
+  </div>
+
+  <h3>Quiz</h3>
+  <div class="quiz">
+    <h4>Test Your Knowledge</h4>
+
+    <div class="quiz-question" data-answer="a">
+      <p>1. What index does the FIRST item in an array have?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">0</button>
+        <button class="quiz-option" data-value="b">1</button>
+        <button class="quiz-option" data-value="c">-1</button>
+        <button class="quiz-option" data-value="d">It depends on the language</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="c">
+      <p>2. If <code>fruits = ["apple", "banana", "cherry"]</code>, what does <code>len(fruits)</code> return?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">2</button>
+        <button class="quiz-option" data-value="b">4</button>
+        <button class="quiz-option" data-value="c">3</button>
+        <button class="quiz-option" data-value="d">Error</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="b">
+      <p>3. How do you add "mango" to the end of <code>fruits</code>?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a"><code>fruits.add("mango")</code></button>
+        <button class="quiz-option" data-value="b"><code>fruits.append("mango")</code></button>
+        <button class="quiz-option" data-value="c"><code>fruits.insert("mango")</code></button>
+        <button class="quiz-option" data-value="d"><code>fruits + "mango"</code></button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="d">
+      <p>4. What does <code>fruits[0:2]</code> return?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a"><code>["apple"]</code></button>
+        <button class="quiz-option" data-value="b"><code>["apple", "banana", "cherry"]</code></button>
+        <button class="quiz-option" data-value="c"><code>["banana", "cherry"]</code></button>
+        <button class="quiz-option" data-value="d"><code>["apple", "banana"]</code></button>
+      </div>
+    </div>
+
+    <div class="quiz-score"></div>
+    <button class="quiz-reset">Try Again</button>
+  </div>
+
+  <h3>Assignment: Spotify Playlist Manager</h3>
+  <div class="card assignment">
+    <p>Build a mini playlist manager with your favourite songs!</p>
+    <ul>
+      <li>Start with 5 songs hardcoded in a list</li>
+      <li>Menu: View all (with position numbers), Add, Remove, Swap two songs, Show count</li>
+      <li>Loop so the user can keep managing until they type "quit"</li>
+    </ul>
+    <p><a class="assignment-link" href="/assignments" style="color:var(--accent-pink);font-weight:600;">Open in Assignments →</a></p>
+  </div>
+
+  <button class="chapter-complete-btn" data-chapter="ch2">✓ Mark as Complete</button>
+  <div class="nav-buttons">
+    <button class="nav-btn" data-target="ch1">← Previous: Subroutines</button>
+    <button class="nav-btn" data-target="ch3">Next: 2D Arrays →</button>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 3: 2D ARRAYS ==================== -->
+<section id="ch3" class="chapter">
+  <h2>Chapter 3: 2D Arrays</h2>
+  <p>Tables, Grids, and Lists of Lists</p>
+
+  <div class="card big-idea">"A list of lists — like a spreadsheet or a table with rows and columns."</div>
+
+  <div class="card analogy">
+    <p>Think of a <strong>cinema seating chart</strong>. Row 0 has seats [A, B, C, D]. Row 1 has seats [A, B, C, D]. To find a specific seat, you need TWO numbers: which <strong>row</strong>, and which <strong>seat</strong> in that row.</p>
+    <p>That's exactly how a 2D array works: <code>cinema[row][seat]</code></p>
+  </div>
+
+  <h3>Key Concepts</h3>
+  <table>
+    <tr><th>Concept</th><th>Example</th></tr>
+    <tr><td>Creating a 2D array</td><td><code>seats = [["X","O","X"], ["O","O","X"], ["X","X","O"]]</code></td></tr>
+    <tr><td>Accessing an element</td><td><code>seats[1][2]</code> → row 1, column 2</td></tr>
+    <tr><td>Looping through rows</td><td><code>for row in seats:</code></td></tr>
+    <tr><td>Looping through everything</td><td><code>for row in seats: for item in row:</code></td></tr>
+    <tr><td>Number of rows</td><td><code>len(seats)</code></td></tr>
+    <tr><td>Number of columns</td><td><code>len(seats[0])</code></td></tr>
+  </table>
+
+  <h3>Live Demo — Type This!</h3>
+  <div class="code-block">
+    <div class="code-header"><span>python — noughts_and_crosses.py</span><button class="copy-btn">Copy</button></div>
+    <pre><code># Noughts and Crosses board — a 2D array!
+board = [
+    [" ", " ", " "],
+    [" ", " ", " "],
+    [" ", " ", " "]
+]
+
+def print_board(board):
+    print("  0   1   2")
+    for i, row in enumerate(board):
+        print(f"{i} " + " | ".join(row))
+        if i < 2:
+            print("  ---------")
+
+# Place some moves
+board[1][1] = "X"  # Centre
+board[0][0] = "O"  # Top-left
+board[2][2] = "X"  # Bottom-right
+
+print_board(board)
+# Try changing the positions and see what happens!</code></pre>
+  </div>
+
+  <h3>Quiz</h3>
+  <div class="quiz">
+    <h4>Test Your Knowledge</h4>
+
+    <div class="quiz-question" data-answer="b">
+      <p>1. How do you access row 2, column 0 of a 2D array called <code>grid</code>?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a"><code>grid[0][2]</code></button>
+        <button class="quiz-option" data-value="b"><code>grid[2][0]</code></button>
+        <button class="quiz-option" data-value="c"><code>grid(2,0)</code></button>
+        <button class="quiz-option" data-value="d"><code>grid[2,0]</code></button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="c">
+      <p>2. How many loops do you need to visit every cell in a 2D array?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">1</button>
+        <button class="quiz-option" data-value="b">3</button>
+        <button class="quiz-option" data-value="c">2</button>
+        <button class="quiz-option" data-value="d">It depends</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="a">
+      <p>3. For a 3×4 grid, what does <code>len(grid)</code> return?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">3 (number of rows)</button>
+        <button class="quiz-option" data-value="b">4 (number of columns)</button>
+        <button class="quiz-option" data-value="c">12 (total cells)</button>
+        <button class="quiz-option" data-value="d">7</button>
+      </div>
+    </div>
+
+    <div class="quiz-score"></div>
+    <button class="quiz-reset">Try Again</button>
+  </div>
+
+  <h3>Assignment: Tic-Tac-Toe</h3>
+  <div class="card assignment">
+    <p>Build the full Noughts and Crosses game!</p>
+    <ul>
+      <li>3x3 board using a 2D array</li>
+      <li>Display the board after each move</li>
+      <li>Players take turns entering row and column (X and O)</li>
+      <li>Check if chosen cell is empty before placing</li>
+      <li><strong>STRETCH:</strong> Check for a winner (3 in a row/column/diagonal)</li>
+      <li><strong>STRETCH:</strong> Check for a draw</li>
+    </ul>
+    <p><a class="assignment-link" href="/assignments" style="color:var(--accent-pink);font-weight:600;">Open in Assignments →</a></p>
+  </div>
+
+  <button class="chapter-complete-btn" data-chapter="ch3">✓ Mark as Complete</button>
+  <div class="nav-buttons">
+    <button class="nav-btn" data-target="ch2">← Previous: 1D Arrays</button>
+    <button class="nav-btn" data-target="ch4">Next: Records →</button>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 4: RECORDS ==================== -->
+<section id="ch4" class="chapter">
+  <h2>Chapter 4: Records</h2>
+  <p>Grouping Different Types of Data Together</p>
+
+  <div class="card big-idea">"Group DIFFERENT types of data about ONE thing together."</div>
+
+  <div class="card analogy">
+    <p>Think of your <strong>school ID card</strong>. It has your name (text), your year group (number), your photo (image), and your student ID (code). These are all DIFFERENT types of data, but they all describe ONE person.</p>
+    <p>An <strong>array</strong> says "here are 10 names." A <strong>record</strong> says "here's everything about ONE student."</p>
+  </div>
+
+  <h3>Key Concepts</h3>
+  <table>
+    <tr><th>Concept</th><th>Array</th><th>Record</th></tr>
+    <tr><td><strong>Stores</strong></td><td>Many items of the SAME type</td><td>Multiple items of DIFFERENT types</td></tr>
+    <tr><td><strong>Access by</strong></td><td>Index number <code>[0]</code></td><td>Field name <code>["name"]</code></td></tr>
+    <tr><td><strong>Example</strong></td><td><code>["Aarav", "Zain"]</code></td><td><code>{"name": "Aarav", "age": 14}</code></td></tr>
+  </table>
+
+  <h3>Live Demo — Type This!</h3>
+  <div class="code-block">
+    <div class="code-header"><span>python — records_demo.py</span><button class="copy-btn">Copy</button></div>
+    <pre><code># A record using a dictionary
+student = {
+    "name": "Vihaan",
+    "age": 14,
+    "year_group": 10,
+    "favourite_subject": "Computing"
+}
+
+# Accessing fields
+print(f"Name: {student['name']}")
+print(f"Age: {student['age']}")
+
+# An ARRAY of RECORDS — super powerful!
+students = [
+    {"name": "Vihaan", "age": 14, "score": 92},
+    {"name": "Aarav", "age": 15, "score": 87},
+    {"name": "Lily", "age": 14, "score": 95},
+]
+
+# Find the student with the highest score
+best = students[0]
+for student in students:
+    if student["score"] > best["score"]:
+        best = student
+print(f"Top student: {best['name']} with {best['score']}!")</code></pre>
+  </div>
+
+  <h3>Pseudocode</h3>
+  <div class="code-block">
+    <div class="code-header"><span>pseudocode</span><button class="copy-btn">Copy</button></div>
+    <pre><code>RECORD Student
+    name: STRING
+    age: INTEGER
+    score: INTEGER
+END RECORD
+
+students ← ARRAY OF Student
+best ← students[0]
+FOR index ← 0 TO LEN(students) - 1
+    IF students[index].score > best.score THEN
+        best ← students[index]
+    END IF
+END FOR
+OUTPUT "Top student: " + best.name</code></pre>
+  </div>
+
+  <h3>Quiz</h3>
+  <div class="quiz">
+    <h4>Test Your Knowledge</h4>
+
+    <div class="quiz-question" data-answer="b">
+      <p>1. What is the main difference between an array and a record?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Arrays are faster</button>
+        <button class="quiz-option" data-value="b">Records store different data types; arrays store the same type</button>
+        <button class="quiz-option" data-value="c">Records can only store numbers</button>
+        <button class="quiz-option" data-value="d">Arrays can store more items</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="c">
+      <p>2. How do you access the "age" field from <code>person = {"name": "Vihaan", "age": 14}</code>?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a"><code>person[1]</code></button>
+        <button class="quiz-option" data-value="b"><code>person.age</code></button>
+        <button class="quiz-option" data-value="c"><code>person["age"]</code></button>
+        <button class="quiz-option" data-value="d"><code>person(age)</code></button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="a">
+      <p>3. Can you have an array of records?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Yes — e.g., a list of students, each with name, age, and score</button>
+        <button class="quiz-option" data-value="b">No — arrays and records are separate</button>
+        <button class="quiz-option" data-value="c">Only in low-level languages</button>
+        <button class="quiz-option" data-value="d">Only if all records have the same fields</button>
+      </div>
+    </div>
+
+    <div class="quiz-score"></div>
+    <button class="quiz-reset">Try Again</button>
+  </div>
+
+  <h3>Assignment: Pokemon Card Collection</h3>
+  <div class="card assignment">
+    <p>Build a digital card collection manager!</p>
+    <ul>
+      <li>Create records for cards with: name, type, HP, attack_power, rarity</li>
+      <li>Start with 5 cards in an array</li>
+      <li>Menu: View all cards, Search by name, Find highest HP, Battle two cards</li>
+      <li><strong>STRETCH:</strong> Add new cards to the collection</li>
+      <li><strong>STRETCH:</strong> Add a "trade" feature</li>
+    </ul>
+    <p><a class="assignment-link" href="/assignments" style="color:var(--accent-pink);font-weight:600;">Open in Assignments →</a></p>
+  </div>
+
+  <button class="chapter-complete-btn" data-chapter="ch4">✓ Mark as Complete</button>
+  <div class="nav-buttons">
+    <button class="nav-btn" data-target="ch3">← Previous: 2D Arrays</button>
+    <button class="nav-btn" data-target="ch5">Next: External Files →</button>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 5: EXTERNAL FILES ==================== -->
+<section id="ch5" class="chapter">
+  <h2>Chapter 5: External Files</h2>
+  <p>Reading and Writing Data to Files</p>
+
+  <div class="card big-idea">"Save data so it survives after the program closes. Read data that already exists."</div>
+
+  <div class="card analogy">
+    <p>Your brain is like <strong>RAM</strong> — it forgets things when you sleep (program closes). A <strong>notebook</strong> is like a file — you write things down so you can read them tomorrow.</p>
+    <p>Programs work the same way: variables disappear when the program ends, but <strong>files stick around forever</strong>.</p>
+  </div>
+
+  <h3>Key Concepts</h3>
+  <table>
+    <tr><th>Operation</th><th>Python Code</th><th>What it does</th></tr>
+    <tr><td><strong>Open for writing</strong></td><td><code>f = open("data.txt", "w")</code></td><td>Creates/overwrites file</td></tr>
+    <tr><td><strong>Open for appending</strong></td><td><code>f = open("data.txt", "a")</code></td><td>Adds to end (safe!)</td></tr>
+    <tr><td><strong>Open for reading</strong></td><td><code>f = open("data.txt", "r")</code></td><td>Read the contents</td></tr>
+    <tr><td><strong>Write a line</strong></td><td><code>f.write("Hello\n")</code></td><td>Puts text in file</td></tr>
+    <tr><td><strong>Read all lines</strong></td><td><code>lines = f.readlines()</code></td><td>Gets all lines as a list</td></tr>
+    <tr><td><strong>Close</strong></td><td><code>f.close()</code></td><td>Always close when done!</td></tr>
+  </table>
+
+  <div class="card tip">
+    <p><strong>Critical rule:</strong> <code>"w"</code> ERASES the file first. <code>"a"</code> ADDS to the end. Mix these up and you lose data! When in doubt, use <code>"a"</code>.</p>
+  </div>
+
+  <h3>Live Demo — Type This!</h3>
+  <div class="code-block">
+    <div class="code-header"><span>python — file_demo.py</span><button class="copy-btn">Copy</button></div>
+    <pre><code># WRITE a high score to a file
+name = input("Enter your name: ")
+score = input("Enter your score: ")
+
+f = open("highscores.txt", "a")  # 'a' = append, won't erase old scores!
+f.write(f"{name} {score}\n")
+f.close()
+print("Score saved!")
+
+# READ all high scores
+f = open("highscores.txt", "r")
+lines = f.readlines()
+f.close()
+
+print("\n--- HIGH SCORES ---")
+for line in lines:
+    print(line.strip())  # .strip() removes the \n at the end</code></pre>
+  </div>
+
+  <h3>Pseudocode</h3>
+  <div class="code-block">
+    <div class="code-header"><span>pseudocode</span><button class="copy-btn">Copy</button></div>
+    <pre><code>myFile ← OPEN_FILE("highscores.txt")
+lines ← READ_LINES(myFile)
+FOR EACH line IN lines
+    OUTPUT line
+END FOR
+CLOSE_FILE(myFile)</code></pre>
+  </div>
+
+  <h3>Quiz</h3>
+  <div class="quiz">
+    <h4>Test Your Knowledge</h4>
+
+    <div class="quiz-question" data-answer="c">
+      <p>1. What's the difference between <code>"w"</code> and <code>"a"</code> mode?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">"w" is for words, "a" is for all</button>
+        <button class="quiz-option" data-value="b">No difference</button>
+        <button class="quiz-option" data-value="c">"w" overwrites the file, "a" adds to the end</button>
+        <button class="quiz-option" data-value="d">"a" overwrites the file, "w" adds to the end</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="b">
+      <p>2. What does <code>readlines()</code> return?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">A single string</button>
+        <button class="quiz-option" data-value="b">A list of strings (one per line)</button>
+        <button class="quiz-option" data-value="c">A number</button>
+        <button class="quiz-option" data-value="d">A dictionary</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="a">
+      <p>3. Why must you always close a file after using it?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">To save changes and free system resources</button>
+        <button class="quiz-option" data-value="b">Python requires it or the program crashes</button>
+        <button class="quiz-option" data-value="c">To encrypt the file</button>
+        <button class="quiz-option" data-value="d">You don't have to; it's optional</button>
+      </div>
+    </div>
+
+    <div class="quiz-score"></div>
+    <button class="quiz-reset">Try Again</button>
+  </div>
+
+  <h3>Assignment: Digital Diary</h3>
+  <div class="card assignment">
+    <p>Build a personal diary app that saves entries to a file!</p>
+    <ul>
+      <li>Menu: Write Entry, Read All, Search by Date, Quit</li>
+      <li>Auto-add today's date when writing</li>
+      <li>Use append mode so old entries aren't erased</li>
+      <li>Search by date to find specific entries</li>
+      <li><strong>STRETCH:</strong> Add a password to protect the diary</li>
+    </ul>
+    <p><a class="assignment-link" href="/assignments" style="color:var(--accent-pink);font-weight:600;">Open in Assignments →</a></p>
+  </div>
+
+  <button class="chapter-complete-btn" data-chapter="ch5">✓ Mark as Complete</button>
+  <div class="nav-buttons">
+    <button class="nav-btn" data-target="ch4">← Previous: Records</button>
+    <button class="nav-btn" data-target="ch6">Next: Random Numbers →</button>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 6: RANDOM NUMBERS ==================== -->
+<section id="ch6" class="chapter">
+  <h2>Chapter 6: Random Numbers</h2>
+  <p>Games, Simulations, and Unpredictability</p>
+
+  <div class="card big-idea">"Let the computer make unpredictable choices — essential for games, simulations, and security."</div>
+
+  <div class="card analogy">
+    <p>When you roll a dice, you can't predict the number. <code>random.randint(1,6)</code> is a <strong>digital dice</strong>.</p>
+    <p>When you shuffle a deck of cards, you use <code>random.shuffle()</code>. When you pick a random card, you use <code>random.choice()</code>.</p>
+    <p>Games without randomness would be boring — you'd know exactly what happens every time!</p>
+  </div>
+
+  <h3>Key Concepts</h3>
+  <div class="code-block">
+    <div class="code-header"><span>python — random_cheatsheet.py</span><button class="copy-btn">Copy</button></div>
+    <pre><code>import random
+
+my_list = [1, 2, 3, 4, 5]
+
+print(random.randint(1, 6))        # Random integer between 1 and 6 (inclusive)
+print(random.choice(["a", "b"]))   # Pick one random item from a list
+random.shuffle(my_list)             # Shuffle a list in-place
+print("Shuffled:", my_list)
+print(random.random())              # Random decimal between 0.0 and 1.0
+print(random.sample(my_list, 3))    # Pick 3 unique random items from a list</code></pre>
+  </div>
+
+  <h3>Live Demo — Type This!</h3>
+  <div class="code-block">
+    <div class="code-header"><span>python — dice_demo.py</span><button class="copy-btn">Copy</button></div>
+    <pre><code>import random
+
+# Digital dice
+for i in range(5):
+    roll = random.randint(1, 6)
+    print(f"Roll {i+1}: {roll}")
+
+# Random name picker (for who does the washing up!)
+family = ["Mum", "Dad", "Vihaan", "Sister"]
+chosen = random.choice(family)
+print(f"\n{chosen} is doing the washing up tonight!")
+
+# Coin flip simulator
+heads = 0
+tails = 0
+for _ in range(100):
+    if random.randint(0, 1) == 0:
+        heads += 1
+    else:
+        tails += 1
+print(f"\n100 coin flips: {heads} heads, {tails} tails")</code></pre>
+  </div>
+
+  <h3>Quiz</h3>
+  <div class="quiz">
+    <h4>Test Your Knowledge</h4>
+
+    <div class="quiz-question" data-answer="c">
+      <p>1. What module do you import for random numbers?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a"><code>import math</code></button>
+        <button class="quiz-option" data-value="b"><code>import dice</code></button>
+        <button class="quiz-option" data-value="c"><code>import random</code></button>
+        <button class="quiz-option" data-value="d"><code>import randint</code></button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="b">
+      <p>2. What does <code>random.choice(["red", "blue", "green"])</code> do?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Returns all three colours</button>
+        <button class="quiz-option" data-value="b">Picks one random colour from the list</button>
+        <button class="quiz-option" data-value="c">Always returns "red"</button>
+        <button class="quiz-option" data-value="d">Shuffles the list</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="d">
+      <p>3. What is the range of <code>random.randint(1, 10)</code>?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">1 to 9</button>
+        <button class="quiz-option" data-value="b">0 to 10</button>
+        <button class="quiz-option" data-value="c">0 to 9</button>
+        <button class="quiz-option" data-value="d">1 to 10 (inclusive)</button>
+      </div>
+    </div>
+
+    <div class="quiz-score"></div>
+    <button class="quiz-reset">Try Again</button>
+  </div>
+
+  <h3>Assignment: Race to 50</h3>
+  <div class="card assignment">
+    <p>Build a two-player dice game with real strategy!</p>
+    <ul>
+      <li>2 players take turns rolling a dice</li>
+      <li>Each turn: roll as many times as you want, points add up</li>
+      <li>BUT roll a 1 = lose ALL points from that turn!</li>
+      <li>Choose to "hold" to keep your turn's points safely</li>
+      <li>First to 50 total wins</li>
+      <li><strong>STRETCH:</strong> Add a computer opponent that holds after 15 points in a turn</li>
+    </ul>
+    <p><a class="assignment-link" href="/assignments" style="color:var(--accent-pink);font-weight:600;">Open in Assignments →</a></p>
+  </div>
+
+  <button class="chapter-complete-btn" data-chapter="ch6">✓ Mark as Complete</button>
+  <div class="nav-buttons">
+    <button class="nav-btn" data-target="ch5">← Previous: External Files</button>
+    <button class="nav-btn" data-target="ch7">Next: Scope &amp; Structure →</button>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 7: SCOPE ==================== -->
+<section id="ch7" class="chapter">
+  <h2>Chapter 7: Scope &amp; Structured Programming</h2>
+  <p>Where Variables Live and How to Organise Code</p>
+
+  <div class="card big-idea">"Where you create a variable determines where you can use it. Structure your code into logical blocks."</div>
+
+  <div class="card analogy">
+    <p>Think of your house. Your <strong>bedroom</strong> is your "local scope" — your stuff stays there. The <strong>kitchen</strong> is "shared scope" — everyone uses it.</p>
+    <p>A <strong>local variable</strong> is like your phone charger in your room — only you can use it. A <strong>global variable</strong> is like the WiFi password — everyone in the house knows it.</p>
+    <p>If a friend comes over (a function is called), they can't access your bedroom stuff unless you <strong>hand it to them</strong> (pass it as a parameter).</p>
+  </div>
+
+  <h3>Key Concepts</h3>
+  <table>
+    <tr><th>Term</th><th>Meaning</th><th>Example</th></tr>
+    <tr><td><strong>Local variable</strong></td><td>Created inside a function, only usable there</td><td><code>def greet(): name = "Vihaan"</code></td></tr>
+    <tr><td><strong>Global variable</strong></td><td>Created outside all functions, usable everywhere</td><td><code>score = 0</code> at the top</td></tr>
+    <tr><td><strong><code>global</code> keyword</strong></td><td>Lets a function modify a global variable</td><td><code>global score</code></td></tr>
+    <tr><td><strong>Structured programming</strong></td><td>Using sequence, selection, iteration</td><td>Clean, logical code flow</td></tr>
+  </table>
+
+  <h3>The Three Structures</h3>
+  <table>
+    <tr><th>Structure</th><th>What it is</th><th>Python Example</th></tr>
+    <tr><td><strong>Sequence</strong></td><td>Code runs line by line, in order</td><td><code>x = 1</code> then <code>y = 2</code> then <code>print(x + y)</code></td></tr>
+    <tr><td><strong>Selection</strong></td><td>Making decisions (branching)</td><td><code>if age >= 18:</code></td></tr>
+    <tr><td><strong>Iteration</strong></td><td>Repeating code (loops)</td><td><code>for i in range(10):</code> or <code>while True:</code></td></tr>
+  </table>
+
+  <h3>Live Demo — Type This!</h3>
+  <div class="code-block">
+    <div class="code-header"><span>python — scope_demo.py</span><button class="copy-btn">Copy</button></div>
+    <pre><code>score = 0  # GLOBAL variable — lives outside all functions
+
+def add_points(points):
+    global score           # Without this line, Python would create a LOCAL 'score'
+    score = score + points
+    bonus = points * 2     # LOCAL variable — only exists inside this function
+    print(f"Bonus calculated: {bonus}")
+
+add_points(10)
+print(f"Score is now: {score}")    # Works! score is global
+
+# Uncomment the next line to see an error:
+# print(bonus)  # ERROR! bonus is local to add_points
+
+# WITHOUT global keyword — common mistake!
+lives = 3
+
+def lose_life():
+    # lives = lives - 1  # This would ERROR because Python thinks
+    #                     # you're trying to create a LOCAL 'lives'
+    global lives
+    lives = lives - 1
+
+lose_life()
+print(f"Lives remaining: {lives}")  # 2</code></pre>
+  </div>
+
+  <h3>Quiz</h3>
+  <div class="quiz">
+    <h4>Test Your Knowledge</h4>
+
+    <div class="quiz-question" data-answer="b">
+      <p>1. What happens if you try to use a local variable outside its function?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">It works fine</button>
+        <button class="quiz-option" data-value="b">You get a NameError — it doesn't exist there</button>
+        <button class="quiz-option" data-value="c">It returns 0</button>
+        <button class="quiz-option" data-value="d">It returns None</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="c">
+      <p>2. What does the <code>global</code> keyword do?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Creates a new variable</button>
+        <button class="quiz-option" data-value="b">Deletes a variable</button>
+        <button class="quiz-option" data-value="c">Tells the function to use the global version of a variable</button>
+        <button class="quiz-option" data-value="d">Makes a variable permanent</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="d">
+      <p>3. What are the three structures in structured programming?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Input, Process, Output</button>
+        <button class="quiz-option" data-value="b">Variables, Functions, Classes</button>
+        <button class="quiz-option" data-value="c">Read, Write, Execute</button>
+        <button class="quiz-option" data-value="d">Sequence, Selection, Iteration</button>
+      </div>
+    </div>
+
+    <div class="quiz-score"></div>
+    <button class="quiz-reset">Try Again</button>
+  </div>
+
+  <h3>Assignment: Text Adventure Game</h3>
+  <div class="card assignment">
+    <p>Build a text adventure where each room is a separate function!</p>
+    <ul>
+      <li>Global variables: <code>player_health</code>, <code>player_inventory</code> (list)</li>
+      <li>Each room is a function: <code>entrance()</code>, <code>dark_cave()</code>, <code>treasure_room()</code>, <code>dragon_lair()</code></li>
+      <li>Choices in each room lead to other rooms</li>
+      <li>Items collected in one room must be available in others</li>
+      <li>Must use: sequence, selection, and iteration</li>
+    </ul>
+    <p><a class="assignment-link" href="/assignments" style="color:var(--accent-pink);font-weight:600;">Open in Assignments →</a></p>
+  </div>
+
+  <button class="chapter-complete-btn" data-chapter="ch7">✓ Mark as Complete</button>
+  <div class="nav-buttons">
+    <button class="nav-btn" data-target="ch6">← Previous: Random Numbers</button>
+    <button class="nav-btn" data-target="ch8">Next: Validation &amp; Auth →</button>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 8: VALIDATION ==================== -->
+<section id="ch8" class="chapter">
+  <h2>Chapter 8: Validation, Authentication &amp; Testing</h2>
+  <p>Making Programs Robust and Secure</p>
+
+  <div class="card big-idea">"Never trust user input. Always check it. Protect your system with passwords. Test everything."</div>
+
+  <div class="card analogy">
+    <p>Think of a <strong>nightclub bouncer</strong>.</p>
+    <p><strong>Validation</strong> is the bouncer checking your age — "Are you 18 or over?" If you say 300, the range check catches that.</p>
+    <p><strong>Authentication</strong> is the bouncer checking your name is on the guest list.</p>
+    <p><strong>Testing</strong> is the club owner pretending to be underage to make sure the bouncer actually does their job!</p>
+  </div>
+
+  <h3>Three Types of Validation</h3>
+  <table>
+    <tr><th>Check</th><th>What it does</th><th>Example</th></tr>
+    <tr><td><strong>Presence</strong></td><td>Is the field empty?</td><td>Username can't be blank</td></tr>
+    <tr><td><strong>Range</strong></td><td>Is it within limits?</td><td>Age must be 0-120</td></tr>
+    <tr><td><strong>Length</strong></td><td>Right number of characters?</td><td>Password must be 8+ chars</td></tr>
+  </table>
+
+  <h3>Three Types of Tests</h3>
+  <table>
+    <tr><th>Test Type</th><th>Purpose</th><th>Example for age >= 18</th></tr>
+    <tr><td><strong>Normal</strong></td><td>Expected input</td><td>Age = 25 (should be accepted)</td></tr>
+    <tr><td><strong>Boundary</strong></td><td>Edge values</td><td>Age = 18 (right on the limit)</td></tr>
+    <tr><td><strong>Erroneous</strong></td><td>Wrong/impossible input</td><td>Age = -5, or "hello"</td></tr>
+  </table>
+
+  <div class="card tip">
+    <p><strong>GIGO = Garbage In, Garbage Out.</strong> If you put rubbish data in, you get rubbish results out. Validation stops the garbage getting in!</p>
+  </div>
+
+  <h3>Live Demo — Type This!</h3>
+  <div class="code-block">
+    <div class="code-header"><span>python — validation_demo.py</span><button class="copy-btn">Copy</button></div>
+    <pre><code># A ROBUST age checker with all three validation types
+def get_valid_age():
+    while True:
+        age_input = input("Enter your age: ")
+
+        # PRESENCE CHECK — is it empty?
+        if age_input == "":
+            print("You must enter something!")
+            continue
+
+        # TYPE CHECK — is it a number?
+        if not age_input.isdigit():
+            print("That's not a number!")
+            continue
+
+        age = int(age_input)
+
+        # RANGE CHECK — is it sensible?
+        if age < 0 or age > 120:
+            print("Age must be between 0 and 120!")
+            continue
+
+        return age  # Only reaches here if ALL checks pass
+
+age = get_valid_age()
+print(f"Your age is {age}. Valid!")
+
+# AUTHENTICATION — simple login
+correct_user = "Vihaan"
+correct_pass = "Python123"
+
+username = input("\nUsername: ")
+password = input("Password: ")
+
+if username == correct_user and password == correct_pass:
+    print("Access granted! Welcome!")
+else:
+    print("Access denied!")</code></pre>
+  </div>
+
+  <h3>Test Plan Example</h3>
+  <table>
+    <tr><th>Test #</th><th>Description</th><th>Test Data</th><th>Expected Result</th><th>Type</th></tr>
+    <tr><td>1</td><td>Normal age</td><td>25</td><td>Accepted</td><td>Normal</td></tr>
+    <tr><td>2</td><td>Minimum valid age</td><td>0</td><td>Accepted</td><td>Boundary</td></tr>
+    <tr><td>3</td><td>Maximum valid age</td><td>120</td><td>Accepted</td><td>Boundary</td></tr>
+    <tr><td>4</td><td>Negative number</td><td>-5</td><td>Rejected</td><td>Erroneous</td></tr>
+    <tr><td>5</td><td>Text instead of number</td><td>"hello"</td><td>Rejected</td><td>Erroneous</td></tr>
+    <tr><td>6</td><td>Empty input</td><td>(nothing)</td><td>Rejected</td><td>Erroneous</td></tr>
+  </table>
+
+  <h3>Quiz</h3>
+  <div class="quiz">
+    <h4>Test Your Knowledge</h4>
+
+    <div class="quiz-question" data-answer="c">
+      <p>1. What does GIGO stand for?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Good Input, Good Output</button>
+        <button class="quiz-option" data-value="b">Get In, Get Out</button>
+        <button class="quiz-option" data-value="c">Garbage In, Garbage Out</button>
+        <button class="quiz-option" data-value="d">Go In, Go Out</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="a">
+      <p>2. What type of test checks the edge/limit values?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Boundary test</button>
+        <button class="quiz-option" data-value="b">Normal test</button>
+        <button class="quiz-option" data-value="c">Erroneous test</button>
+        <button class="quiz-option" data-value="d">Unit test</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="d">
+      <p>3. Why do we use a <code>while</code> loop for validation?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Because for loops don't work with input</button>
+        <button class="quiz-option" data-value="b">Because it's faster</button>
+        <button class="quiz-option" data-value="c">Because Python requires it</button>
+        <button class="quiz-option" data-value="d">To keep asking until valid data is entered</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="b">
+      <p>4. What's the difference between validation and authentication?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">They are the same thing</button>
+        <button class="quiz-option" data-value="b">Validation checks data is reasonable; authentication checks identity</button>
+        <button class="quiz-option" data-value="c">Authentication checks data; validation checks identity</button>
+        <button class="quiz-option" data-value="d">Validation is for numbers; authentication is for text</button>
+      </div>
+    </div>
+
+    <div class="quiz-score"></div>
+    <button class="quiz-reset">Try Again</button>
+  </div>
+
+  <h3>Assignment: Secure Login System</h3>
+  <div class="card assignment">
+    <p>Build a login system for a secret club!</p>
+    <ul>
+      <li>Store 3 usernames and passwords</li>
+      <li>Validate: username can't be empty, password must be 8+ characters</li>
+      <li>Give 3 attempts then lock out</li>
+      <li>Welcome message on success</li>
+      <li>Write a TEST PLAN with at least 6 tests (normal, boundary, erroneous)</li>
+      <li><strong>STRETCH:</strong> Password must contain 1 number and 1 uppercase</li>
+    </ul>
+    <p><a class="assignment-link" href="/assignments" style="color:var(--accent-pink);font-weight:600;">Open in Assignments →</a></p>
+  </div>
+
+  <button class="chapter-complete-btn" data-chapter="ch8">✓ Mark as Complete</button>
+  <div class="nav-buttons">
+    <button class="nav-btn" data-target="ch7">← Previous: Scope &amp; Structure</button>
+    <button class="nav-btn" data-target="ch9">Next: Programming Languages →</button>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 9: PROGRAMMING LANGUAGES ==================== -->
+<section id="ch9" class="chapter">
+  <h2>Chapter 9: Programming Languages</h2>
+  <p>How Code Actually Runs on Hardware (Theory)</p>
+
+  <div class="card big-idea">"Computers only understand 1s and 0s. Everything you write in Python gets translated."</div>
+
+  <div class="card analogy">
+    <p>Imagine you speak English and need to instruct someone who <strong>only speaks binary</strong>.</p>
+    <p><strong>Machine code</strong> = speaking binary directly (exhausting).<br>
+    <strong>Assembly language</strong> = using abbreviations like texting: "brb", "lol" (slightly easier).<br>
+    <strong>Python</strong> = speaking normal English (easy for you, but needs a translator).</p>
+    <p>The <strong>compiler</strong> translates the whole book before the person reads it.<br>
+    The <strong>interpreter</strong> translates one sentence at a time, waiting for them to finish each one.</p>
+  </div>
+
+  <h3>Language Levels</h3>
+  <table>
+    <tr><th>Level</th><th>Language</th><th>Human-Friendly?</th><th>Speed</th></tr>
+    <tr><td><strong>Low Level</strong></td><td>Machine Code (0s and 1s)</td><td>Not at all</td><td>Very fast</td></tr>
+    <tr><td><strong>Low Level</strong></td><td>Assembly (ADD, MOV, SUB)</td><td>A bit</td><td>Fast</td></tr>
+    <tr><td><strong>High Level</strong></td><td>Python, Java, C++</td><td>Yes!</td><td>Needs translating first</td></tr>
+  </table>
+
+  <h3>Translators</h3>
+  <table>
+    <tr><th>Translator</th><th>What it does</th><th>Key fact</th></tr>
+    <tr><td><strong>Assembler</strong></td><td>Assembly → Machine Code</td><td>One-to-one translation (each instruction becomes one machine code instruction)</td></tr>
+    <tr><td><strong>Compiler</strong></td><td>Translates ALL high-level code at once</td><td>Creates a standalone executable file. Used for distributing finished software.</td></tr>
+    <tr><td><strong>Interpreter</strong></td><td>Translates line by line, runs immediately</td><td>Slower but great for testing/debugging. Python uses this!</td></tr>
+  </table>
+
+  <h3>Machine Code Structure</h3>
+  <div class="card tip">
+    <p>Each machine code instruction has two parts:</p>
+    <ul>
+      <li><strong>OPCODE</strong> — the operation to perform (e.g., ADD, LOAD, STORE)</li>
+      <li><strong>OPERAND</strong> — the data or memory address to use</li>
+    </ul>
+    <p>Example: <code>1010 0011</code> → OPCODE <code>1010</code> (ADD) + OPERAND <code>0011</code> (memory location 3)</p>
+  </div>
+
+  <h3>Compiler vs Interpreter</h3>
+  <table>
+    <tr><th>Feature</th><th>Compiler</th><th>Interpreter</th></tr>
+    <tr><td>Translates</td><td>Whole program at once</td><td>One line at a time</td></tr>
+    <tr><td>Speed</td><td>Faster to run (already translated)</td><td>Slower (translates every time)</td></tr>
+    <tr><td>Errors</td><td>Shows all errors after compiling</td><td>Stops at the first error</td></tr>
+    <tr><td>Debugging</td><td>Harder (must recompile)</td><td>Easier (change and re-run)</td></tr>
+    <tr><td>Output</td><td>Creates an executable file</td><td>No executable file</td></tr>
+    <tr><td>Examples</td><td>C, C++, Java</td><td>Python, JavaScript</td></tr>
+  </table>
+
+  <h3>Fun Activity: Human Computer Game</h3>
+  <div class="card assignment">
+    <p><strong>Do this with your uncle — no computer needed!</strong></p>
+    <ol>
+      <li><strong>Round 1 (Machine Code):</strong> One person gives binary commands: 1 = stand, 0 = sit. Shout "1, 0, 1, 1, 0" — the other must stand/sit.</li>
+      <li><strong>Round 2 (Assembly):</strong> Use mnemonics: "STN" = stand, "SIT" = sit. A third person (the Assembler) translates to binary.</li>
+      <li><strong>Round 3 (High-Level):</strong> Use English: "Do the morning exercise." The Compiler converts the whole thing at once.</li>
+    </ol>
+    <p><strong>Discussion:</strong> Which was easiest for the programmer? Which was fastest for the CPU? That's the trade-off!</p>
+  </div>
+
+  <h3>Quiz</h3>
+  <div class="quiz">
+    <h4>Test Your Knowledge</h4>
+
+    <div class="quiz-question" data-answer="a">
+      <p>1. What is machine code?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Binary instructions (0s and 1s) that the processor directly executes</button>
+        <button class="quiz-option" data-value="b">Code written in Python</button>
+        <button class="quiz-option" data-value="c">Abbreviated commands like ADD and SUB</button>
+        <button class="quiz-option" data-value="d">Any code written on a machine</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="c">
+      <p>2. What does a compiler do differently from an interpreter?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">A compiler works with low-level languages only</button>
+        <button class="quiz-option" data-value="b">A compiler is always faster</button>
+        <button class="quiz-option" data-value="c">A compiler translates the whole program at once; an interpreter does it line by line</button>
+        <button class="quiz-option" data-value="d">There is no difference</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="b">
+      <p>3. What is a mnemonic in assembly language?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">A binary number</button>
+        <button class="quiz-option" data-value="b">A short, human-readable abbreviation like ADD or MOV</button>
+        <button class="quiz-option" data-value="c">A Python keyword</button>
+        <button class="quiz-option" data-value="d">An error message</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" data-answer="d">
+      <p>4. Name two advantages of high-level languages.</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Faster execution and smaller file size</button>
+        <button class="quiz-option" data-value="b">Direct hardware access and speed</button>
+        <button class="quiz-option" data-value="c">Use binary and are processor-specific</button>
+        <button class="quiz-option" data-value="d">Easier to read/write and machine-independent (portable)</button>
+      </div>
+    </div>
+
+    <div class="quiz-score"></div>
+    <button class="quiz-reset">Try Again</button>
+  </div>
+
+  <h3>Assignment: Comparison Poster</h3>
+  <div class="card assignment">
+    <p>Create a one-page comparison (on paper, PowerPoint, or as code output):</p>
+    <ul>
+      <li>Two columns: <strong>High-Level vs Low-Level</strong></li>
+      <li>Three rows: Advantages, Disadvantages, Examples</li>
+      <li>A diagram showing how each translator works</li>
+      <li>One real-world use case for each level</li>
+      <li><strong>STRETCH:</strong> Research what language your favourite game was built with!</li>
+    </ul>
+  </div>
+
+  <button class="chapter-complete-btn" data-chapter="ch9">✓ Mark as Complete</button>
+  <div class="nav-buttons">
+    <button class="nav-btn" data-target="ch8">← Previous: Validation &amp; Auth</button>
+    <button class="nav-btn" data-target="ch10">Next: Final Project →</button>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 10: FINAL PROJECT ==================== -->
+<section id="ch10" class="chapter">
+  <h2>Chapter 10: Final Project</h2>
+  <p>Put Everything Together!</p>
+
+  <div class="card big-idea">"Combine everything you've learned into one real program. Plan it, build it, test it."</div>
+
+  <h3>The Development Process</h3>
+  <div class="card tip">
+    <p>Real developers don't just start coding! Follow these steps:</p>
+    <ol>
+      <li><strong>PLAN</strong> — Write out what the program should do in plain English</li>
+      <li><strong>FLOWCHART</strong> — Draw the logic using proper flowchart symbols</li>
+      <li><strong>PSEUDOCODE</strong> — Write it in structured English (not Python yet!)</li>
+      <li><strong>CODE</strong> — Now write the Python</li>
+      <li><strong>TEST</strong> — Create a test plan with normal, boundary, and erroneous tests</li>
+      <li><strong>BUG BASH</strong> — Have someone else try to break your program!</li>
+    </ol>
+  </div>
+
+  <h3>Choose Your Project</h3>
+  <table>
+    <tr><th>Project</th><th>Difficulty</th><th>Skills Used</th></tr>
+    <tr><td><strong>Gaming Opponents</strong></td><td>Easy (Levels 4-5)</td><td>Files, random, arrays</td></tr>
+    <tr><td><strong>Scored Gaming Opponents</strong></td><td>Medium (Levels 5-7)</td><td>+ string splitting</td></tr>
+    <tr><td><strong>Gaming Teams</strong></td><td>Medium-Hard (Levels 7-9)</td><td>+ 2D arrays, sorting</td></tr>
+    <tr><td><strong>Slot Machine</strong></td><td>Hard (Level 8-9)</td><td>+ while loops, complex logic</td></tr>
+    <tr><td><strong>Freestyle</strong></td><td>Varies</td><td>Choose your own adventure!</td></tr>
+  </table>
+
+  <h3>Project 1: Gaming Opponents (Easy)</h3>
+  <div class="card">
+    <p>Write a program that selects a random opponent from a list of 20 gamer names.</p>
+    <ul>
+      <li>Ask for the player's name (validate: at least 1 character)</li>
+      <li>Gamer names are pre-loaded in the starter code (ShadowNinja, PixelQueen, TurboFox, ...)</li>
+      <li>Randomly pick one opponent and print the matchup</li>
+      <li><strong>Extension:</strong> Generate random scores for both and declare a winner</li>
+    </ul>
+    <p><a class="assignment-link" href="/assignments" style="color:var(--accent-pink);font-weight:600;">Open in Assignments →</a></p>
+  </div>
+
+  <h3>Project 2: Scored Gaming Opponents (Medium)</h3>
+  <div class="card">
+    <p>Pick a random opponent AND compare scores! Each gamer has a pre-set score.</p>
+    <ul>
+      <li>Data format: <code>"ShadowNinja 85"</code> — use <code>.split(" ")</code> to separate name and score</li>
+      <li>Randomly pick an opponent, read their score</li>
+      <li>Generate a random score for yourself</li>
+      <li>Compare and declare the winner</li>
+    </ul>
+    <p><a class="assignment-link" href="/assignments" style="color:var(--accent-pink);font-weight:600;">Open in Assignments →</a></p>
+  </div>
+
+  <h3>Project 3: Gaming Teams (Medium-Hard)</h3>
+  <div class="card">
+    <p>Randomly split gamers into two teams and see which team has the highest total score!</p>
+    <ul>
+      <li>Ask how many players per team (1-10, validated)</li>
+      <li>Randomly pick unique players — no repeats between teams</li>
+      <li>Calculate total score for each team</li>
+      <li>Declare the winning team</li>
+      <li><strong>Extension:</strong> Add yourself to a team with a random score</li>
+    </ul>
+    <p><a class="assignment-link" href="/assignments" style="color:var(--accent-pink);font-weight:600;">Open in Assignments →</a></p>
+  </div>
+
+  <h3>Project 4: Slot Machine (Hard)</h3>
+  <div class="card">
+    <p>Build a virtual slot machine!</p>
+    <ul>
+      <li>Start with 100 coins, each spin costs 5</li>
+      <li>5 symbols: Bell, Cherry, Banana, Dollar, Skull</li>
+      <li>3 matching fruits = 50 coins, 2 matching = 10 coins</li>
+      <li>3 Bells = 1000, 2 Bells = 100</li>
+      <li>3 Dollars = 500, 2 Dollars = 50, 1 Dollar = 1</li>
+      <li>BUT: Any Skull cancels ALL winnings!</li>
+      <li>Save high scores to a file</li>
+    </ul>
+    <p><a class="assignment-link" href="/assignments" style="color:var(--accent-pink);font-weight:600;">Open in Assignments →</a></p>
+  </div>
+
+  <h3>Project 5: Freestyle</h3>
+  <div class="card">
+    <p>Design your OWN Python project — anything you like! Must include at least 3 skills:</p>
+    <ul>
+      <li>Random numbers, Arrays, File reading/writing, Functions/procedures</li>
+      <li><strong>Ideas:</strong> Quiz game, virtual pet, budget tracker, recipe book, sports league, text RPG</li>
+    </ul>
+    <p><a class="assignment-link" href="/assignments" style="color:var(--accent-pink);font-weight:600;">Open in Assignments →</a></p>
+  </div>
+
+  <h3>Test Plan Template</h3>
+  <table>
+    <tr><th>Test #</th><th>Description</th><th>Test Data</th><th>Expected Result</th><th>Actual Result</th><th>Type</th></tr>
+    <tr><td>1</td><td></td><td></td><td></td><td></td><td>Normal</td></tr>
+    <tr><td>2</td><td></td><td></td><td></td><td></td><td>Boundary</td></tr>
+    <tr><td>3</td><td></td><td></td><td></td><td></td><td>Erroneous</td></tr>
+    <tr><td>4</td><td></td><td></td><td></td><td></td><td>Normal</td></tr>
+    <tr><td>5</td><td></td><td></td><td></td><td></td><td>Boundary</td></tr>
+    <tr><td>6</td><td></td><td></td><td></td><td></td><td>Erroneous</td></tr>
+  </table>
+
+  <h3>Flowchart Symbols Reminder</h3>
+  <div class="card">
+    <table>
+      <tr><th>Symbol</th><th>Meaning</th><th>Use for</th></tr>
+      <tr><td>Oval / Rounded rectangle</td><td>Start / End</td><td>Beginning and end of program</td></tr>
+      <tr><td>Rectangle</td><td>Process</td><td>Calculations, assignments</td></tr>
+      <tr><td>Parallelogram</td><td>Input / Output</td><td>Getting input, displaying output</td></tr>
+      <tr><td>Diamond</td><td>Decision</td><td>If/else choices (Yes/No branches)</td></tr>
+      <tr><td>Arrow</td><td>Flow</td><td>Shows the direction of execution</td></tr>
+    </table>
+  </div>
+
+  <button class="chapter-complete-btn" data-chapter="ch10">✓ Mark as Complete</button>
+  <div class="nav-buttons">
+    <button class="nav-btn" data-target="ch9">← Previous: Languages</button>
+    <button class="nav-btn hidden">→</button>
+  </div>
+</section>
+
+</main>
+
+<!-- Toast notification -->
+<div id="toast">
+  <span class="toast-emoji">🎉</span>
+  <span class="toast-text"></span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="app.js"></script>
+<script src="features.js"></script>
+</body>
+</html>

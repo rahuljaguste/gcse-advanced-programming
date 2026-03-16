@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playground — Python Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
+  <style>
+    :root{--bg:#0f0f1a;--card:#1a1a2e;--border:#27273a;--blue:#00d4ff;--green:#00ff88;--purple:#a855f7;--orange:#ff9f43;--red:#ff4757;--text:#e4e4e7;--dim:#71717a;--code-bg:#0d1117;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+
+    .top-bar{padding:16px 32px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+    .top-bar a{color:var(--dim);text-decoration:none;font-size:0.85rem;}
+    .top-bar a:hover{color:var(--blue);}
+    .top-bar h1{font-size:1.3rem;font-weight:800;background:linear-gradient(135deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .top-bar .shortcuts{font-size:0.72rem;color:var(--dim);}
+    .top-bar .shortcuts kbd{background:var(--card);border:1px solid var(--border);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text);}
+
+    .main{flex:1;display:flex;flex-direction:column;}
+
+    .templates{padding:12px 32px;display:flex;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.2);}
+    .templates-label{font-size:0.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px;font-weight:700;display:flex;align-items:center;margin-right:8px;}
+    .tmpl{padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--dim);cursor:pointer;font-size:0.75rem;font-family:'Inter',sans-serif;transition:all .2s;}
+    .tmpl:hover{border-color:var(--blue);color:var(--blue);background:rgba(0,212,255,0.06);}
+    .tmpl.active{border-color:var(--green);color:var(--green);background:rgba(0,255,136,0.06);}
+
+    .split{flex:1;display:flex;min-height:0;}
+
+    /* Editor (left) */
+    .editor-pane{flex:1;display:flex;flex-direction:column;min-width:0;border-right:2px solid var(--border);}
+    .pane-bar{background:#1c2129;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #30363d;}
+    .dots{display:flex;gap:6px;}
+    .dots span{width:12px;height:12px;border-radius:50%;}
+    .dots span:nth-child(1){background:#ff5f57;}
+    .dots span:nth-child(2){background:#febc2e;}
+    .dots span:nth-child(3){background:#28c840;}
+    .pane-bar .label{font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--dim);flex:1;margin-left:28px;}
+    .pane-bar .actions{display:flex;gap:8px;}
+    .btn-s{padding:5px 14px;border-radius:6px;cursor:pointer;font-size:0.75rem;font-family:'Inter',sans-serif;transition:all .2s;}
+    .btn-clear{background:none;border:1px solid #30363d;color:var(--dim);}
+    .btn-clear:hover{border-color:var(--orange);color:var(--orange);}
+    .btn-run{background:rgba(0,255,136,0.12);border:1px solid rgba(0,255,136,0.3);color:var(--green);font-weight:700;font-size:0.85rem;padding:6px 22px;}
+    .btn-run:hover{background:rgba(0,255,136,0.2);box-shadow:0 0 14px rgba(0,255,136,0.2);}
+    .btn-run:disabled{opacity:0.5;cursor:not-allowed;}
+    .btn-stop{background:rgba(255,71,87,0.12);border:1px solid rgba(255,71,87,0.3);color:var(--red);font-weight:700;font-size:0.85rem;padding:6px 22px;display:none;}
+    .btn-stop:hover{background:rgba(255,71,87,0.2);}
+    #code{width:100%;flex:1;background:var(--code-bg);border:none;padding:20px 24px;color:#c9d1d9;font-family:'JetBrains Mono',monospace;font-size:0.9rem;line-height:1.7;resize:none;outline:none;tab-size:4;}
+    #code::placeholder{color:#484f58;}
+
+    /* Terminal (right) */
+    .terminal-pane{flex:1;display:flex;flex-direction:column;min-width:0;background:#0a0e14;}
+    .term-bar{background:#1c2129;padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #30363d;}
+    .term-bar .status{display:flex;align-items:center;gap:8px;flex:1;}
+    .term-bar .status .dot{width:8px;height:8px;border-radius:50%;background:var(--dim);transition:all .3s;}
+    .term-bar .status .dot.ok{background:var(--green);box-shadow:0 0 6px rgba(0,255,136,0.5);}
+    .term-bar .status .dot.err{background:var(--red);box-shadow:0 0 6px rgba(255,71,87,0.5);}
+    .term-bar .status .dot.wait{background:var(--orange);box-shadow:0 0 6px rgba(255,159,67,0.5);animation:pulse 1s infinite;}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+    .btn-clear-term{background:none;border:none;color:var(--dim);cursor:pointer;font-size:0.7rem;font-family:'Inter',sans-serif;}
+    .btn-clear-term:hover{color:var(--blue);}
+
+    #terminal{flex:1;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:0.88rem;color:var(--green);overflow-y:auto;white-space:pre-wrap;line-height:1.6;cursor:default;}
+    #terminal .t-output{color:var(--green);}
+    #terminal .t-error{color:var(--red);}
+    #terminal .t-info{color:var(--dim);font-style:italic;}
+    #terminal .t-prompt{color:var(--text);}
+    #terminal .t-user-input{color:var(--orange);}
+
+    /* Inline input in terminal */
+    .term-input-line{display:flex;align-items:center;}
+    .term-input-line .t-prompt-text{color:var(--text);white-space:pre;}
+    #term-input{background:none;border:none;color:var(--orange);font-family:'JetBrains Mono',monospace;font-size:0.88rem;outline:none;flex:1;caret-color:var(--orange);}
+    .cursor-blink{display:inline-block;width:8px;height:16px;background:var(--orange);animation:blink 1s step-end infinite;vertical-align:middle;margin-left:2px;}
+    @keyframes blink{50%{opacity:0;}}
+
+    @media(max-width:900px){
+      .split{flex-direction:column;}
+      .editor-pane{border-right:none;border-bottom:2px solid var(--border);min-height:40vh;}
+      .terminal-pane{min-height:30vh;}
+    }
+    @media(max-width:768px){
+      .top-bar{padding:12px 16px;flex-wrap:wrap;gap:8px;}
+      .templates{padding:10px 16px;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="/">&larr; Back to lessons</a>
+  <h1>🧪 Python Playground</h1>
+  <div class="shortcuts">
+    <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to run &nbsp;|&nbsp; <kbd>Tab</kbd> for indent
+  </div>
+</div>
+
+<div class="main">
+  <div class="templates">
+    <span class="templates-label">Templates:</span>
+    <button class="tmpl" onclick="loadTemplate('blank',this)">Blank</button>
+    <button class="tmpl" onclick="loadTemplate('hello',this)">Hello World</button>
+    <button class="tmpl" onclick="loadTemplate('input_demo',this)">Input Demo</button>
+    <button class="tmpl" onclick="loadTemplate('list',this)">Lists</button>
+    <button class="tmpl" onclick="loadTemplate('loop',this)">Loops</button>
+    <button class="tmpl" onclick="loadTemplate('function',this)">Functions</button>
+    <button class="tmpl" onclick="loadTemplate('dict',this)">Dictionaries</button>
+    <button class="tmpl" onclick="loadTemplate('random',this)">Random</button>
+    <button class="tmpl" onclick="loadTemplate('file',this)">File I/O</button>
+    <button class="tmpl" onclick="loadTemplate('validation',this)">Validation</button>
+  </div>
+
+  <div class="split">
+    <div class="editor-pane">
+      <div class="pane-bar">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span class="label">playground.py</span>
+        <div class="actions">
+          <button class="btn-s btn-clear" onclick="clearCode()">Clear</button>
+          <button class="btn-s btn-stop" id="stop-btn" onclick="stopRun()">&#9632; Stop</button>
+          <button class="btn-s btn-run" id="run-btn" onclick="startRun()">&#9654; Run</button>
+        </div>
+      </div>
+      <textarea id="code" spellcheck="false" placeholder="# Write your Python code here...&#10;# Pick a template above or start from scratch!&#10;&#10;name = input('What is your name? ')&#10;print(f'Hello, {name}!')"></textarea>
+    </div>
+
+    <div class="terminal-pane">
+      <div class="term-bar">
+        <div class="status"><div class="dot" id="status-dot"></div><span id="status-text" style="font-size:0.75rem;color:var(--dim);">Ready</span></div>
+        <button class="btn-clear-term" onclick="clearTerminal()">Clear</button>
+      </div>
+      <div id="terminal">
+        <span class="t-info">Press ▶ Run to execute your code.
+When the program asks for input, type here and press Enter.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const TEMPLATES = {
+  blank: `# Write your code here\n`,
+  hello: `# Hello World\nname = "Vihaan"\nprint(f"Hello, {name}!")\nprint(f"Your name has {len(name)} letters.")`,
+  input_demo: `# Interactive Input Demo\nname = input("What is your name? ")\nage = input("How old are you? ")\nprint(f"\\nHello {name}!")\nprint(f"You are {age} years old.")\nprint(f"In 10 years you'll be {int(age) + 10}!")`,
+  list: `# Lists (1D Arrays)\nfruits = ["apple", "banana", "cherry", "mango"]\nprint("All fruits:", fruits)\nprint("First:", fruits[0])\nprint("Last:", fruits[-1])\n\nfruits.append("kiwi")\nfruits.remove("banana")\nprint("After changes:", fruits)\n\nfor i in range(len(fruits)):\n    print(f"  [{i}] {fruits[i]}")`,
+  loop: `# Loops\nprint("Counting:")\nfor i in range(1, 6):\n    print(f"  {i}", end=" ")\nprint()\n\nprint("\\nStars:")\nfor row in range(1, 6):\n    print("  " + "*" * row)\n\nprint("\\nCountdown:")\nn = 5\nwhile n > 0:\n    print(f"  {n}...")\n    n -= 1\nprint("  Blast off!")`,
+  function: `# Functions\ndef add(a, b):\n    return a + b\n\na = int(input("Enter 1st number: "))\nb = int(input("Enter 2nd number: "))\nprint(f"Sum of {a} and {b} is {add(a, b)}")`,
+  dict: `# Dictionaries\nstudent = {"name": "Vihaan", "age": 14, "grade": "A*"}\nprint(f"Name: {student['name']}")\nprint(f"Age: {student['age']}")\nprint(f"Grade: {student['grade']}")`,
+  random: `# Random Numbers\nimport random\nfor i in range(5):\n    print(f"Roll {i+1}: {random.randint(1, 6)}")\nprint(f"\\nRandom colour: {random.choice(['red','blue','green'])}")`,
+  file: `# File I/O\nimport tempfile, os\npath = os.path.join(tempfile.gettempdir(), "test.txt")\nf = open(path, "w")\nf.write("Hello!\\nPython is great.\\n")\nf.close()\nf = open(path, "r")\nfor i, line in enumerate(f.readlines()):\n    print(f"Line {i}: {line.strip()}")\nf.close()\nos.remove(path)`,
+  validation: `# Validation with input\nwhile True:\n    age_str = input("Enter your age (0-120): ")\n    if not age_str.isdigit():\n        print("Not a number! Try again.")\n        continue\n    age = int(age_str)\n    if age < 0 or age > 120:\n        print("Out of range! Try again.")\n        continue\n    break\nprint(f"Valid age: {age}")`
+};
+
+// === STATE ===
+let accumulatedStdin = '';
+let isRunning = false;
+let currentAbort = null; // AbortController for in-flight request
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function loadTemplate(name, el) {
+  document.getElementById('code').value = TEMPLATES[name] || '';
+  document.querySelectorAll('.tmpl').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  clearTerminal();
+}
+
+function clearCode() {
+  document.getElementById('code').value = '';
+  document.querySelectorAll('.tmpl').forEach(b => b.classList.remove('active'));
+}
+
+function clearTerminal() {
+  const term = document.getElementById('terminal');
+  term.innerHTML = '<span class="t-info">Press \u25b6 Run to execute your code.\nWhen the program asks for input, type here and press Enter.</span>';
+  document.getElementById('status-dot').className = 'dot';
+  document.getElementById('status-text').textContent = 'Ready';
+  accumulatedStdin = '';
+  isRunning = false;
+  document.getElementById('run-btn').style.display = '';
+  document.getElementById('stop-btn').style.display = 'none';
+}
+
+function stopRun() {
+  isRunning = false;
+  // Abort the in-flight fetch request
+  if (currentAbort) { currentAbort.abort(); currentAbort = null; }
+  const term = document.getElementById('terminal');
+  term.innerHTML += '\n<span class="t-info">[Stopped]</span>';
+  document.getElementById('status-dot').className = 'dot';
+  document.getElementById('status-text').textContent = 'Stopped';
+  document.getElementById('run-btn').style.display = '';
+  document.getElementById('stop-btn').style.display = 'none';
+  removeInputLine();
+}
+
+function removeInputLine() {
+  const existing = document.querySelector('.term-input-line');
+  if (existing) existing.remove();
+}
+
+function appendToTerminal(html) {
+  const term = document.getElementById('terminal');
+  // Remove the initial info message
+  const info = term.querySelector('.t-info');
+  if (info && info.parentElement === term) info.remove();
+  term.innerHTML += html;
+  term.scrollTop = term.scrollHeight;
+}
+
+function showInputPrompt(promptText) {
+  removeInputLine();
+  const term = document.getElementById('terminal');
+
+  const line = document.createElement('div');
+  line.className = 'term-input-line';
+  line.innerHTML = `<span class="t-prompt-text">${escapeHtml(promptText)}</span><input id="term-input" type="text" autofocus>`;
+  term.appendChild(line);
+
+  const input = document.getElementById('term-input');
+  input.focus();
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const value = input.value;
+
+      // Replace input line with static text showing what was typed
+      line.innerHTML = `<span class="t-prompt-text">${escapeHtml(promptText)}</span><span class="t-user-input">${escapeHtml(value)}</span>`;
+
+      // Add to accumulated stdin and re-run
+      accumulatedStdin += value + '\n';
+      executeCode();
+    }
+  });
+
+  term.scrollTop = term.scrollHeight;
+}
+
+async function startRun() {
+  const code = document.getElementById('code').value;
+  if (!code.trim()) return;
+
+  // Reset state
+  accumulatedStdin = '';
+  isRunning = true;
+
+  const term = document.getElementById('terminal');
+  term.innerHTML = '';
+
+  document.getElementById('run-btn').style.display = 'none';
+  document.getElementById('stop-btn').style.display = '';
+  document.getElementById('status-dot').className = 'dot wait';
+  document.getElementById('status-text').textContent = 'Running...';
+
+  await executeCode();
+}
+
+async function executeCode() {
+  if (!isRunning) return;
+
+  const code = document.getElementById('code').value;
+  const startTime = performance.now();
+
+  try {
+    currentAbort = new AbortController();
+    const res = await fetch('/api/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, stdin: accumulatedStdin }),
+      signal: currentAbort.signal
+    });
+    const data = await res.json();
+    currentAbort = null;
+    const elapsed = Math.round(performance.now() - startTime);
+
+    if (!isRunning) return; // stopped while waiting
+
+    // Clear previous output and re-render all (since we re-run from scratch)
+    const term = document.getElementById('terminal');
+    term.innerHTML = '';
+
+    if (data.stdout) {
+      appendToTerminal(`<span class="t-output">${escapeHtml(data.stdout)}</span>`);
+    }
+
+    if (data.needs_input) {
+      // Program is waiting for input — show the prompt
+      // The prompt text is the last incomplete line of stdout
+      const lines = (data.stdout || '').split('\n');
+      const lastLine = lines[lines.length - 1]; // the prompt text from input()
+
+      // Re-render: all complete lines as output, last line as prompt
+      term.innerHTML = '';
+      const completeOutput = lines.slice(0, -1).join('\n');
+      if (completeOutput) {
+        appendToTerminal(`<span class="t-output">${escapeHtml(completeOutput)}\n</span>`);
+      }
+
+      // Mark previously entered values in the output
+      highlightUserInputs(term);
+
+      document.getElementById('status-dot').className = 'dot wait';
+      document.getElementById('status-text').textContent = 'Waiting for input...';
+      showInputPrompt(lastLine);
+      return;
+    }
+
+    if (data.stderr && data.returncode !== 0) {
+      appendToTerminal(`\n<span class="t-error">${escapeHtml(data.stderr)}</span>`);
+      document.getElementById('status-dot').className = 'dot err';
+      document.getElementById('status-text').textContent = `Error (${elapsed}ms)`;
+    } else {
+      if (data.stderr) {
+        appendToTerminal(`\n<span class="t-info">${escapeHtml(data.stderr)}</span>`);
+      }
+      document.getElementById('status-dot').className = 'dot ok';
+      document.getElementById('status-text').textContent = `Done (${elapsed}ms)`;
+    }
+
+    // Program finished
+    isRunning = false;
+    document.getElementById('run-btn').style.display = '';
+    document.getElementById('stop-btn').style.display = 'none';
+
+  } catch (e) {
+    appendToTerminal(`\n<span class="t-error">Could not connect to server.</span>`);
+    document.getElementById('status-dot').className = 'dot err';
+    document.getElementById('status-text').textContent = 'Connection failed';
+    isRunning = false;
+    document.getElementById('run-btn').style.display = '';
+    document.getElementById('stop-btn').style.display = 'none';
+  }
+}
+
+function highlightUserInputs(term) {
+  // Walk text nodes only — avoids corrupting HTML tags/attributes
+  if (!accumulatedStdin) return;
+  const inputs = accumulatedStdin.split('\n').filter(s => s !== '');
+  if (!inputs.length) return;
+
+  const walker = document.createTreeWalker(term, NodeFilter.SHOW_TEXT);
+  const replacements = [];
+  let inputIdx = 0;
+
+  while (walker.nextNode() && inputIdx < inputs.length) {
+    const node = walker.currentNode;
+    const val = inputs[inputIdx];
+    const pos = node.textContent.indexOf(val);
+    if (pos !== -1) {
+      replacements.push({ node, val, pos });
+      inputIdx++;
+    }
+  }
+
+  // Apply in reverse to preserve positions
+  replacements.reverse().forEach(({ node, val, pos }) => {
+    const before = node.textContent.substring(0, pos);
+    const after = node.textContent.substring(pos + val.length);
+    const span = document.createElement('span');
+    span.className = 't-user-input';
+    span.textContent = val;
+    const parent = node.parentNode;
+    if (after) parent.insertBefore(document.createTextNode(after), node.nextSibling);
+    parent.insertBefore(span, node.nextSibling);
+    node.textContent = before;
+  });
+}
+
+// Click on terminal focuses the input
+document.getElementById('terminal').addEventListener('click', () => {
+  const input = document.getElementById('term-input');
+  if (input) input.focus();
+});
+
+// Keyboard shortcuts in editor
+document.getElementById('code').addEventListener('keydown', function(e) {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const start = this.selectionStart;
+    const end = this.selectionEnd;
+    this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
+    this.selectionStart = this.selectionEnd = start + 4;
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    startRun();
+  }
+});
+</script>
+</body>
+</html>

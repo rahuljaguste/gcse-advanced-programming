@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Dashboard — Python Pro</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+  <style>
+    :root {
+      --bg-dark: #0f0f1a;
+      --bg-card: #1a1a2e;
+      --bg-sidebar: #16213e;
+      --accent-blue: #00d4ff;
+      --accent-green: #00ff88;
+      --accent-purple: #a855f7;
+      --accent-orange: #ff9f43;
+      --accent-red: #ff4757;
+      --text-primary: #e4e4e7;
+      --text-secondary: #a1a1aa;
+      --text-dim: #71717a;
+      --border: #27273a;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 40px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    h1 {
+      font-size: 1.8rem;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header-actions { display: flex; gap: 12px; align-items: center; }
+    .btn {
+      padding: 8px 20px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn:hover { border-color: var(--accent-blue); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      border: none;
+      color: white;
+      font-weight: 600;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label { font-size: 0.8rem; color: var(--text-dim); margin-top: 4px; }
+
+    /* Student cards */
+    .student-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .student-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .student-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-transform: capitalize;
+      color: var(--accent-blue);
+    }
+    .student-meta { font-size: 0.75rem; color: var(--text-dim); }
+    .student-progress-bar {
+      width: 100%;
+      height: 10px;
+      background: var(--bg-dark);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .student-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+      border-radius: 5px;
+      transition: width 0.5s;
+    }
+    .student-percent {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    /* Chapter grid */
+    .chapter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .ch-badge {
+      text-align: center;
+      padding: 10px 6px;
+      border-radius: 8px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      color: var(--text-dim);
+    }
+    .ch-badge.done {
+      background: rgba(0,255,136,0.1);
+      border-color: rgba(0,255,136,0.3);
+      color: var(--accent-green);
+    }
+    .ch-badge .ch-label { display: block; font-size: 0.65rem; color: var(--text-dim); margin-top: 2px; }
+    .ch-badge.done .ch-label { color: rgba(0,255,136,0.5); }
+
+    /* Quiz scores */
+    .quiz-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .quiz-table th {
+      text-align: left;
+      padding: 8px 12px;
+      color: var(--accent-purple);
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+    }
+    .quiz-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      color: var(--text-secondary);
+    }
+    .score-good { color: var(--accent-green); }
+    .score-ok { color: var(--accent-orange); }
+    .score-bad { color: var(--accent-red); }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px;
+      color: var(--text-dim);
+    }
+    .empty-state p { font-size: 1.1rem; margin-top: 12px; }
+
+    .last-updated {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 24px;
+    }
+
+    #loading {
+      text-align: center;
+      padding: 60px;
+      color: var(--text-dim);
+      font-size: 1.1rem;
+    }
+
+    .chapter-names {
+      display: none; /* hidden data for JS */
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      .chapter-grid { grid-template-columns: repeat(5, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>📊 Teacher Dashboard</h1>
+    <p style="color: var(--text-dim); font-size: 0.85rem;">Python Pro — Student Progress</p>
+  </div>
+  <div class="header-actions">
+    <button class="btn" onclick="loadDashboard()">Refresh</button>
+    <a href="/" class="btn btn-primary">Student Site</a>
+  </div>
+</div>
+
+<div class="stats-grid" id="stats-grid"></div>
+
+<div id="loading">Loading student data...</div>
+<div id="students-container"></div>
+<div class="last-updated" id="last-updated"></div>
+
+<script>
+const CHAPTER_LABELS = {
+  ch1: "Subroutines", ch2: "1D Arrays", ch3: "2D Arrays",
+  ch4: "Records", ch5: "Files", ch6: "Random",
+  ch7: "Scope", ch8: "Validation", ch9: "Languages", ch10: "Project"
+};
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+async function loadDashboard() {
+  try {
+    const res = await fetch('/api/dashboard');
+    const data = await res.json();
+    renderDashboard(data);
+  } catch (err) {
+    document.getElementById('loading').innerHTML =
+      '<p style="color: var(--accent-red);">Could not connect to server. Is it running?</p>';
+  }
+}
+
+function renderDashboard(data) {
+  const { students, chapters } = data;
+  document.getElementById('loading').style.display = 'none';
+
+  // Stats
+  const totalStudents = students.length;
+  const avgProgress = totalStudents > 0
+    ? Math.round(students.reduce((s, st) => s + st.percent, 0) / totalStudents)
+    : 0;
+  const totalQuizzes = students.reduce((s, st) => s + Object.keys(st.quizzes).length, 0);
+  const fullyComplete = students.filter(st => st.percent === 100).length;
+
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-value">${totalStudents}</div>
+      <div class="stat-label">Students Registered</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${avgProgress}%</div>
+      <div class="stat-label">Average Progress</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${totalQuizzes}</div>
+      <div class="stat-label">Quizzes Completed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${fullyComplete}</div>
+      <div class="stat-label">Fully Completed</div>
+    </div>
+  `;
+
+  // Students
+  const container = document.getElementById('students-container');
+
+  if (students.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div style="font-size: 3rem;">🎓</div>
+        <p>No students yet. Share the site link to get started!</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = students.map(st => {
+    // Chapter badges
+    const badges = chapters.map(ch => {
+      const done = st.chapters[ch];
+      const dateStr = st.chapter_dates[ch] ? `<br><span style="font-size:0.6rem">${st.chapter_dates[ch].split(' ')[0]}</span>` : '';
+      return `<div class="ch-badge ${done ? 'done' : ''}">
+        ${done ? '✓' : '○'} ${ch.replace('ch', 'Ch ')}
+        <span class="ch-label">${CHAPTER_LABELS[ch] || ch}${dateStr}</span>
+      </div>`;
+    }).join('');
+
+    // Quiz scores
+    const quizRows = Object.entries(st.quizzes).map(([ch, score]) => {
+      const [got, total] = score.split('/').map(Number);
+      const pct = total > 0 ? Math.round((got / total) * 100) : 0;
+      let cls = 'score-bad';
+      if (pct >= 80) cls = 'score-good';
+      else if (pct >= 50) cls = 'score-ok';
+      return `<tr>
+        <td>${ch.replace('ch', 'Ch ')} — ${CHAPTER_LABELS[ch] || ch}</td>
+        <td class="${cls}">${score} (${pct}%)</td>
+      </tr>`;
+    }).join('');
+
+    const quizSection = quizRows
+      ? `<h4 style="color: var(--accent-purple); font-size: 0.85rem; margin: 12px 0 8px;">Quiz Scores</h4>
+         <table class="quiz-table"><tr><th>Chapter</th><th>Score</th></tr>${quizRows}</table>`
+      : `<p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 8px;">No quizzes completed yet.</p>`;
+
+    return `
+      <div class="student-card">
+        <div class="student-header">
+          <div>
+            <div class="student-name">${escapeHtml(st.name)}</div>
+            <div class="student-meta">Registered: ${escapeHtml(st.registered)}</div>
+          </div>
+          <div class="student-percent">${st.completed}/${st.total} chapters (${st.percent}%)</div>
+        </div>
+        <div class="student-progress-bar">
+          <div class="student-progress-fill" style="width: ${st.percent}%"></div>
+        </div>
+        <div class="chapter-grid">${badges}</div>
+        ${quizSection}
+      </div>`;
+  }).join('');
+
+  document.getElementById('last-updated').textContent =
+    `Last refreshed: ${new Date().toLocaleTimeString()}`;
+}
+
+// Fix #18: Only auto-refresh when tab is visible
+loadDashboard();
+setInterval(() => {
+  if (!document.hidden) loadDashboard();
+}, 30000);
+</script>
+</body>
+</html>

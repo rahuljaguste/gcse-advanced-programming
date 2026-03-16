@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cheat Sheet — Python Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0f0f1a;--card:#1a1a2e;--border:#27273a;--blue:#00d4ff;--green:#00ff88;--purple:#a855f7;--orange:#ff9f43;--pink:#ff6b9d;--text:#e4e4e7;--dim:#71717a;--code-bg:#0d1117;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);padding:32px;max-width:1100px;margin:0 auto;}
+    a.back{color:var(--dim);text-decoration:none;font-size:0.85rem;display:inline-block;margin-bottom:16px;}
+    a.back:hover{color:var(--blue);}
+    .header{text-align:center;margin-bottom:32px;}
+    h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .header p{color:var(--dim);font-size:0.85rem;margin-top:4px;}
+    .print-btn{padding:8px 24px;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;cursor:pointer;margin-top:12px;font-family:'Inter',sans-serif;font-size:0.85rem;}
+    .print-btn:hover{border-color:var(--blue);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;}
+    .section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;break-inside:avoid;}
+    .section h2{font-size:1rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+    .section h2 .icon{font-size:1.2rem;}
+    .s-blue h2{color:var(--blue);}
+    .s-green h2{color:var(--green);}
+    .s-purple h2{color:var(--purple);}
+    .s-orange h2{color:var(--orange);}
+    .s-pink h2{color:var(--pink);}
+    .row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.82rem;gap:12px;}
+    .row:last-child{border-bottom:none;}
+    .row .label{color:var(--dim);flex-shrink:0;min-width:120px;}
+    .row .val{color:var(--text);text-align:right;}
+    code{font-family:'JetBrains Mono',monospace;background:var(--code-bg);padding:1px 6px;border-radius:4px;font-size:0.8rem;color:var(--blue);}
+    pre.block{background:var(--code-bg);padding:12px;border-radius:8px;font-size:0.78rem;line-height:1.6;overflow-x:auto;margin:8px 0;font-family:'JetBrains Mono',monospace;color:#c9d1d9;}
+    .note{font-size:0.75rem;color:var(--dim);margin-top:8px;font-style:italic;}
+
+    @media print{
+      body{background:#fff;color:#000;padding:16px;font-size:10pt;}
+      .section{border:1px solid #ccc;break-inside:avoid;page-break-inside:avoid;}
+      .section h2{color:#333!important;}
+      .row .label{color:#666;}
+      code{background:#f0f0f0;color:#333;}
+      pre.block{background:#f5f5f5;color:#333;}
+      a.back,.print-btn{display:none;}
+      .grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+    }
+  </style>
+</head>
+<body>
+<a href="/" class="back">&larr; Back to lessons</a>
+<div class="header">
+  <h1>🐍 Python Cheat Sheet</h1>
+  <p>GCSE Computer Science — Everything on one page</p>
+  <button class="print-btn" onclick="window.print()">🖨 Print This Page</button>
+</div>
+
+<div class="grid">
+
+<div class="section s-blue">
+  <h2><span class="icon">🔧</span> Subroutines</h2>
+  <div class="row"><span class="label">Procedure</span><span class="val">Does something, <b>no return</b></span></div>
+  <div class="row"><span class="label">Function</span><span class="val">Calculates &amp; <b>returns a value</b></span></div>
+  <div class="row"><span class="label">Parameter</span><span class="val">Input variable in the definition</span></div>
+  <div class="row"><span class="label">Argument</span><span class="val">Actual value passed when calling</span></div>
+  <pre class="block">def greet(name):          # procedure
+    print(f"Hi {name}")
+
+def add(a, b):            # function
+    return a + b
+
+result = add(3, 5)        # result = 8</pre>
+</div>
+
+<div class="section s-green">
+  <h2><span class="icon">📦</span> Arrays (Lists)</h2>
+  <div class="row"><span class="label">Create</span><span class="val"><code>fruits = ["a", "b", "c"]</code></span></div>
+  <div class="row"><span class="label">Access</span><span class="val"><code>fruits[0]</code> → first item</span></div>
+  <div class="row"><span class="label">Length</span><span class="val"><code>len(fruits)</code></span></div>
+  <div class="row"><span class="label">Add</span><span class="val"><code>fruits.append("d")</code></span></div>
+  <div class="row"><span class="label">Remove</span><span class="val"><code>fruits.remove("b")</code></span></div>
+  <div class="row"><span class="label">Insert</span><span class="val"><code>fruits.insert(1, "x")</code></span></div>
+  <div class="row"><span class="label">Slice</span><span class="val"><code>fruits[0:2]</code> → first two</span></div>
+  <div class="row"><span class="label">2D Access</span><span class="val"><code>grid[row][col]</code></span></div>
+  <p class="note">Index starts at 0. Slice end is exclusive.</p>
+</div>
+
+<div class="section s-purple">
+  <h2><span class="icon">🪪</span> Records (Dictionaries)</h2>
+  <pre class="block">student = {
+    "name": "Vihaan",
+    "age": 14,
+    "score": 92
+}
+print(student["name"])  # Vihaan
+
+# Array of records
+students = [
+    {"name": "A", "score": 90},
+    {"name": "B", "score": 85},
+]</pre>
+  <p class="note">Records group different data types. Arrays group same types.</p>
+</div>
+
+<div class="section s-orange">
+  <h2><span class="icon">📁</span> File Handling</h2>
+  <div class="row"><span class="label"><code>"w"</code> write</span><span class="val">Creates/overwrites file</span></div>
+  <div class="row"><span class="label"><code>"a"</code> append</span><span class="val">Adds to end (safe!)</span></div>
+  <div class="row"><span class="label"><code>"r"</code> read</span><span class="val">Read contents</span></div>
+  <pre class="block"># Write
+f = open("data.txt", "a")
+f.write("Hello\n")
+f.close()
+
+# Read
+f = open("data.txt", "r")
+lines = f.readlines()  # list
+f.close()</pre>
+  <p class="note">Always close files! "w" erases first — use "a" to be safe.</p>
+</div>
+
+<div class="section s-pink">
+  <h2><span class="icon">🎲</span> Random</h2>
+  <pre class="block">import random
+
+random.randint(1, 6)      # int 1-6
+random.choice(myList)     # pick one
+random.shuffle(myList)    # mix up
+random.random()           # 0.0 - 1.0</pre>
+</div>
+
+<div class="section s-blue">
+  <h2><span class="icon">🏠</span> Scope</h2>
+  <div class="row"><span class="label">Local var</span><span class="val">Inside function only</span></div>
+  <div class="row"><span class="label">Global var</span><span class="val">Outside all functions</span></div>
+  <div class="row"><span class="label"><code>global x</code></span><span class="val">Let function modify global x</span></div>
+  <div class="row"><span class="label">3 Structures</span><span class="val">Sequence, Selection, Iteration</span></div>
+</div>
+
+<div class="section s-green">
+  <h2><span class="icon">🔐</span> Validation &amp; Testing</h2>
+  <div class="row"><span class="label">Presence</span><span class="val">Is it empty?</span></div>
+  <div class="row"><span class="label">Range</span><span class="val">Within min/max?</span></div>
+  <div class="row"><span class="label">Length</span><span class="val">Enough characters?</span></div>
+  <div class="row"><span class="label">Normal test</span><span class="val">Expected input</span></div>
+  <div class="row"><span class="label">Boundary</span><span class="val">Edge values (on the limit)</span></div>
+  <div class="row"><span class="label">Erroneous</span><span class="val">Invalid/impossible input</span></div>
+  <div class="row"><span class="label">GIGO</span><span class="val">Garbage In, Garbage Out</span></div>
+</div>
+
+<div class="section s-purple">
+  <h2><span class="icon">🌍</span> Programming Languages</h2>
+  <div class="row"><span class="label">Machine code</span><span class="val">Binary (0s &amp; 1s), fastest</span></div>
+  <div class="row"><span class="label">Assembly</span><span class="val">Mnemonics (ADD, MOV)</span></div>
+  <div class="row"><span class="label">High-level</span><span class="val">Python, Java (human-readable)</span></div>
+  <div class="row"><span class="label">Compiler</span><span class="val">Translates all at once → exe</span></div>
+  <div class="row"><span class="label">Interpreter</span><span class="val">Translates line by line</span></div>
+  <div class="row"><span class="label">Assembler</span><span class="val">Assembly → machine code (1:1)</span></div>
+  <p class="note">Python uses an interpreter. C++ uses a compiler.</p>
+</div>
+
+<div class="section s-orange">
+  <h2><span class="icon">📝</span> Pseudocode Quick Ref</h2>
+  <pre class="block">variable ← value
+OUTPUT "text"
+USERINPUT
+IF condition THEN ... ELSE ... ENDIF
+FOR i ← 0 TO 9 ... END FOR
+WHILE condition ... END WHILE
+SUBROUTINE name(params) ... END
+FUNCTION name(params) RETURN val END
+myFile ← OPEN_FILE("f.txt")
+WRITE(myFile, "text")
+CLOSE_FILE(myFile)</pre>
+</div>
+
+<div class="section s-pink">
+  <h2><span class="icon">🧪</span> Common Python Tricks</h2>
+  <div class="row"><span class="label">f-string</span><span class="val"><code>f"Hi {name}"</code></span></div>
+  <div class="row"><span class="label">Type check</span><span class="val"><code>"5".isdigit()</code> → True</span></div>
+  <div class="row"><span class="label">Upper/Lower</span><span class="val"><code>"Hi".lower()</code> → "hi"</span></div>
+  <div class="row"><span class="label">Strip</span><span class="val"><code>" hi ".strip()</code> → "hi"</span></div>
+  <div class="row"><span class="label">Split</span><span class="val"><code>"a,b".split(",")</code> → ["a","b"]</span></div>
+  <div class="row"><span class="label">Join</span><span class="val"><code>",".join(list)</code></span></div>
+  <div class="row"><span class="label">Range</span><span class="val"><code>range(5)</code> → 0,1,2,3,4</span></div>
+  <div class="row"><span class="label">Enumerate</span><span class="val"><code>for i,v in enumerate(list)</code></span></div>
+</div>
+
+</div>
+</body>
+</html>
