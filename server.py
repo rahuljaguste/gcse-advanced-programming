@@ -107,15 +107,26 @@ BADGE_DEFINITIONS = [
     {"id": "python_pro",      "name": "Python Pro",      "icon": "🐍", "desc": "Complete ALL chapters",               "condition": {"type": "chapters_min", "count": 10}},
 ]
 
-# Fix #12: Simple CSRF — check Origin header on state-changing requests
-# CSRF: allowed origins — includes Railway URL if set
+# CSRF: allowed origins
 ALLOWED_ORIGINS = {"http://localhost:5000", "http://127.0.0.1:5000"}
-_railway_url = os.environ.get("RAILWAY_PUBLIC_DOMAIN", "")
-if _railway_url:
-    ALLOWED_ORIGINS.add(f"https://{_railway_url}")
+for _port in range(5001, 5010):  # cover common dev ports
+    ALLOWED_ORIGINS.add(f"http://localhost:{_port}")
+
+# Add Railway/cloud URLs
+for _env_key in ("RAILWAY_PUBLIC_DOMAIN", "RAILWAY_STATIC_URL"):
+    _val = os.environ.get(_env_key, "")
+    if _val:
+        _val = _val.rstrip("/")
+        if not _val.startswith("http"):
+            ALLOWED_ORIGINS.add(f"https://{_val}")
+        else:
+            ALLOWED_ORIGINS.add(_val)
+
 _custom_url = os.environ.get("APP_URL", "")
 if _custom_url:
     ALLOWED_ORIGINS.add(_custom_url.rstrip("/"))
+
+IS_CLOUD = bool(os.environ.get("RAILWAY_ENVIRONMENT") or os.environ.get("RAILWAY_PUBLIC_DOMAIN"))
 
 
 def sanitize_name(name):
@@ -145,11 +156,18 @@ def parse_score(score_str):
 
 
 def check_origin():
-    """Fix #12: Reject cross-origin state-changing requests."""
+    """Reject cross-origin state-changing requests."""
     origin = request.headers.get("Origin", "")
-    if origin and origin not in ALLOWED_ORIGINS:
-        return False
-    return True
+    if not origin:
+        return True  # no Origin header (non-browser clients)
+    if origin in ALLOWED_ORIGINS:
+        return True
+    # On Railway: accept if Origin matches the request's own host
+    if IS_CLOUD:
+        host = request.headers.get("Host", "")
+        if host and (origin == f"https://{host}" or origin == f"http://{host}"):
+            return True
+    return False
 
 
 # ─── Static file serving (fix #11: explicit allowlist) ───────────────────
