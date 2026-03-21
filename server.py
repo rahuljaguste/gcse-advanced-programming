@@ -26,15 +26,19 @@ def load_dotenv(path=".env"):
                     key, _, value = line.partition("=")
                     os.environ.setdefault(key.strip(), value.strip())
 
-load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
+_base = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(_base, ".env"))
 
 DASHBOARD_USER = os.environ.get("DASHBOARD_USER", "admin")
 DASHBOARD_PASS = os.environ.get("DASHBOARD_PASS", "admin")
 
 # ─── App setup ───────────────────────────────────────────────────────────
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, static_folder=None)
 
-r = redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
+# Redis: use REDIS_URL (Railway/cloud) or fall back to localhost
+REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+r = redis.from_url(REDIS_URL, decode_responses=True)
 
 
 # ─── Dashboard auth ──────────────────────────────────────────────────────
@@ -104,7 +108,14 @@ BADGE_DEFINITIONS = [
 ]
 
 # Fix #12: Simple CSRF — check Origin header on state-changing requests
+# CSRF: allowed origins — includes Railway URL if set
 ALLOWED_ORIGINS = {"http://localhost:5000", "http://127.0.0.1:5000"}
+_railway_url = os.environ.get("RAILWAY_PUBLIC_DOMAIN", "")
+if _railway_url:
+    ALLOWED_ORIGINS.add(f"https://{_railway_url}")
+_custom_url = os.environ.get("APP_URL", "")
+if _custom_url:
+    ALLOWED_ORIGINS.add(_custom_url.rstrip("/"))
 
 
 def sanitize_name(name):
@@ -152,38 +163,38 @@ STATIC_FILES = {
 
 @app.route("/")
 def index():
-    return send_from_directory(".", "index.html")
+    return send_from_directory(BASE_DIR,"index.html")
 
 
 @app.route("/dashboard")
 @require_dashboard_auth
 def dashboard_page():
-    return send_from_directory(".", "dashboard.html")
+    return send_from_directory(BASE_DIR,"dashboard.html")
 
 
 @app.route("/flashcards")
 def flashcards_page():
-    return send_from_directory(".", "flashcards.html")
+    return send_from_directory(BASE_DIR,"flashcards.html")
 
 
 @app.route("/cheatsheet")
 def cheatsheet_page():
-    return send_from_directory(".", "cheatsheet.html")
+    return send_from_directory(BASE_DIR,"cheatsheet.html")
 
 @app.route("/playground")
 def playground_page():
-    return send_from_directory(".", "playground.html")
+    return send_from_directory(BASE_DIR,"playground.html")
 
 @app.route("/assignments")
 def assignments_page():
-    return send_from_directory(".", "assignments.html")
+    return send_from_directory(BASE_DIR,"assignments.html")
 
 
 @app.route("/<path:filename>")
 def serve_static(filename):
     """Only serve explicitly allowed static files."""
     if filename in STATIC_FILES:
-        return send_from_directory(".", filename)
+        return send_from_directory(BASE_DIR,filename)
     return jsonify({"error": "Not found"}), 404
 
 
@@ -698,14 +709,20 @@ def dashboard_data():
 # ─── Run ─────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    # Railway/cloud: bind 0.0.0.0. Local: bind 127.0.0.1
+    host = "0.0.0.0" if os.environ.get("RAILWAY_ENVIRONMENT") else "127.0.0.1"
+
     print("\n  🐍 Vihaan Learns Python — Server")
     print("  ==================================")
-    print("  Student site:      http://localhost:5000")
-    print("  Flashcards:        http://localhost:5000/flashcards")
-    print("  Cheat sheet:       http://localhost:5000/cheatsheet")
-    print("  Playground:        http://localhost:5000/playground")
-    print("  Assignments:       http://localhost:5000/assignments")
-    print("  Teacher dashboard: http://localhost:5000/dashboard")
+    if host == "127.0.0.1":
+        print(f"  Student site:      http://localhost:{port}")
+        print(f"  Assignments:       http://localhost:{port}/assignments")
+        print(f"  Playground:        http://localhost:{port}/playground")
+        print(f"  Flashcards:        http://localhost:{port}/flashcards")
+        print(f"  Cheat sheet:       http://localhost:{port}/cheatsheet")
+        print(f"  Teacher dashboard: http://localhost:{port}/dashboard")
+    else:
+        print(f"  Running on port {port} (cloud mode)")
     print("  Press Ctrl+C to stop.\n")
-    # Fix #2: Bind to 127.0.0.1 only (not 0.0.0.0)
-    app.run(host="127.0.0.1", port=5000, debug=os.environ.get("FLASK_DEBUG", "0") == "1")
+    app.run(host=host, port=port, debug=os.environ.get("FLASK_DEBUG", "0") == "1")
