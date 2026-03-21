@@ -1,5 +1,5 @@
 """
-Vihaan Learns Python — Backend Server
+Python Pro — Backend Server
 ======================================
 Flask + Redis backend for tracking student progress,
 badges, flashcards, and explain-it-back responses.
@@ -731,7 +731,7 @@ if __name__ == "__main__":
     # Railway/cloud: bind 0.0.0.0. Local: bind 127.0.0.1
     host = "0.0.0.0" if os.environ.get("RAILWAY_ENVIRONMENT") else "127.0.0.1"
 
-    print("\n  🐍 Vihaan Learns Python — Server")
+    print("\n  🐍 Python Pro — Server")
     print("  ==================================")
     if host == "127.0.0.1":
         print(f"  Student site:      http://localhost:{port}")

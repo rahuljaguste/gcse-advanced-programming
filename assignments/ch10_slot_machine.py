@@ -79,7 +79,7 @@ def show_high_scores():
 def save_high_score(name, score):
     """Saves a player's score to the high scores file."""
     # TODO: Open HIGH_SCORE_FILE in append mode
-    #   Write the name and score (e.g. "Vihaan 250\n")
+    #   Write the name and score (e.g. "Alex 250\n")
     #   Close the file
     #   Print "Score saved!"
     pass

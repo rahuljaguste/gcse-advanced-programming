@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================
-#  Vihaan's Python Learning Website
+#  Python Pro Learning Platform
 #  Flask + Redis Backend
 # =============================================
 
@@ -36,7 +36,7 @@ if ! redis-cli ping >/dev/null 2>&1; then
 fi
 
 echo ""
-echo "  🐍 Vihaan Learns Python"
+echo "  🐍 Python Pro"
 echo "  ========================"
 echo ""
 echo "  Student site:      http://localhost:5000"

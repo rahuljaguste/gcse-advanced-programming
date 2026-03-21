@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vihaan Learns Python - Advanced Programming</title>
+  <title>Python Pro - Advanced Programming</title>
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -169,7 +169,7 @@ def slices_needed(people):
     return people * 2  # 2 slices per person
 
 # USING THEM
-greet("Vihaan")
+greet("Alex")
 total = slices_needed(4)
 print(f"We need {total} slices!")
 
@@ -195,7 +195,7 @@ FUNCTION slices_needed(people)
     RETURN people * 2
 END FUNCTION
 
-greet("Vihaan")
+greet("Alex")
 total ← slices_needed(4)
 OUTPUT "We need " + total + " slices!"</code></pre>
   </div>
@@ -530,7 +530,7 @@ print_board(board)
     <div class="code-header"><span>python — records_demo.py</span><button class="copy-btn">Copy</button></div>
     <pre><code># A record using a dictionary
 student = {
-    "name": "Vihaan",
+    "name": "Alex",
     "age": 14,
     "year_group": 10,
     "favourite_subject": "Computing"
@@ -542,7 +542,7 @@ print(f"Age: {student['age']}")
 
 # An ARRAY of RECORDS — super powerful!
 students = [
-    {"name": "Vihaan", "age": 14, "score": 92},
+    {"name": "Alex", "age": 14, "score": 92},
     {"name": "Aarav", "age": 15, "score": 87},
     {"name": "Lily", "age": 14, "score": 95},
 ]
@@ -589,7 +589,7 @@ OUTPUT "Top student: " + best.name</code></pre>
     </div>
 
     <div class="quiz-question" data-answer="c">
-      <p>2. How do you access the "age" field from <code>person = {"name": "Vihaan", "age": 14}</code>?</p>
+      <p>2. How do you access the "age" field from <code>person = {"name": "Alex", "age": 14}</code>?</p>
       <div class="quiz-options">
         <button class="quiz-option" data-value="a"><code>person[1]</code></button>
         <button class="quiz-option" data-value="b"><code>person.age</code></button>
@@ -789,7 +789,7 @@ for i in range(5):
     print(f"Roll {i+1}: {roll}")
 
 # Random name picker (for who does the washing up!)
-family = ["Mum", "Dad", "Vihaan", "Sister"]
+family = ["Mum", "Dad", "Alex", "Sister"]
 chosen = random.choice(family)
 print(f"\n{chosen} is doing the washing up tonight!")
 
@@ -879,7 +879,7 @@ print(f"\n100 coin flips: {heads} heads, {tails} tails")</code></pre>
   <h3>Key Concepts</h3>
   <table>
     <tr><th>Term</th><th>Meaning</th><th>Example</th></tr>
-    <tr><td><strong>Local variable</strong></td><td>Created inside a function, only usable there</td><td><code>def greet(): name = "Vihaan"</code></td></tr>
+    <tr><td><strong>Local variable</strong></td><td>Created inside a function, only usable there</td><td><code>def greet(): name = "Alex"</code></td></tr>
     <tr><td><strong>Global variable</strong></td><td>Created outside all functions, usable everywhere</td><td><code>score = 0</code> at the top</td></tr>
     <tr><td><strong><code>global</code> keyword</strong></td><td>Lets a function modify a global variable</td><td><code>global score</code></td></tr>
     <tr><td><strong>Structured programming</strong></td><td>Using sequence, selection, iteration</td><td>Clean, logical code flow</td></tr>
@@ -1046,7 +1046,7 @@ age = get_valid_age()
 print(f"Your age is {age}. Valid!")
 
 # AUTHENTICATION — simple login
-correct_user = "Vihaan"
+correct_user = "Alex"
 correct_pass = "Python123"
 
 username = input("\nUsername: ")

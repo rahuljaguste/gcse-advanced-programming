@@ -142,12 +142,12 @@ When the program asks for input, type here and press Enter.</span>
 <script>
 const TEMPLATES = {
   blank: `# Write your code here\n`,
-  hello: `# Hello World\nname = "Vihaan"\nprint(f"Hello, {name}!")\nprint(f"Your name has {len(name)} letters.")`,
+  hello: `# Hello World\nname = "Alex"\nprint(f"Hello, {name}!")\nprint(f"Your name has {len(name)} letters.")`,
   input_demo: `# Interactive Input Demo\nname = input("What is your name? ")\nage = input("How old are you? ")\nprint(f"\\nHello {name}!")\nprint(f"You are {age} years old.")\nprint(f"In 10 years you'll be {int(age) + 10}!")`,
   list: `# Lists (1D Arrays)\nfruits = ["apple", "banana", "cherry", "mango"]\nprint("All fruits:", fruits)\nprint("First:", fruits[0])\nprint("Last:", fruits[-1])\n\nfruits.append("kiwi")\nfruits.remove("banana")\nprint("After changes:", fruits)\n\nfor i in range(len(fruits)):\n    print(f"  [{i}] {fruits[i]}")`,
   loop: `# Loops\nprint("Counting:")\nfor i in range(1, 6):\n    print(f"  {i}", end=" ")\nprint()\n\nprint("\\nStars:")\nfor row in range(1, 6):\n    print("  " + "*" * row)\n\nprint("\\nCountdown:")\nn = 5\nwhile n > 0:\n    print(f"  {n}...")\n    n -= 1\nprint("  Blast off!")`,
   function: `# Functions\ndef add(a, b):\n    return a + b\n\na = int(input("Enter 1st number: "))\nb = int(input("Enter 2nd number: "))\nprint(f"Sum of {a} and {b} is {add(a, b)}")`,
-  dict: `# Dictionaries\nstudent = {"name": "Vihaan", "age": 14, "grade": "A*"}\nprint(f"Name: {student['name']}")\nprint(f"Age: {student['age']}")\nprint(f"Grade: {student['grade']}")`,
+  dict: `# Dictionaries\nstudent = {"name": "Alex", "age": 14, "grade": "A*"}\nprint(f"Name: {student['name']}")\nprint(f"Age: {student['age']}")\nprint(f"Grade: {student['grade']}")`,
   random: `# Random Numbers\nimport random\nfor i in range(5):\n    print(f"Roll {i+1}: {random.randint(1, 6)}")\nprint(f"\\nRandom colour: {random.choice(['red','blue','green'])}")`,
   file: `# File I/O\nimport tempfile, os\npath = os.path.join(tempfile.gettempdir(), "test.txt")\nf = open(path, "w")\nf.write("Hello!\\nPython is great.\\n")\nf.close()\nf = open(path, "r")\nfor i, line in enumerate(f.readlines()):\n    print(f"Line {i}: {line.strip()}")\nf.close()\nos.remove(path)`,
   validation: `# Validation with input\nwhile True:\n    age_str = input("Enter your age (0-120): ")\n    if not age_str.isdigit():\n        print("Not a number! Try again.")\n        continue\n    age = int(age_str)\n    if age < 0 or age > 120:\n        print("Out of range! Try again.")\n        continue\n    break\nprint(f"Valid age: {age}")`

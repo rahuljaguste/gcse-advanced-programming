@@ -10,7 +10,7 @@
 
 # Stored users and passwords (in a real system these would be encrypted!)
 users = {
-    "vihaan":   "Python123!",
+    "student1":   "Python123!",
     "admin":    "Sup3rS3cure",
     "guest":    "Welcome99x"
 }

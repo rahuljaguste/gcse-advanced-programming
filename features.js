@@ -14,9 +14,9 @@ const DIAGRAMS = {
       <div class="diagram-box proc">
         <div class="db-label">PROCEDURE</div>
         <div class="db-icon">⚙️</div>
-        <div class="db-code">greet("Vihaan")</div>
+        <div class="db-code">greet("Alex")</div>
         <div class="db-arrow">↓</div>
-        <div class="db-result">Prints "Hello Vihaan"</div>
+        <div class="db-result">Prints "Hello Alex"</div>
         <div class="db-tag">No return value</div>
       </div>
       <div class="diagram-vs">vs</div>
