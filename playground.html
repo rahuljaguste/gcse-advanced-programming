@@ -47,7 +47,10 @@
     .btn-run:disabled{opacity:0.5;cursor:not-allowed;}
     .btn-stop{background:rgba(255,71,87,0.12);border:1px solid rgba(255,71,87,0.3);color:var(--red);font-weight:700;font-size:0.85rem;padding:6px 22px;display:none;}
     .btn-stop:hover{background:rgba(255,71,87,0.2);}
-    #code{width:100%;flex:1;background:var(--code-bg);border:none;padding:20px 24px;color:#c9d1d9;font-family:'JetBrains Mono',monospace;font-size:0.9rem;line-height:1.7;resize:none;outline:none;tab-size:4;}
+    .editor-wrap{display:flex;flex:1;min-height:0;overflow:hidden;}
+    #line-nums{width:44px;background:rgba(0,0,0,0.2);border-right:1px solid #30363d;padding:20px 8px 20px 0;text-align:right;font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.7;color:#484f58;user-select:none;overflow:hidden;flex-shrink:0;}
+    #line-nums span{display:block;}
+    #code{width:100%;flex:1;background:var(--code-bg);border:none;padding:20px 20px;color:#c9d1d9;font-family:'JetBrains Mono',monospace;font-size:0.9rem;line-height:1.7;resize:none;outline:none;tab-size:4;}
     #code::placeholder{color:#484f58;}
 
     /* Terminal (right) */
@@ -127,7 +130,10 @@
           <button class="btn-s btn-run" id="run-btn" onclick="startRun()">&#9654; Run</button>
         </div>
       </div>
-      <textarea id="code" spellcheck="false" placeholder="# Write your Python code here...&#10;# Pick a template above or start from scratch!&#10;&#10;name = input('What is your name? ')&#10;print(f'Hello, {name}!')"></textarea>
+      <div class="editor-wrap">
+        <div id="line-nums"><span>1</span></div>
+        <textarea id="code" spellcheck="false" placeholder="# Write your Python code here...&#10;# Pick a template above or start from scratch!&#10;&#10;name = input('What is your name? ')&#10;print(f'Hello, {name}!')"></textarea>
+      </div>
     </div>
 
     <div class="terminal-pane">
@@ -387,14 +393,39 @@ document.getElementById('terminal').addEventListener('click', () => {
   if (input) input.focus();
 });
 
+// Line numbers
+const codeEl = document.getElementById('code');
+const lineNums = document.getElementById('line-nums');
+
+function updateLineNumbers() {
+  const lines = codeEl.value.split('\n').length;
+  lineNums.innerHTML = Array.from({length: lines}, (_, i) => `<span>${i + 1}</span>`).join('');
+}
+
+codeEl.addEventListener('input', updateLineNumbers);
+codeEl.addEventListener('scroll', function() {
+  lineNums.scrollTop = this.scrollTop;
+});
+
+// Update on template load
+const origLoadTemplate = loadTemplate;
+loadTemplate = function(name, el) {
+  origLoadTemplate(name, el);
+  updateLineNumbers();
+};
+
+// Initial
+updateLineNumbers();
+
 // Keyboard shortcuts in editor
-document.getElementById('code').addEventListener('keydown', function(e) {
+codeEl.addEventListener('keydown', function(e) {
   if (e.key === 'Tab') {
     e.preventDefault();
     const start = this.selectionStart;
     const end = this.selectionEnd;
     this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
     this.selectionStart = this.selectionEnd = start + 4;
+    updateLineNumbers();
   }
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
     e.preventDefault();

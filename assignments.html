@@ -61,7 +61,10 @@
     .a-btn-submit:hover{box-shadow:0 0 16px rgba(0,255,136,0.3);}
     .a-btn:disabled{opacity:0.5;cursor:not-allowed;}
 
-    .a-code{width:100%;min-height:350px;background:var(--code-bg);border:none;padding:20px;color:#c9d1d9;font-family:'JetBrains Mono',monospace;font-size:0.88rem;line-height:1.7;resize:vertical;outline:none;tab-size:4;}
+    .a-editor-wrap{display:flex;flex:1;min-height:350px;}
+    .a-line-nums{width:44px;background:rgba(0,0,0,0.2);border-right:1px solid #30363d;padding:20px 8px 20px 0;text-align:right;font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.7;color:#484f58;user-select:none;overflow:hidden;flex-shrink:0;}
+    .a-line-nums span{display:block;}
+    .a-code{width:100%;flex:1;background:var(--code-bg);border:none;padding:20px;color:#c9d1d9;font-family:'JetBrains Mono',monospace;font-size:0.88rem;line-height:1.7;resize:vertical;outline:none;tab-size:4;}
     .a-code::placeholder{color:#484f58;}
 
     /* Stdin */
@@ -212,6 +215,7 @@ async function init() {
 
   renderTabs();
   renderAssignments();
+  initAllLineNumbers();
 
   // Open assignment from URL hash (e.g. /assignments#ch7)
   const hash = window.location.hash.replace('#', '');
@@ -267,7 +271,12 @@ function renderAssignments() {
             <button class="a-btn a-btn-submit" onclick="submitAssignment('${a.id}')">Submit</button>
           </div>
         </div>
-        <textarea class="a-code" id="code-${a.id}" spellcheck="false">${escapeForTextarea(code)}</textarea>
+        <div class="a-editor-wrap">
+          <div class="a-line-nums" id="lines-${a.id}"><span>1</span></div>
+          <textarea class="a-code" id="code-${a.id}" spellcheck="false"
+            oninput="updateAssignmentLines('${a.id}')"
+            onscroll="document.getElementById('lines-${a.id}').scrollTop=this.scrollTop">${escapeForTextarea(code)}</textarea>
+        </div>
       </div>
 
       <div class="a-output-wrap">
@@ -312,6 +321,21 @@ function renderAssignments() {
 
 function escapeForTextarea(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function updateAssignmentLines(id) {
+  const ta = document.getElementById('code-' + id);
+  const ln = document.getElementById('lines-' + id);
+  if (!ta || !ln) return;
+  const count = ta.value.split('\n').length;
+  ln.innerHTML = Array.from({length: count}, (_, i) => `<span>${i + 1}</span>`).join('');
+}
+
+function initAllLineNumbers() {
+  document.querySelectorAll('.a-code').forEach(ta => {
+    const id = ta.id.replace('code-', '');
+    updateAssignmentLines(id);
+  });
 }
 
 function escapeHtml(s) {
