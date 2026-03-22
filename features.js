@@ -218,6 +218,79 @@ const DIAGRAMS = {
       </div>
     </div>
   </div>`,
+
+  ch11: `<div class="diagram">
+    <div class="diagram-title">Decomposition — Breaking Down a Problem</div>
+    <div class="flow-diagram">
+      <div class="flow-step" style="min-width:160px"><div class="fs-icon">🎯</div><div class="fs-text">BIG PROBLEM<br><small>"Make a game"</small></div></div>
+      <div class="flow-arrow">→</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="flow-step"><div class="fs-text"><small>1. Get player name</small></div></div>
+        <div class="flow-step"><div class="fs-text"><small>2. Generate board</small></div></div>
+        <div class="flow-step"><div class="fs-text"><small>3. Game loop</small></div></div>
+        <div class="flow-step"><div class="fs-text"><small>4. Check winner</small></div></div>
+      </div>
+    </div>
+    <div class="av-note">Each small part is easier to solve, test, and debug</div>
+  </div>`,
+
+  ch13: `<div class="diagram">
+    <div class="diagram-title">Linear vs Binary Search</div>
+    <div class="diagram-flow">
+      <div class="diagram-box proc" style="max-width:240px">
+        <div class="db-label">LINEAR SEARCH</div>
+        <div class="db-icon">👉</div>
+        <div class="record-fields">
+          <div class="rf-row"><span class="rf-key">Step 1</span><span class="rf-val">Check [0]</span></div>
+          <div class="rf-row"><span class="rf-key">Step 2</span><span class="rf-val">Check [1]</span></div>
+          <div class="rf-row"><span class="rf-key">Step 3</span><span class="rf-val">Check [2]</span></div>
+          <div class="rf-row"><span class="rf-key">...</span><span class="rf-val">one by one</span></div>
+        </div>
+        <div class="db-tag">Works on ANY list</div>
+      </div>
+      <div class="diagram-vs">vs</div>
+      <div class="diagram-box func" style="max-width:240px">
+        <div class="db-label">BINARY SEARCH</div>
+        <div class="db-icon">✂️</div>
+        <div class="record-fields">
+          <div class="rf-row"><span class="rf-key">Step 1</span><span class="rf-val">Check middle</span></div>
+          <div class="rf-row"><span class="rf-key">Step 2</span><span class="rf-val">Discard half</span></div>
+          <div class="rf-row"><span class="rf-key">Step 3</span><span class="rf-val">Check new mid</span></div>
+          <div class="rf-row"><span class="rf-key">...</span><span class="rf-val">halve each time</span></div>
+        </div>
+        <div class="db-tag">MUST be sorted first</div>
+      </div>
+    </div>
+    <div class="av-note">1,000 items: Linear = 1,000 steps | Binary = 10 steps</div>
+  </div>`,
+
+  ch14: `<div class="diagram">
+    <div class="diagram-title">Bubble Sort vs Merge Sort</div>
+    <div class="diagram-flow">
+      <div class="diagram-box proc" style="max-width:240px">
+        <div class="db-label">BUBBLE SORT</div>
+        <div class="db-icon">🫧</div>
+        <div class="record-fields">
+          <div class="rf-row"><span class="rf-val">Compare neighbours</span></div>
+          <div class="rf-row"><span class="rf-val">Swap if wrong order</span></div>
+          <div class="rf-row"><span class="rf-val">Repeat until sorted</span></div>
+        </div>
+        <div class="db-tag">Simple but slow (N²)</div>
+      </div>
+      <div class="diagram-vs">vs</div>
+      <div class="diagram-box func" style="max-width:240px">
+        <div class="db-label">MERGE SORT</div>
+        <div class="db-icon">🔀</div>
+        <div class="record-fields">
+          <div class="rf-row"><span class="rf-val">Split in half</span></div>
+          <div class="rf-row"><span class="rf-val">Sort each half</span></div>
+          <div class="rf-row"><span class="rf-val">Merge back in order</span></div>
+        </div>
+        <div class="db-tag">Complex but fast (N log N)</div>
+      </div>
+    </div>
+    <div class="av-note">1,000 items: Bubble = ~1,000,000 ops | Merge = ~10,000 ops</div>
+  </div>`,
 };
 
 function injectDiagrams() {
@@ -371,6 +444,10 @@ const EXPLAIN_PROMPTS = {
   ch8: "What's the difference between validation and authentication?",
   ch9: "Explain how Python code goes from what you type to what the computer runs.",
   ch10: "What's the most important thing you learned in this course?",
+  ch11: "Explain what decomposition is using a real-life example.",
+  ch12: "Why is binary search more efficient than linear search? Use numbers.",
+  ch13: "When would you choose linear search over binary search?",
+  ch14: "Explain how bubble sort works to someone who has never coded.",
 };
 
 function injectExplainBack() {

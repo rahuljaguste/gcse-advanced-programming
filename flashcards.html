@@ -123,9 +123,32 @@ const FLASHCARDS = {
     {id:"ch9_4",q:"What is an <b>assembler</b>?",a:"A translator that converts assembly language into machine code (one-to-one)."},
     {id:"ch9_5",q:"High-level vs low-level languages?",a:"<b>High</b>: human-readable, portable, needs translating (Python).<br><b>Low</b>: close to hardware, fast, processor-specific (assembly)."},
   ],
+  ch11: [
+    {id:"ch11_1",q:"What is an <b>algorithm</b>?",a:"A step-by-step set of instructions to solve a problem or complete a task."},
+    {id:"ch11_2",q:"What is <b>decomposition</b>?",a:"Breaking a large, complex problem into smaller, manageable sub-problems."},
+    {id:"ch11_3",q:"What is <b>abstraction</b>?",a:"Removing unnecessary detail to focus on what's important. E.g. a tube map shows lines, not streets."},
+    {id:"ch11_4",q:"What is a <b>trace table</b>?",a:"A table that tracks the value of each variable line by line as an algorithm executes."},
+  ],
+  ch12: [
+    {id:"ch12_1",q:"Can different algorithms solve the same problem?",a:"Yes — and some are more <b>efficient</b> (faster, fewer steps) than others."},
+    {id:"ch12_2",q:"What does <b>algorithm efficiency</b> mean?",a:"How quickly it solves the problem, or how few resources (time, memory) it uses."},
+    {id:"ch12_3",q:"How do we compare algorithm efficiency?",a:"Count the number of <b>comparisons or steps</b> each needs for the same input size."},
+  ],
+  ch13: [
+    {id:"ch13_1",q:"How does <b>linear search</b> work?",a:"Check each item one by one from start to end. Works on <b>any</b> list (sorted or unsorted)."},
+    {id:"ch13_2",q:"How does <b>binary search</b> work?",a:"Check the middle item, discard the half that can't contain the target, repeat. List <b>must be sorted</b>."},
+    {id:"ch13_3",q:"Binary search on 1,000 items — max comparisons?",a:"About <b>10</b> (log₂ 1000 ≈ 10). Linear search would need up to 1,000."},
+    {id:"ch13_4",q:"When is linear search better than binary?",a:"When the data is <b>unsorted</b> — binary search requires sorted data."},
+  ],
+  ch14: [
+    {id:"ch14_1",q:"How does <b>bubble sort</b> work?",a:"Compare adjacent pairs, swap if wrong order, repeat until no swaps needed. Largest values 'bubble' to the end."},
+    {id:"ch14_2",q:"How does <b>merge sort</b> work?",a:"Split list in half repeatedly until single items, then <b>merge</b> them back together in order."},
+    {id:"ch14_3",q:"Bubble sort vs merge sort efficiency?",a:"Bubble: <b>N²</b> (slow for large lists).<br>Merge: <b>N × log₂(N)</b> (much faster)."},
+    {id:"ch14_4",q:"What's the trade-off of merge sort?",a:"It's faster but uses <b>more memory</b> (creates new lists during merging)."},
+  ],
 };
 
-const CHAPTER_LABELS = {ch1:"Subroutines",ch2:"1D Arrays",ch3:"2D Arrays",ch4:"Records",ch5:"Files",ch6:"Random",ch7:"Scope",ch8:"Validation",ch9:"Languages"};
+const CHAPTER_LABELS = {ch1:"Subroutines",ch2:"1D Arrays",ch3:"2D Arrays",ch4:"Records",ch5:"Files",ch6:"Random",ch7:"Scope",ch8:"Validation",ch9:"Languages",ch11:"Algorithms",ch12:"Efficiency",ch13:"Searching",ch14:"Sorting"};
 
 let currentChapter = "ch1";
 let deck = [];

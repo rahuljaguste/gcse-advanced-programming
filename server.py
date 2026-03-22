@@ -70,13 +70,15 @@ def handle_redis_generic(e):
     return jsonify({"error": "Database error. Please try again."}), 500
 
 
-CHAPTERS = ["ch1", "ch2", "ch3", "ch4", "ch5", "ch6", "ch7", "ch8", "ch9", "ch10"]
+CHAPTERS = ["ch1", "ch2", "ch3", "ch4", "ch5", "ch6", "ch7", "ch8", "ch9", "ch10",
+            "ch11", "ch12", "ch13", "ch14"]
 VALID_CHAPTERS = set(CHAPTERS)
 NAME_PATTERN = re.compile(r'^[a-zA-Z0-9 \-]{1,30}$')
 
 # Fix #5: Known quiz question counts per chapter for score validation
 QUIZ_TOTALS = {"ch1": 4, "ch2": 4, "ch3": 3, "ch4": 3, "ch5": 3, "ch6": 3,
-               "ch7": 3, "ch8": 4, "ch9": 4}
+               "ch7": 3, "ch8": 4, "ch9": 4,
+               "ch11": 4, "ch12": 3, "ch13": 4, "ch14": 4}
 
 # Valid flashcard IDs (fix #5e from review — validate card_id)
 VALID_CARD_IDS = set()
@@ -459,6 +461,7 @@ def all_explanations():
 VALID_ASSIGNMENTS = {
     "ch1", "ch2", "ch3", "ch4", "ch5", "ch6", "ch7", "ch8", "ch10",
     "proj1", "proj2", "proj3", "proj5",  # Ch10 final projects
+    "ch13", "ch14",  # Unit 2: Algorithms
 }
 
 

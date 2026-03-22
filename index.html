@@ -84,6 +84,19 @@
       <span class="emoji">🚀</span> Final Project <span class="check"></span>
     </li>
     <li class="nav-divider"></li>
+    <li class="nav-item" data-chapter="ch11">
+      <span class="emoji">📐</span> Algorithms <span class="check"></span>
+    </li>
+    <li class="nav-item" data-chapter="ch12">
+      <span class="emoji">⚡</span> Efficiency <span class="check"></span>
+    </li>
+    <li class="nav-item" data-chapter="ch13">
+      <span class="emoji">🔍</span> Searching <span class="check"></span>
+    </li>
+    <li class="nav-item" data-chapter="ch14">
+      <span class="emoji">🔀</span> Sorting <span class="check"></span>
+    </li>
+    <li class="nav-divider"></li>
     <li class="nav-item nav-link" onclick="window.location.href='/assignments'">
       <span class="emoji">📝</span> Assignments
     </li>
@@ -1387,6 +1400,519 @@ else:
   <button class="chapter-complete-btn" data-chapter="ch10">✓ Mark as Complete</button>
   <div class="nav-buttons">
     <button class="nav-btn" data-target="ch9">← Previous: Languages</button>
+    <button class="nav-btn hidden">→</button>
+  </div>
+</section>
+
+<!-- ==================== UNIT 2: ALGORITHMS ==================== -->
+
+<!-- ==================== CHAPTER 11: ALGORITHM FUNDAMENTALS ==================== -->
+<section id="ch11" class="chapter">
+  <h2>Chapter 11: Algorithm Fundamentals</h2>
+  <p>Unit 2 — What are algorithms, decomposition, abstraction, and trace tables</p>
+
+  <div class="card big-idea">"An algorithm is a step-by-step set of instructions to solve a problem or complete a task."</div>
+
+  <div class="card analogy">
+    <p>A <strong>recipe</strong> is an algorithm. It tells you exactly what to do, in what order, to make a cake. If you skip a step or do them in the wrong order, you get a mess. Algorithms work the same way — precise, ordered, unambiguous.</p>
+  </div>
+
+  <h3>Key Concepts</h3>
+  <table>
+    <tr><th>Term</th><th>Meaning</th><th>Example</th></tr>
+    <tr><td><strong>Algorithm</strong></td><td>A sequence of steps to solve a problem</td><td>A recipe, directions to school, login process</td></tr>
+    <tr><td><strong>Decomposition</strong></td><td>Breaking a big problem into smaller, manageable parts</td><td>"Make breakfast" → boil kettle, toast bread, pour cereal</td></tr>
+    <tr><td><strong>Abstraction</strong></td><td>Removing unnecessary detail to focus on what matters</td><td>A tube map — shows stations and lines, not every street</td></tr>
+    <tr><td><strong>Input</strong></td><td>Data that goes INTO the algorithm</td><td>User types their age</td></tr>
+    <tr><td><strong>Process</strong></td><td>What the algorithm DOES with the data</td><td>Check if age >= 18</td></tr>
+    <tr><td><strong>Output</strong></td><td>The RESULT the algorithm produces</td><td>"Access granted" or "Access denied"</td></tr>
+  </table>
+
+  <h3>Flowcharts</h3>
+  <table>
+    <tr><th>Symbol</th><th>Shape</th><th>Used for</th></tr>
+    <tr><td><strong>Terminal</strong></td><td>Rounded rectangle / Oval</td><td>Start and End</td></tr>
+    <tr><td><strong>Process</strong></td><td>Rectangle</td><td>Calculations, assignments</td></tr>
+    <tr><td><strong>Input/Output</strong></td><td>Parallelogram</td><td>Getting input, displaying output</td></tr>
+    <tr><td><strong>Decision</strong></td><td>Diamond</td><td>Yes/No questions (if/else)</td></tr>
+    <tr><td><strong>Flow line</strong></td><td>Arrow</td><td>Direction of execution</td></tr>
+  </table>
+
+  <h3>Trace Tables</h3>
+  <div class="card tip">
+    <p>A <strong>trace table</strong> tracks the value of each variable as the algorithm executes line by line. It's like being a detective — you follow the code step by step and write down what changes.</p>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span>python — trace_example.py</span><button class="copy-btn">Copy</button></div>
+    <pre><code>x = 1
+y = 2
+for i in range(3):
+    x = x + y
+    y = y + 1
+print(x, y)</code></pre>
+  </div>
+
+  <table>
+    <tr><th>Step</th><th>i</th><th>x</th><th>y</th></tr>
+    <tr><td>Start</td><td>—</td><td>1</td><td>2</td></tr>
+    <tr><td>Loop 1</td><td>0</td><td>3</td><td>3</td></tr>
+    <tr><td>Loop 2</td><td>1</td><td>6</td><td>4</td></tr>
+    <tr><td>Loop 3</td><td>2</td><td>10</td><td>5</td></tr>
+    <tr><td>Output</td><td>—</td><td colspan="2">10 5</td></tr>
+  </table>
+
+  <h3>Quiz</h3>
+  <div class="quiz">
+    <h4>Test Your Knowledge</h4>
+    <div class="quiz-question" data-answer="b">
+      <p>1. What is an algorithm?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">A programming language</button>
+        <button class="quiz-option" data-value="b">A step-by-step set of instructions to solve a problem</button>
+        <button class="quiz-option" data-value="c">A type of computer</button>
+        <button class="quiz-option" data-value="d">A flowchart symbol</button>
+      </div>
+    </div>
+    <div class="quiz-question" data-answer="c">
+      <p>2. What is decomposition?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Removing detail from a problem</button>
+        <button class="quiz-option" data-value="b">Writing code in Python</button>
+        <button class="quiz-option" data-value="c">Breaking a large problem into smaller, manageable parts</button>
+        <button class="quiz-option" data-value="d">Testing an algorithm</button>
+      </div>
+    </div>
+    <div class="quiz-question" data-answer="a">
+      <p>3. What is abstraction?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Removing unnecessary detail to focus on what's important</button>
+        <button class="quiz-option" data-value="b">Adding more detail to a solution</button>
+        <button class="quiz-option" data-value="c">Converting code to binary</button>
+        <button class="quiz-option" data-value="d">The same as decomposition</button>
+      </div>
+    </div>
+    <div class="quiz-question" data-answer="d">
+      <p>4. In a trace table for <code>x = 5; x = x * 2; x = x - 3</code>, what is the final value of x?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">5</button>
+        <button class="quiz-option" data-value="b">10</button>
+        <button class="quiz-option" data-value="c">2</button>
+        <button class="quiz-option" data-value="d">7</button>
+      </div>
+    </div>
+    <div class="quiz-score"></div>
+    <button class="quiz-reset">Try Again</button>
+  </div>
+
+  <button class="chapter-complete-btn" data-chapter="ch11">✓ Mark as Complete</button>
+  <div class="nav-buttons">
+    <button class="nav-btn" data-target="ch10">← Previous: Final Project</button>
+    <button class="nav-btn" data-target="ch12">Next: Efficiency →</button>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 12: ALGORITHM EFFICIENCY ==================== -->
+<section id="ch12" class="chapter">
+  <h2>Chapter 12: Algorithm Efficiency</h2>
+  <p>Unit 2 — Comparing algorithms and understanding efficiency</p>
+
+  <div class="card big-idea">"There's often more than one way to solve a problem — but some ways are faster than others."</div>
+
+  <div class="card analogy">
+    <p>Imagine you need to find a word in a dictionary. You could start at page 1 and check every page (<strong>slow</strong>). Or you could open it roughly in the middle and narrow down from there (<strong>fast</strong>). Both work, but one is massively more efficient.</p>
+  </div>
+
+  <h3>Key Concepts</h3>
+  <table>
+    <tr><th>Concept</th><th>Meaning</th></tr>
+    <tr><td><strong>Efficiency</strong></td><td>How quickly an algorithm solves a problem, or how few resources (time, memory) it uses</td></tr>
+    <tr><td><strong>Time complexity</strong></td><td>How the number of steps grows as the input gets bigger</td></tr>
+    <tr><td><strong>Comparisons</strong></td><td>The number of times the algorithm checks or compares values — fewer = more efficient</td></tr>
+  </table>
+
+  <h3>Comparing Algorithms</h3>
+  <div class="card tip">
+    <p>Two algorithms that solve the same problem can have very different efficiency. We compare them by counting how many steps (comparisons, swaps, etc.) they need for the same input. For example:</p>
+    <ul>
+      <li><strong>Linear search</strong> on 1,000 items: up to <strong>1,000</strong> comparisons (worst case)</li>
+      <li><strong>Binary search</strong> on 1,000 items: up to <strong>10</strong> comparisons (worst case)</li>
+    </ul>
+    <p>Same problem, hugely different efficiency!</p>
+  </div>
+
+  <h3>Live Demo — Two Ways to Find the Max</h3>
+  <div class="code-block">
+    <div class="code-header"><span>python — efficiency_demo.py</span><button class="copy-btn">Copy</button></div>
+    <pre><code># Method 1: Manual loop (we control every step)
+numbers = [45, 78, 12, 92, 33, 67, 85, 21, 56, 90]
+max_val = numbers[0]
+comparisons = 0
+for num in numbers:
+    comparisons += 1
+    if num > max_val:
+        max_val = num
+print(f"Max: {max_val} (took {comparisons} comparisons)")
+
+# Method 2: Sort first, then take last (works but wasteful!)
+import time
+numbers2 = [45, 78, 12, 92, 33, 67, 85, 21, 56, 90]
+numbers2.sort()  # sorting does MANY comparisons internally
+max_val2 = numbers2[-1]
+print(f"Max: {max_val2} (sorted entire list just to find max!)")
+print("\nMethod 1 is more efficient — it only needs N comparisons.")</code></pre>
+  </div>
+
+  <h3>Quiz</h3>
+  <div class="quiz">
+    <h4>Test Your Knowledge</h4>
+    <div class="quiz-question" data-answer="a">
+      <p>1. Can more than one algorithm solve the same problem?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Yes — and some are more efficient than others</button>
+        <button class="quiz-option" data-value="b">No — there's only one correct algorithm per problem</button>
+        <button class="quiz-option" data-value="c">Yes — but they all take the same time</button>
+        <button class="quiz-option" data-value="d">Only in high-level languages</button>
+      </div>
+    </div>
+    <div class="quiz-question" data-answer="c">
+      <p>2. What does "algorithm efficiency" measure?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">How many lines of code it has</button>
+        <button class="quiz-option" data-value="b">How readable the code is</button>
+        <button class="quiz-option" data-value="c">How quickly it solves the problem / how few resources it uses</button>
+        <button class="quiz-option" data-value="d">Whether it produces the correct output</button>
+      </div>
+    </div>
+    <div class="quiz-question" data-answer="b">
+      <p>3. Binary search on 1,000 items needs at most ~10 comparisons. Linear search needs up to 1,000. Which is more efficient?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Linear search</button>
+        <button class="quiz-option" data-value="b">Binary search</button>
+        <button class="quiz-option" data-value="c">They're equally efficient</button>
+        <button class="quiz-option" data-value="d">It depends on the data</button>
+      </div>
+    </div>
+    <div class="quiz-score"></div>
+    <button class="quiz-reset">Try Again</button>
+  </div>
+
+  <button class="chapter-complete-btn" data-chapter="ch12">✓ Mark as Complete</button>
+  <div class="nav-buttons">
+    <button class="nav-btn" data-target="ch11">← Previous: Algorithms</button>
+    <button class="nav-btn" data-target="ch13">Next: Searching →</button>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 13: SEARCHING ALGORITHMS ==================== -->
+<section id="ch13" class="chapter">
+  <h2>Chapter 13: Searching Algorithms</h2>
+  <p>Unit 2 — Linear search and binary search</p>
+
+  <div class="card big-idea">"Finding something in a list — the brute-force way vs the smart way."</div>
+
+  <div class="card analogy">
+    <p><strong>Linear search</strong> is like looking for a book on an unsorted shelf — you check every single book from left to right until you find it.</p>
+    <p><strong>Binary search</strong> is like looking up a word in a dictionary — you open the middle, decide if the word is before or after, and cut the remaining pages in half each time. But the dictionary MUST be in alphabetical order (sorted)!</p>
+  </div>
+
+  <h3>Linear Search</h3>
+  <table>
+    <tr><th>Feature</th><th>Detail</th></tr>
+    <tr><td><strong>How it works</strong></td><td>Check each item one by one, from start to end</td></tr>
+    <tr><td><strong>Data must be sorted?</strong></td><td>No — works on any list</td></tr>
+    <tr><td><strong>Best case</strong></td><td>1 comparison (item is first)</td></tr>
+    <tr><td><strong>Worst case</strong></td><td>N comparisons (item is last or not found)</td></tr>
+    <tr><td><strong>Good for</strong></td><td>Small lists, unsorted data</td></tr>
+  </table>
+
+  <div class="code-block">
+    <div class="code-header"><span>python — linear_search.py</span><button class="copy-btn">Copy</button></div>
+    <pre><code>def linear_search(data, target):
+    for i in range(len(data)):
+        if data[i] == target:
+            return i  # Found! Return the index
+    return -1  # Not found
+
+names = ["Alice", "Bob", "Charlie", "Diana", "Eve"]
+result = linear_search(names, "Charlie")
+print(f"Found at index: {result}")  # 2
+
+result = linear_search(names, "Zara")
+print(f"Found at index: {result}")  # -1 (not found)</code></pre>
+  </div>
+
+  <h3>Binary Search</h3>
+  <table>
+    <tr><th>Feature</th><th>Detail</th></tr>
+    <tr><td><strong>How it works</strong></td><td>Check the middle item. If too high, search left half. If too low, search right half. Repeat.</td></tr>
+    <tr><td><strong>Data must be sorted?</strong></td><td>YES — only works on sorted data</td></tr>
+    <tr><td><strong>Best case</strong></td><td>1 comparison (item is in the middle)</td></tr>
+    <tr><td><strong>Worst case</strong></td><td>log₂(N) comparisons (e.g., 10 for 1,000 items)</td></tr>
+    <tr><td><strong>Good for</strong></td><td>Large sorted lists — much faster than linear</td></tr>
+  </table>
+
+  <div class="code-block">
+    <div class="code-header"><span>python — binary_search.py</span><button class="copy-btn">Copy</button></div>
+    <pre><code>def binary_search(data, target):
+    low = 0
+    high = len(data) - 1
+    steps = 0
+
+    while low <= high:
+        mid = (low + high) // 2
+        steps += 1
+        print(f"  Step {steps}: checking index {mid} = {data[mid]}")
+
+        if data[mid] == target:
+            return mid, steps
+        elif data[mid] < target:
+            low = mid + 1    # target is in the RIGHT half
+        else:
+            high = mid - 1   # target is in the LEFT half
+
+    return -1, steps
+
+numbers = [3, 7, 12, 19, 25, 31, 42, 56, 78, 92]
+print("Searching for 42:")
+index, steps = binary_search(numbers, 42)
+print(f"Found at index {index} in {steps} steps!")
+
+print("\nSearching for 99:")
+index, steps = binary_search(numbers, 99)
+print(f"Result: {index} ({steps} steps — not found)")</code></pre>
+  </div>
+
+  <h3>Comparison</h3>
+  <table>
+    <tr><th>Feature</th><th>Linear Search</th><th>Binary Search</th></tr>
+    <tr><td><strong>Sorted data needed?</strong></td><td>No</td><td>Yes</td></tr>
+    <tr><td><strong>Speed (worst case)</strong></td><td>Slow — checks every item</td><td>Fast — halves the list each time</td></tr>
+    <tr><td><strong>1,000 items (worst)</strong></td><td>1,000 comparisons</td><td>~10 comparisons</td></tr>
+    <tr><td><strong>1,000,000 items (worst)</strong></td><td>1,000,000 comparisons</td><td>~20 comparisons</td></tr>
+    <tr><td><strong>Simplicity</strong></td><td>Very simple to code</td><td>More complex</td></tr>
+  </table>
+
+  <h3>Quiz</h3>
+  <div class="quiz">
+    <h4>Test Your Knowledge</h4>
+    <div class="quiz-question" data-answer="b">
+      <p>1. What does linear search do?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Splits the list in half each time</button>
+        <button class="quiz-option" data-value="b">Checks each item one by one from start to end</button>
+        <button class="quiz-option" data-value="c">Sorts the list first, then searches</button>
+        <button class="quiz-option" data-value="d">Only works on numbers</button>
+      </div>
+    </div>
+    <div class="quiz-question" data-answer="c">
+      <p>2. What is required for binary search to work?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">The list must contain numbers only</button>
+        <button class="quiz-option" data-value="b">The list must be less than 100 items</button>
+        <button class="quiz-option" data-value="c">The list must be sorted</button>
+        <button class="quiz-option" data-value="d">The target must be in the list</button>
+      </div>
+    </div>
+    <div class="quiz-question" data-answer="d">
+      <p>3. How many comparisons does binary search need for 1,024 items (worst case)?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">1,024</button>
+        <button class="quiz-option" data-value="b">512</button>
+        <button class="quiz-option" data-value="c">100</button>
+        <button class="quiz-option" data-value="d">10</button>
+      </div>
+    </div>
+    <div class="quiz-question" data-answer="a">
+      <p>4. When would you choose linear search over binary search?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">When the data is unsorted</button>
+        <button class="quiz-option" data-value="b">When the list is very large</button>
+        <button class="quiz-option" data-value="c">When you need the fastest possible search</button>
+        <button class="quiz-option" data-value="d">Never — binary search is always better</button>
+      </div>
+    </div>
+    <div class="quiz-score"></div>
+    <button class="quiz-reset">Try Again</button>
+  </div>
+
+  <h3>Assignment: Implement Both Searches</h3>
+  <div class="card assignment">
+    <p>Build both search algorithms and compare them!</p>
+    <ul>
+      <li>Implement <code>linear_search(data, target)</code> — returns index or -1</li>
+      <li>Implement <code>binary_search(data, target)</code> — returns index or -1</li>
+      <li>Count comparisons for each and print the difference</li>
+      <li>Test with a list of 20 sorted numbers</li>
+    </ul>
+    <p><a class="assignment-link" href="/assignments" style="color:var(--accent-pink);font-weight:600;">Open in Assignments →</a></p>
+  </div>
+
+  <button class="chapter-complete-btn" data-chapter="ch13">✓ Mark as Complete</button>
+  <div class="nav-buttons">
+    <button class="nav-btn" data-target="ch12">← Previous: Efficiency</button>
+    <button class="nav-btn" data-target="ch14">Next: Sorting →</button>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 14: SORTING ALGORITHMS ==================== -->
+<section id="ch14" class="chapter">
+  <h2>Chapter 14: Sorting Algorithms</h2>
+  <p>Unit 2 — Bubble sort and merge sort</p>
+
+  <div class="card big-idea">"Putting things in order — the simple way and the clever way."</div>
+
+  <div class="card analogy">
+    <p><strong>Bubble sort</strong> is like sorting a line of students by height. You compare neighbours, swap if they're in the wrong order, and repeat until nobody needs swapping. The tallest person "bubbles" to the end.</p>
+    <p><strong>Merge sort</strong> is like sorting a deck of cards by splitting it in half, sorting each half separately, then merging them back together in order.</p>
+  </div>
+
+  <h3>Bubble Sort</h3>
+  <table>
+    <tr><th>Feature</th><th>Detail</th></tr>
+    <tr><td><strong>How it works</strong></td><td>Compare adjacent pairs, swap if wrong order. Repeat until no swaps needed.</td></tr>
+    <tr><td><strong>Best case</strong></td><td>Already sorted — 1 pass, N-1 comparisons</td></tr>
+    <tr><td><strong>Worst case</strong></td><td>Reverse sorted — N×N comparisons</td></tr>
+    <tr><td><strong>Simple?</strong></td><td>Yes — easy to understand and code</td></tr>
+    <tr><td><strong>Efficient?</strong></td><td>No — very slow for large lists</td></tr>
+  </table>
+
+  <div class="code-block">
+    <div class="code-header"><span>python — bubble_sort.py</span><button class="copy-btn">Copy</button></div>
+    <pre><code>def bubble_sort(data):
+    n = len(data)
+    swaps_total = 0
+    for pass_num in range(n - 1):
+        swapped = False
+        for i in range(n - 1 - pass_num):
+            if data[i] > data[i + 1]:
+                data[i], data[i + 1] = data[i + 1], data[i]  # swap
+                swapped = True
+                swaps_total += 1
+        print(f"  Pass {pass_num + 1}: {data}")
+        if not swapped:
+            print("  No swaps needed — done early!")
+            break
+    return swaps_total
+
+numbers = [64, 34, 25, 12, 22, 11, 90]
+print(f"Before: {numbers}")
+total = bubble_sort(numbers)
+print(f"After:  {numbers}")
+print(f"Total swaps: {total}")</code></pre>
+  </div>
+
+  <h3>Merge Sort</h3>
+  <table>
+    <tr><th>Feature</th><th>Detail</th></tr>
+    <tr><td><strong>How it works</strong></td><td>Split list in half repeatedly until single items, then merge them back in order</td></tr>
+    <tr><td><strong>Best &amp; worst case</strong></td><td>Always N × log₂(N) — consistent performance</td></tr>
+    <tr><td><strong>Simple?</strong></td><td>More complex — uses recursion (a function calling itself)</td></tr>
+    <tr><td><strong>Efficient?</strong></td><td>Yes — much faster than bubble sort for large lists</td></tr>
+    <tr><td><strong>Trade-off</strong></td><td>Uses more memory (creates new lists during merge)</td></tr>
+  </table>
+
+  <div class="code-block">
+    <div class="code-header"><span>python — merge_sort.py</span><button class="copy-btn">Copy</button></div>
+    <pre><code>def merge_sort(data):
+    if len(data) <= 1:
+        return data
+
+    # Split in half
+    mid = len(data) // 2
+    left = merge_sort(data[:mid])
+    right = merge_sort(data[mid:])
+
+    # Merge the two sorted halves
+    merged = []
+    i = j = 0
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            merged.append(left[i])
+            i += 1
+        else:
+            merged.append(right[j])
+            j += 1
+    merged.extend(left[i:])
+    merged.extend(right[j:])
+    return merged
+
+numbers = [64, 34, 25, 12, 22, 11, 90]
+print(f"Before: {numbers}")
+sorted_nums = merge_sort(numbers)
+print(f"After:  {sorted_nums}")</code></pre>
+  </div>
+
+  <h3>Comparison</h3>
+  <table>
+    <tr><th>Feature</th><th>Bubble Sort</th><th>Merge Sort</th></tr>
+    <tr><td><strong>Speed (worst case)</strong></td><td>Slow — N² comparisons</td><td>Fast — N × log₂(N)</td></tr>
+    <tr><td><strong>10 items (worst)</strong></td><td>~100 comparisons</td><td>~33 comparisons</td></tr>
+    <tr><td><strong>1,000 items (worst)</strong></td><td>~1,000,000 comparisons</td><td>~10,000 comparisons</td></tr>
+    <tr><td><strong>Extra memory?</strong></td><td>No — sorts in-place</td><td>Yes — creates new lists</td></tr>
+    <tr><td><strong>Simple to code?</strong></td><td>Yes</td><td>More complex (recursion)</td></tr>
+    <tr><td><strong>Best for</strong></td><td>Small lists, learning</td><td>Large lists, real applications</td></tr>
+  </table>
+
+  <h3>Quiz</h3>
+  <div class="quiz">
+    <h4>Test Your Knowledge</h4>
+    <div class="quiz-question" data-answer="c">
+      <p>1. How does bubble sort work?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Splits the list in half and sorts each half</button>
+        <button class="quiz-option" data-value="b">Finds the smallest item and moves it to the front</button>
+        <button class="quiz-option" data-value="c">Compares adjacent pairs and swaps them if in wrong order, repeating until sorted</button>
+        <button class="quiz-option" data-value="d">Randomly shuffles until sorted</button>
+      </div>
+    </div>
+    <div class="quiz-question" data-answer="b">
+      <p>2. How does merge sort work?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Compares neighbours and swaps</button>
+        <button class="quiz-option" data-value="b">Splits the list in half repeatedly, then merges the halves back in order</button>
+        <button class="quiz-option" data-value="c">Finds the largest item and moves it to the end</button>
+        <button class="quiz-option" data-value="d">Sorts using a dictionary</button>
+      </div>
+    </div>
+    <div class="quiz-question" data-answer="a">
+      <p>3. Which sort is more efficient for large lists?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">Merge sort — it's N×log₂(N) vs N²</button>
+        <button class="quiz-option" data-value="b">Bubble sort — it's simpler</button>
+        <button class="quiz-option" data-value="c">They're equally fast</button>
+        <button class="quiz-option" data-value="d">Bubble sort — it uses less memory</button>
+      </div>
+    </div>
+    <div class="quiz-question" data-answer="d">
+      <p>4. What is a disadvantage of merge sort compared to bubble sort?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-value="a">It's slower</button>
+        <button class="quiz-option" data-value="b">It doesn't sort correctly</button>
+        <button class="quiz-option" data-value="c">It can only sort numbers</button>
+        <button class="quiz-option" data-value="d">It uses more memory (creates new lists)</button>
+      </div>
+    </div>
+    <div class="quiz-score"></div>
+    <button class="quiz-reset">Try Again</button>
+  </div>
+
+  <h3>Assignment: Implement Bubble Sort</h3>
+  <div class="card assignment">
+    <p>Build bubble sort from scratch and trace its execution!</p>
+    <ul>
+      <li>Implement <code>bubble_sort(data)</code> that sorts a list in-place</li>
+      <li>Print the list after each pass to show the sorting process</li>
+      <li>Count and display the total number of swaps</li>
+      <li>Add an optimisation: stop early if no swaps in a pass</li>
+      <li><strong>STRETCH:</strong> Implement merge sort too and compare swap counts</li>
+    </ul>
+    <p><a class="assignment-link" href="/assignments" style="color:var(--accent-pink);font-weight:600;">Open in Assignments →</a></p>
+  </div>
+
+  <button class="chapter-complete-btn" data-chapter="ch14">✓ Mark as Complete</button>
+  <div class="nav-buttons">
+    <button class="nav-btn" data-target="ch13">← Previous: Searching</button>
     <button class="nav-btn hidden">→</button>
   </div>
 </section>
