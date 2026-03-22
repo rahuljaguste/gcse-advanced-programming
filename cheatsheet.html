@@ -173,6 +173,57 @@ WRITE(myFile, "text")
 CLOSE_FILE(myFile)</pre>
 </div>
 
+<div class="section s-blue">
+  <h2><span class="icon">📐</span> Algorithms</h2>
+  <div class="row"><span class="label">Algorithm</span><span class="val">Step-by-step instructions to solve a problem</span></div>
+  <div class="row"><span class="label">Decomposition</span><span class="val">Break big problem into smaller parts</span></div>
+  <div class="row"><span class="label">Abstraction</span><span class="val">Remove unnecessary detail</span></div>
+  <div class="row"><span class="label">Trace table</span><span class="val">Track variable values line by line</span></div>
+  <div class="row"><span class="label">Input</span><span class="val">Data going in</span></div>
+  <div class="row"><span class="label">Process</span><span class="val">What the algorithm does</span></div>
+  <div class="row"><span class="label">Output</span><span class="val">The result</span></div>
+</div>
+
+<div class="section s-green">
+  <h2><span class="icon">🔍</span> Searching Algorithms</h2>
+  <div class="row"><span class="label">Linear search</span><span class="val">Check each item, one by one</span></div>
+  <div class="row"><span class="label">  Sorted needed?</span><span class="val">No</span></div>
+  <div class="row"><span class="label">  Worst case</span><span class="val">N comparisons</span></div>
+  <div class="row"><span class="label">Binary search</span><span class="val">Check middle, discard half, repeat</span></div>
+  <div class="row"><span class="label">  Sorted needed?</span><span class="val">Yes!</span></div>
+  <div class="row"><span class="label">  Worst case</span><span class="val">log₂(N) comparisons</span></div>
+  <pre class="block">def linear_search(data, target):
+    for i in range(len(data)):
+        if data[i] == target:
+            return i
+    return -1
+
+def binary_search(data, target):
+    low, high = 0, len(data) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        if data[mid] == target: return mid
+        elif data[mid] < target: low = mid + 1
+        else: high = mid - 1
+    return -1</pre>
+</div>
+
+<div class="section s-purple">
+  <h2><span class="icon">🔀</span> Sorting Algorithms</h2>
+  <div class="row"><span class="label">Bubble sort</span><span class="val">Compare neighbours, swap, repeat</span></div>
+  <div class="row"><span class="label">  Speed</span><span class="val">Slow — N² comparisons</span></div>
+  <div class="row"><span class="label">  Memory</span><span class="val">In-place (no extra)</span></div>
+  <div class="row"><span class="label">Merge sort</span><span class="val">Split in half, sort each, merge back</span></div>
+  <div class="row"><span class="label">  Speed</span><span class="val">Fast — N × log₂(N)</span></div>
+  <div class="row"><span class="label">  Memory</span><span class="val">Uses extra (new lists)</span></div>
+  <pre class="block">def bubble_sort(data):
+    for p in range(len(data) - 1):
+        for i in range(len(data) - 1 - p):
+            if data[i] > data[i+1]:
+                data[i], data[i+1] = data[i+1], data[i]</pre>
+  <p class="note">1,000 items: Bubble ≈ 1,000,000 ops | Merge ≈ 10,000 ops</p>
+</div>
+
 <div class="section s-pink">
   <h2><span class="icon">🧪</span> Common Python Tricks</h2>
   <div class="row"><span class="label">f-string</span><span class="val"><code>f"Hi {name}"</code></span></div>
