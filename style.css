@@ -116,6 +116,23 @@ body {
   list-style: none;
 }
 
+.nav-section-title {
+  list-style: none;
+  padding: 14px 20px 6px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border);
+  margin-top: 6px;
+}
+
+.nav-section-title:first-of-type {
+  border-top: none;
+  margin-top: 0;
+}
+
 .nav-item.nav-link .check { display: none; }
 
 .nav-item:hover {
