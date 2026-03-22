@@ -9,30 +9,36 @@
   <style>
     :root{--bg:#0f0f1a;--card:#1a1a2e;--border:#27273a;--blue:#00d4ff;--green:#00ff88;--purple:#a855f7;--orange:#ff9f43;--pink:#ff6b9d;--text:#e4e4e7;--dim:#71717a;--code-bg:#0d1117;}
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);padding:32px;max-width:1100px;margin:0 auto;}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);padding:32px 40px;max-width:1200px;margin:0 auto;line-height:1.6;}
     a.back{color:var(--dim);text-decoration:none;font-size:0.85rem;display:inline-block;margin-bottom:16px;}
     a.back:hover{color:var(--blue);}
-    .header{text-align:center;margin-bottom:32px;}
-    h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .header{text-align:center;margin-bottom:40px;}
+    h1{font-size:2.2rem;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
     .header p{color:var(--dim);font-size:0.85rem;margin-top:4px;}
     .print-btn{padding:8px 24px;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;cursor:pointer;margin-top:12px;font-family:'Inter',sans-serif;font-size:0.85rem;}
     .print-btn:hover{border-color:var(--blue);}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;}
-    .section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;break-inside:avoid;}
-    .section h2{font-size:1rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
-    .section h2 .icon{font-size:1.2rem;}
+
+    /* Section group titles */
+    .group-title{font-size:0.7rem;text-transform:uppercase;letter-spacing:2px;color:var(--dim);font-weight:700;margin:36px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+    .group-title:first-of-type{margin-top:0;}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px;}
+    .section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;break-inside:avoid;transition:border-color 0.2s;}
+    .section:hover{border-color:rgba(255,255,255,0.1);}
+    .section h2{font-size:1.05rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+    .section h2 .icon{font-size:1.3rem;}
     .s-blue h2{color:var(--blue);}
     .s-green h2{color:var(--green);}
     .s-purple h2{color:var(--purple);}
     .s-orange h2{color:var(--orange);}
     .s-pink h2{color:var(--pink);}
-    .row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.82rem;gap:12px;}
+    .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.85rem;gap:16px;align-items:baseline;}
     .row:last-child{border-bottom:none;}
-    .row .label{color:var(--dim);flex-shrink:0;min-width:120px;}
-    .row .val{color:var(--text);text-align:right;}
-    code{font-family:'JetBrains Mono',monospace;background:var(--code-bg);padding:1px 6px;border-radius:4px;font-size:0.8rem;color:var(--blue);}
-    pre.block{background:var(--code-bg);padding:12px;border-radius:8px;font-size:0.78rem;line-height:1.6;overflow-x:auto;margin:8px 0;font-family:'JetBrains Mono',monospace;color:#c9d1d9;}
-    .note{font-size:0.75rem;color:var(--dim);margin-top:8px;font-style:italic;}
+    .row .label{color:var(--dim);flex-shrink:0;min-width:130px;font-weight:500;}
+    .row .val{color:var(--text);text-align:right;line-height:1.5;}
+    code{font-family:'JetBrains Mono',monospace;background:var(--code-bg);padding:2px 7px;border-radius:5px;font-size:0.82rem;color:var(--blue);}
+    pre.block{background:var(--code-bg);padding:16px;border-radius:10px;font-size:0.82rem;line-height:1.7;overflow-x:auto;margin:12px 0;font-family:'JetBrains Mono',monospace;color:#c9d1d9;border:1px solid #30363d;}
+    .note{font-size:0.78rem;color:var(--dim);margin-top:10px;font-style:italic;padding-top:8px;border-top:1px solid rgba(255,255,255,0.04);}
 
     @media print{
       body{background:#fff;color:#000;padding:16px;font-size:10pt;}
@@ -40,9 +46,18 @@
       .section h2{color:#333!important;}
       .row .label{color:#666;}
       code{background:#f0f0f0;color:#333;}
-      pre.block{background:#f5f5f5;color:#333;}
+      pre.block{background:#f5f5f5;color:#333;border-color:#ddd;}
       a.back,.print-btn{display:none;}
       .grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+      .group-title{margin:20px 0 8px;}
+    }
+    @media(max-width:768px){
+      body{padding:16px;}
+      .grid{grid-template-columns:1fr;}
+      .section{padding:18px;}
+      .row{font-size:0.82rem;}
+      .row .label{min-width:100px;}
+      pre.block{font-size:0.76rem;padding:12px;}
     }
   </style>
 </head>
@@ -54,6 +69,7 @@
   <button class="print-btn" onclick="window.print()">🖨 Print This Page</button>
 </div>
 
+<div class="group-title">Unit 1 — Advanced Programming</div>
 <div class="grid">
 
 <div class="section s-blue">
@@ -173,6 +189,11 @@ WRITE(myFile, "text")
 CLOSE_FILE(myFile)</pre>
 </div>
 
+</div>
+
+<div class="group-title">Unit 2 — Algorithms</div>
+<div class="grid">
+
 <div class="section s-blue">
   <h2><span class="icon">📐</span> Algorithms</h2>
   <div class="row"><span class="label">Algorithm</span><span class="val">Step-by-step instructions to solve a problem</span></div>
@@ -223,6 +244,11 @@ def binary_search(data, target):
                 data[i], data[i+1] = data[i+1], data[i]</pre>
   <p class="note">1,000 items: Bubble ≈ 1,000,000 ops | Merge ≈ 10,000 ops</p>
 </div>
+
+</div>
+
+<div class="group-title">Quick Reference</div>
+<div class="grid">
 
 <div class="section s-pink">
   <h2><span class="icon">🧪</span> Common Python Tricks</h2>
