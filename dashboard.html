@@ -222,11 +222,7 @@
 <div class="last-updated" id="last-updated"></div>
 
 <script>
-const CHAPTER_LABELS = {
-  ch1: "Subroutines", ch2: "1D Arrays", ch3: "2D Arrays",
-  ch4: "Records", ch5: "Files", ch6: "Random",
-  ch7: "Scope", ch8: "Validation", ch9: "Languages", ch10: "Project"
-};
+let CL = {};
 
 function escapeHtml(str) {
   const div = document.createElement('div');
@@ -245,77 +241,115 @@ async function loadDashboard() {
   }
 }
 
+function scoreCls(pct) { return pct >= 80 ? 'score-good' : pct >= 50 ? 'score-ok' : 'score-bad'; }
+
 function renderDashboard(data) {
-  const { students, chapters } = data;
+  const { students, chapters, chapter_labels, quiz_chapters } = data;
+  CL = chapter_labels || {};
   document.getElementById('loading').style.display = 'none';
 
   // Stats
   const totalStudents = students.length;
-  const avgProgress = totalStudents > 0
-    ? Math.round(students.reduce((s, st) => s + st.percent, 0) / totalStudents)
-    : 0;
-  const totalQuizzes = students.reduce((s, st) => s + Object.keys(st.quizzes).length, 0);
+  const avgProgress = totalStudents > 0 ? Math.round(students.reduce((s, st) => s + st.percent, 0) / totalStudents) : 0;
+  const totalAttempts = students.reduce((s, st) => {
+    return s + Object.values(st.quiz_history || {}).reduce((a, h) => a + h.length, 0);
+  }, 0);
   const fullyComplete = students.filter(st => st.percent === 100).length;
 
   document.getElementById('stats-grid').innerHTML = `
-    <div class="stat-card">
-      <div class="stat-value">${totalStudents}</div>
-      <div class="stat-label">Students Registered</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">${avgProgress}%</div>
-      <div class="stat-label">Average Progress</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">${totalQuizzes}</div>
-      <div class="stat-label">Quizzes Completed</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">${fullyComplete}</div>
-      <div class="stat-label">Fully Completed</div>
-    </div>
+    <div class="stat-card"><div class="stat-value">${totalStudents}</div><div class="stat-label">Students</div></div>
+    <div class="stat-card"><div class="stat-value">${avgProgress}%</div><div class="stat-label">Avg Progress</div></div>
+    <div class="stat-card"><div class="stat-value">${totalAttempts}</div><div class="stat-label">Quiz Attempts</div></div>
+    <div class="stat-card"><div class="stat-value">${fullyComplete}</div><div class="stat-label">Completed All</div></div>
   `;
 
-  // Students
   const container = document.getElementById('students-container');
-
   if (students.length === 0) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <div style="font-size: 3rem;">🎓</div>
-        <p>No students yet. Share the site link to get started!</p>
-      </div>`;
+    container.innerHTML = '<div class="empty-state"><div style="font-size:3rem;">🎓</div><p>No students yet.</p></div>';
     return;
   }
 
   container.innerHTML = students.map(st => {
-    // Chapter badges
-    const badges = chapters.map(ch => {
+    // Chapter progress with timestamps
+    const chapterRows = chapters.map(ch => {
       const done = st.chapters[ch];
-      const dateStr = st.chapter_dates[ch] ? `<br><span style="font-size:0.6rem">${st.chapter_dates[ch].split(' ')[0]}</span>` : '';
-      return `<div class="ch-badge ${done ? 'done' : ''}">
-        ${done ? '✓' : '○'} ${ch.replace('ch', 'Ch ')}
-        <span class="ch-label">${CHAPTER_LABELS[ch] || ch}${dateStr}</span>
-      </div>`;
-    }).join('');
-
-    // Quiz scores
-    const quizRows = Object.entries(st.quizzes).map(([ch, score]) => {
-      const [got, total] = score.split('/').map(Number);
-      const pct = total > 0 ? Math.round((got / total) * 100) : 0;
-      let cls = 'score-bad';
-      if (pct >= 80) cls = 'score-good';
-      else if (pct >= 50) cls = 'score-ok';
+      const date = st.chapter_dates[ch] || '';
       return `<tr>
-        <td>${ch.replace('ch', 'Ch ')} — ${CHAPTER_LABELS[ch] || ch}</td>
-        <td class="${cls}">${score} (${pct}%)</td>
+        <td>${escapeHtml(CL[ch] || ch)}</td>
+        <td>${done ? '<span class="score-good">✓ Done</span>' : '<span style="color:var(--dim)">—</span>'}</td>
+        <td style="font-size:0.75rem;color:var(--dim)">${date || ''}</td>
       </tr>`;
     }).join('');
 
-    const quizSection = quizRows
-      ? `<h4 style="color: var(--accent-purple); font-size: 0.85rem; margin: 12px 0 8px;">Quiz Scores</h4>
-         <table class="quiz-table"><tr><th>Chapter</th><th>Score</th></tr>${quizRows}</table>`
-      : `<p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 8px;">No quizzes completed yet.</p>`;
+    // Quiz scores with attempts & history
+    const quizRows = (quiz_chapters || []).map(ch => {
+      const best = st.quizzes[ch];
+      const history = (st.quiz_history || {})[ch] || [];
+      const attempts = history.length;
+
+      if (!best && attempts === 0) {
+        return `<tr>
+          <td>${escapeHtml(CL[ch] || ch)}</td>
+          <td style="color:var(--dim)">Not attempted</td>
+          <td>0</td>
+          <td></td>
+        </tr>`;
+      }
+
+      const [got, total] = best ? best.split('/').map(Number) : [0, 0];
+      const pct = total > 0 ? Math.round((got / total) * 100) : 0;
+
+      // Build attempt history detail
+      const historyDetail = history.map((h, i) => {
+        const hpct = h.total > 0 ? Math.round((h.score / h.total) * 100) : 0;
+        return `<span class="${scoreCls(hpct)}" style="font-size:0.72rem">${h.score}/${h.total}</span>`;
+      }).join(' → ');
+
+      return `<tr>
+        <td>${escapeHtml(CL[ch] || ch)}</td>
+        <td class="${scoreCls(pct)}">${best} (${pct}%)</td>
+        <td>${attempts}</td>
+        <td style="font-size:0.72rem">${historyDetail || ''}</td>
+      </tr>`;
+    }).join('');
+
+    // Weakness analysis
+    const analysis = st.analysis || {};
+    let analysisHtml = '';
+
+    if (analysis.weaknesses && analysis.weaknesses.length > 0) {
+      analysisHtml += `<div style="margin-top:12px">
+        <h4 style="color:var(--accent-red);font-size:0.8rem;margin-bottom:6px;">⚠ Needs Improvement</h4>
+        ${analysis.weaknesses.map(w => `
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.8rem;">
+            <span>${escapeHtml(w.label)} <span class="${w.status === 'weak' ? 'score-bad' : 'score-ok'}">(${w.best_pct}%)</span></span>
+            <span style="color:var(--dim)">${escapeHtml(w.advice)}</span>
+          </div>
+        `).join('')}
+      </div>`;
+    }
+
+    if (analysis.not_attempted && analysis.not_attempted.length > 0) {
+      analysisHtml += `<div style="margin-top:8px">
+        <h4 style="color:var(--accent-orange);font-size:0.8rem;margin-bottom:6px;">📋 Not Yet Attempted</h4>
+        <div style="font-size:0.8rem;color:var(--dim)">${analysis.not_attempted.map(n => escapeHtml(n.label)).join(', ')}</div>
+      </div>`;
+    }
+
+    if (analysis.strengths && analysis.strengths.length > 0) {
+      analysisHtml += `<div style="margin-top:8px">
+        <h4 style="color:var(--accent-green);font-size:0.8rem;margin-bottom:6px;">✓ Strong Areas</h4>
+        <div style="font-size:0.8rem;color:var(--accent-green)">${analysis.strengths.map(s => `${escapeHtml(s.label)} (${s.best_pct}%)`).join(', ')}</div>
+      </div>`;
+    }
+
+    // Assignments
+    const assignmentList = (st.assignments || []).length > 0
+      ? st.assignments.map(a => {
+          const t = (st.assignment_times || {})[a] || '';
+          return `<span style="font-size:0.75rem;background:rgba(0,212,255,0.08);padding:2px 8px;border-radius:4px;color:var(--accent-blue)">${escapeHtml(CL[a] || a)}${t ? ` (${t.split(' ')[0]})` : ''}</span>`;
+        }).join(' ')
+      : '<span style="font-size:0.8rem;color:var(--dim)">None submitted</span>';
 
     return `
       <div class="student-card">
@@ -329,13 +363,21 @@ function renderDashboard(data) {
         <div class="student-progress-bar">
           <div class="student-progress-fill" style="width: ${st.percent}%"></div>
         </div>
-        <div class="chapter-grid">${badges}</div>
-        ${quizSection}
+
+        <h4 style="color:var(--accent-blue);font-size:0.82rem;margin:14px 0 6px;">Chapter Progress</h4>
+        <table class="quiz-table"><tr><th>Chapter</th><th>Status</th><th>Completed</th></tr>${chapterRows}</table>
+
+        <h4 style="color:var(--accent-purple);font-size:0.82rem;margin:16px 0 6px;">Quiz Scores & Attempts</h4>
+        <table class="quiz-table"><tr><th>Chapter</th><th>Best Score</th><th>Attempts</th><th>History</th></tr>${quizRows}</table>
+
+        ${analysisHtml}
+
+        <h4 style="color:var(--accent-blue);font-size:0.82rem;margin:16px 0 6px;">Assignment Submissions</h4>
+        <div>${assignmentList}</div>
       </div>`;
   }).join('');
 
-  document.getElementById('last-updated').textContent =
-    `Last refreshed: ${new Date().toLocaleTimeString()}`;
+  document.getElementById('last-updated').textContent = `Last refreshed: ${new Date().toLocaleTimeString()}`;
 }
 
 // Fix #18: Only auto-refresh when tab is visible

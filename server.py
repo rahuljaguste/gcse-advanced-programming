@@ -302,16 +302,22 @@ def save_quiz(student):
     if score < 0 or score > total or total <= 0:
         return jsonify({"error": "Invalid score/total range"}), 400
 
-    # Fix #19: Only save if better than previous score
+    # Store attempt in history (all attempts kept)
+    import json as _json
+    attempt = _json.dumps({"score": score, "total": total, "ts": time.strftime("%Y-%m-%d %H:%M:%S")})
+    r.rpush(f"quiz_history:{student}:{chapter}", attempt)
+
+    # Only update best score if better than previous
     existing = r.hget(f"quiz:{student}", chapter)
     if existing:
         parsed = parse_score(existing)
-        if parsed and parsed[0] > score:
-            return jsonify({"status": "ok", "chapter": chapter, "score": existing, "note": "Previous score was higher, kept it"})
+        if parsed and parsed[0] >= score:
+            return jsonify({"status": "ok", "chapter": chapter, "score": existing,
+                            "note": "Previous best score kept", "attempt_saved": True})
 
     r.sadd("students", student)
     r.hset(f"quiz:{student}", chapter, f"{score}/{total}")
-    return jsonify({"status": "ok", "chapter": chapter, "score": f"{score}/{total}"})
+    return jsonify({"status": "ok", "chapter": chapter, "score": f"{score}/{total}", "attempt_saved": True})
 
 
 # ─── Badges ─────────────────────────────────────────────────────────────
@@ -686,13 +692,77 @@ def run_code():
 
 # ─── Teacher dashboard data (fix #17: use Redis pipeline) ───────────────
 
+CHAPTER_LABELS = {
+    "ch1": "Subroutines", "ch2": "1D Arrays", "ch3": "2D Arrays", "ch4": "Records",
+    "ch5": "Files", "ch6": "Random", "ch7": "Scope", "ch8": "Validation",
+    "ch9": "Languages", "ch10": "Project",
+    "ch11": "Algorithms", "ch12": "Efficiency", "ch13": "Searching", "ch14": "Sorting",
+}
+
+QUIZ_CHAPTERS = [ch for ch in CHAPTERS if ch in QUIZ_TOTALS]
+
+
+def analyze_weaknesses(quizzes, quiz_history_data):
+    """Identify weak areas based on quiz scores and attempts."""
+    import json as _json
+    weaknesses = []
+    strengths = []
+
+    for ch in QUIZ_CHAPTERS:
+        best = quizzes.get(ch)
+        if not best:
+            continue
+        parsed = parse_score(best)
+        if not parsed:
+            continue
+        got, total = parsed
+        pct = round((got / total) * 100) if total > 0 else 0
+
+        # Count attempts
+        history = quiz_history_data.get(ch, [])
+        attempts = len(history)
+
+        entry = {
+            "chapter": ch,
+            "label": CHAPTER_LABELS.get(ch, ch),
+            "best_score": f"{got}/{total}",
+            "best_pct": pct,
+            "attempts": attempts,
+        }
+
+        if pct < 50:
+            entry["status"] = "weak"
+            entry["advice"] = "Re-read the chapter and try again"
+            weaknesses.append(entry)
+        elif pct < 80:
+            entry["status"] = "improving"
+            entry["advice"] = "Review the questions you got wrong"
+            weaknesses.append(entry)
+        else:
+            entry["status"] = "strong"
+            strengths.append(entry)
+
+    # Chapters with no quiz attempt at all
+    not_attempted = []
+    for ch in QUIZ_CHAPTERS:
+        if ch not in quizzes:
+            not_attempted.append({
+                "chapter": ch,
+                "label": CHAPTER_LABELS.get(ch, ch),
+                "status": "not_attempted",
+                "advice": "Take the quiz to check your understanding",
+            })
+
+    return {"weaknesses": weaknesses, "strengths": strengths, "not_attempted": not_attempted}
+
+
 @app.route("/api/dashboard", methods=["GET"])
 @require_dashboard_auth
 def dashboard_data():
+    import json as _json
     students = sorted(r.smembers("students"))
     result = []
 
-    # Fix #17: batch Redis queries with pipeline
     pipe = r.pipeline()
     for name in students:
         pipe.hgetall(f"student:{name}")
@@ -700,16 +770,34 @@ def dashboard_data():
         pipe.get(f"student:{name}:registered")
         pipe.smembers(f"badges:{name}")
         pipe.hgetall(f"explanations:{name}")
+        pipe.hgetall(f"assignments:{name}")
+        pipe.hgetall(f"assignment_times:{name}")
+        # Quiz history for each chapter
+        for ch in QUIZ_CHAPTERS:
+            pipe.lrange(f"quiz_history:{name}:{ch}", 0, -1)
     all_data = pipe.execute()
 
+    per_student = 7 + len(QUIZ_CHAPTERS)
+
     for i, name in enumerate(students):
-        base = i * 5
+        base = i * per_student
         progress = all_data[base]
         quizzes = all_data[base + 1]
         registered = all_data[base + 2] or "Unknown"
         badges = list(all_data[base + 3])
         explanations = all_data[base + 4]
+        assignments = all_data[base + 5]
+        assignment_times = all_data[base + 6]
         completed_count = sum(1 for ch in CHAPTERS if ch in progress)
+
+        # Build quiz history
+        quiz_history = {}
+        for j, ch in enumerate(QUIZ_CHAPTERS):
+            raw_list = all_data[base + 7 + j]
+            if raw_list:
+                quiz_history[ch] = [_json.loads(x) for x in raw_list]
+
+        analysis = analyze_weaknesses(quizzes, quiz_history)
 
         result.append({
             "name": name,
@@ -720,11 +808,21 @@ def dashboard_data():
             "chapters": {ch: ch in progress for ch in CHAPTERS},
             "chapter_dates": {ch: progress.get(ch, "") for ch in CHAPTERS},
             "quizzes": quizzes,
+            "quiz_history": quiz_history,
             "badges": badges,
             "explanations": explanations,
+            "assignments": list(assignments.keys()) if assignments else [],
+            "assignment_times": assignment_times or {},
+            "analysis": analysis,
         })
 
-    return jsonify({"students": result, "chapters": CHAPTERS, "badge_definitions": BADGE_DEFINITIONS})
+    return jsonify({
+        "students": result,
+        "chapters": CHAPTERS,
+        "chapter_labels": CHAPTER_LABELS,
+        "badge_definitions": BADGE_DEFINITIONS,
+        "quiz_chapters": QUIZ_CHAPTERS,
+    })
 
 
 # ─── Run ─────────────────────────────────────────────────────────────────
