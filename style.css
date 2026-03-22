@@ -401,27 +401,31 @@ code, code[class*="language-"] {
 }
 
 /* Line numbers on code blocks */
-.code-block pre {
-  counter-reset: line;
-  padding-left: 52px !important;
-  position: relative;
+pre.has-line-numbers {
+  position: relative !important;
+  padding-left: 56px !important;
 }
 
-.code-block pre code {
-  display: block;
-}
-
-.line-number {
+.line-numbers-gutter {
   position: absolute;
   left: 0;
-  width: 36px;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  padding: 20px 8px 20px 0;
   text-align: right;
   color: #484f58;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.7;
   user-select: none;
   pointer-events: none;
-  padding-right: 12px;
   border-right: 1px solid #30363d;
+  background: rgba(0,0,0,0.15);
+}
+
+.line-numbers-gutter span {
+  display: block;
 }
 
 /* Inline code */

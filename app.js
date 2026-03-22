@@ -359,26 +359,24 @@ function setupSyntaxHighlighting() {
     }
   });
 
-  // Run Prism if available
-  if (typeof Prism !== 'undefined') {
-    Prism.highlightAll();
-  }
-
-  // Add line numbers
+  // Add line numbers BEFORE Prism runs (so line count is correct)
   document.querySelectorAll('.code-block pre').forEach(pre => {
     const codeEl = pre.querySelector('code');
     if (!codeEl) return;
     const lines = codeEl.textContent.split('\n');
-    // Remove trailing empty line
     if (lines[lines.length - 1].trim() === '') lines.pop();
+    const count = lines.length;
 
-    const lineNums = document.createElement('div');
-    lineNums.className = 'line-numbers-col';
-    lineNums.innerHTML = lines.map((_, i) =>
-      `<span class="line-number">${i + 1}</span>`
-    ).join('\n');
-    lineNums.style.cssText = 'position:absolute;left:0;top:20px;';
-    pre.style.position = 'relative';
-    pre.appendChild(lineNums);
+    pre.classList.add('has-line-numbers');
+    const gutter = document.createElement('span');
+    gutter.className = 'line-numbers-gutter';
+    gutter.setAttribute('aria-hidden', 'true');
+    gutter.innerHTML = Array.from({length: count}, (_, i) => `<span>${i + 1}</span>`).join('');
+    pre.appendChild(gutter);
   });
+
+  // Run Prism AFTER classes are added and line numbers are set
+  if (typeof Prism !== 'undefined') {
+    Prism.highlightAll();
+  }
 }
