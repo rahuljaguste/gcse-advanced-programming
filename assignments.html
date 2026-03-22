@@ -63,12 +63,10 @@
     .a-btn-submit:hover{box-shadow:0 0 16px rgba(0,255,136,0.3);}
     .a-btn:disabled{opacity:0.5;cursor:not-allowed;}
 
-    .a-editor-wrap{min-height:350px;}
-    .a-editor-wrap .CodeMirror{height:350px!important;background:var(--code-bg)!important;font-family:'JetBrains Mono',monospace!important;font-size:0.85rem!important;line-height:1.7!important;}
+    .a-editor-wrap{min-height:350px;overflow:hidden;}
+    .a-editor-wrap .CodeMirror{height:400px!important;background:var(--code-bg)!important;font-family:'JetBrains Mono',monospace!important;font-size:0.85rem!important;line-height:1.7!important;border-radius:0 0 12px 12px;}
     .a-editor-wrap .CodeMirror-gutters{background:rgba(0,0,0,0.2)!important;border-right:1px solid #30363d!important;}
     .a-editor-wrap .CodeMirror-linenumber{color:#484f58!important;font-size:0.76rem!important;}
-    /* textarea hidden by CodeMirror automatically after init */
-    .a-code::placeholder{color:#484f58;}
 
     /* Stdin */
     /* Interactive terminal input */
@@ -278,9 +276,7 @@ function renderAssignments() {
             <button class="a-btn a-btn-submit" onclick="submitAssignment('${a.id}')">Submit</button>
           </div>
         </div>
-        <div class="a-editor-wrap" id="editor-wrap-${a.id}">
-          <textarea class="a-code" id="code-${a.id}">${escapeForTextarea(code)}</textarea>
-        </div>
+        <div class="a-editor-wrap" id="editor-wrap-${a.id}"></div>
       </div>
 
       <div class="a-output-wrap">
@@ -333,14 +329,15 @@ const cmEditors = {};
 function initCodeMirrorEditors() {
   if (typeof CodeMirror === 'undefined') return;
 
-  // Temporarily show ALL assignment views so CodeMirror can measure dimensions
-  const views = document.querySelectorAll('.assignment-view');
-  views.forEach(v => { v.style.display = 'block'; v.style.visibility = 'hidden'; v.style.position = 'absolute'; });
+  ASSIGNMENTS.forEach(a => {
+    const wrap = document.getElementById('editor-wrap-' + a.id);
+    if (!wrap || cmEditors[a.id]) return;
 
-  document.querySelectorAll('.a-code').forEach(ta => {
-    const id = ta.id.replace('code-', '');
-    if (cmEditors[id]) return;
-    cmEditors[id] = CodeMirror.fromTextArea(ta, {
+    const code = savedCode[a.id] || STARTER_CODE[a.id] || '# Start coding here\n';
+    const id = a.id;
+
+    cmEditors[id] = CodeMirror(wrap, {
+      value: code,
       mode: 'python',
       theme: 'material-darker',
       lineNumbers: true,
@@ -358,14 +355,6 @@ function initCodeMirrorEditors() {
       }
     });
   });
-
-  // Restore normal display after init
-  views.forEach(v => { v.style.display = ''; v.style.visibility = ''; v.style.position = ''; });
-
-  // Refresh active editor
-  setTimeout(() => {
-    Object.values(cmEditors).forEach(cm => cm.refresh());
-  }, 50);
 }
 
 function getCmCode(id) {
