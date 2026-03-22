@@ -279,7 +279,7 @@ function setupQuizzes() {
 }
 
 // ===== INIT =====
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
   // Nav clicks
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => navigateTo(item.dataset.chapter));
@@ -342,7 +342,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Prompt for student login
   promptStudent();
-});
+}
+
+// Run init — if DOM already ready, run now; otherwise wait
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
 
 // ===== SYNTAX HIGHLIGHTING =====
 function setupSyntaxHighlighting() {
@@ -359,7 +366,12 @@ function setupSyntaxHighlighting() {
     }
   });
 
-  // Add line numbers BEFORE Prism runs (so line count is correct)
+  // Run Prism FIRST (before adding line number elements)
+  if (typeof Prism !== 'undefined') {
+    Prism.highlightAll();
+  }
+
+  // Add line numbers AFTER Prism has highlighted
   document.querySelectorAll('.code-block pre').forEach(pre => {
     const codeEl = pre.querySelector('code');
     if (!codeEl) return;
@@ -374,9 +386,4 @@ function setupSyntaxHighlighting() {
     gutter.innerHTML = Array.from({length: count}, (_, i) => `<span>${i + 1}</span>`).join('');
     pre.appendChild(gutter);
   });
-
-  // Run Prism AFTER classes are added and line numbers are set
-  if (typeof Prism !== 'undefined') {
-    Prism.highlightAll();
-  }
 }
