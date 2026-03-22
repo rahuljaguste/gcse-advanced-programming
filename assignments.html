@@ -332,6 +332,11 @@ const cmEditors = {};
 
 function initCodeMirrorEditors() {
   if (typeof CodeMirror === 'undefined') return;
+
+  // Temporarily show ALL assignment views so CodeMirror can measure dimensions
+  const views = document.querySelectorAll('.assignment-view');
+  views.forEach(v => { v.style.display = 'block'; v.style.visibility = 'hidden'; v.style.position = 'absolute'; });
+
   document.querySelectorAll('.a-code').forEach(ta => {
     const id = ta.id.replace('code-', '');
     if (cmEditors[id]) return;
@@ -353,10 +358,14 @@ function initCodeMirrorEditors() {
       }
     });
   });
-  // Refresh all editors after short delay (some are in hidden tabs)
+
+  // Restore normal display after init
+  views.forEach(v => { v.style.display = ''; v.style.visibility = ''; v.style.position = ''; });
+
+  // Refresh active editor
   setTimeout(() => {
     Object.values(cmEditors).forEach(cm => cm.refresh());
-  }, 100);
+  }, 50);
 }
 
 function getCmCode(id) {
