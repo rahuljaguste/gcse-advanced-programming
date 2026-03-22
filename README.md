@@ -13,7 +13,7 @@ A locally-hosted learning platform for **GCSE Computer Science — Topic 3: Adva
 | **Flashcards** | Flip-card revision for every chapter. Mastery tracking (5 levels) — cards you get wrong come first |
 | **Quizzes** | Interactive multiple-choice per chapter with instant feedback. Best score kept |
 | **Cheat Sheet** | Printable single-page reference — all syntax, concepts, pseudocode |
-| **Achievement Badges** | 8 badges: First Steps, Halfway There, Array Master, File Wizard, Security Expert, Quiz Whiz, Perfectionist, Python Pro |
+| **Achievement Badges** | 8 badges: First Steps, Halfway There, Array Master, File Wizard, Security Expert, Quiz Whiz, Perfectionist, GCSE Advanced Programming |
 | **Explain-It-Back** | Writing prompts at end of each chapter — "Explain X to a 10-year-old" |
 | **Teacher Dashboard** | Password-protected. View all student progress, quiz scores, badge unlocks, assignment submissions, explanations |
 | **Auto-Save** | Assignments auto-save every 60s + warn before leaving with unsaved changes |

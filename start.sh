@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================
-#  Python Pro Learning Platform
+#  GCSE Advanced Programming
 #  Flask + Redis Backend
 # =============================================
 
@@ -36,7 +36,7 @@ if ! redis-cli ping >/dev/null 2>&1; then
 fi
 
 echo ""
-echo "  🐍 Python Pro"
+echo "  GCSE Advanced Programming"
 echo "  ========================"
 echo ""
 echo "  Student site:      http://localhost:5000"
