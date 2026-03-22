@@ -574,3 +574,54 @@
   color: var(--text-dim);
 }
 .eb-status.saved { color: var(--accent-green); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  /* Diagrams */
+  .diagram { padding: 16px; }
+  .diagram-flow { flex-direction: column; align-items: center; }
+  .diagram-vs { transform: rotate(90deg); margin: 4px 0; }
+  .diagram-box { max-width: 100%; min-width: 0; }
+
+  /* Array visual */
+  .array-visual { flex-direction: column; }
+  .av-cells { flex-wrap: wrap; }
+  .av-cell { min-width: 60px; }
+
+  /* 2D grid */
+  .grid-visual { grid-template-columns: auto repeat(3, 60px); }
+  .gv-cell, .gv-colh, .gv-rowh { padding: 8px 4px; font-size: 0.8rem; }
+
+  /* Flow diagrams */
+  .flow-diagram { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+  .flow-modes { flex-direction: column; align-items: center; }
+
+  /* Scope house */
+  .sh-rooms { flex-direction: column; }
+
+  /* Translator compare */
+  .translator-compare { flex-direction: column; align-items: center; }
+  .tc-col { max-width: 100%; }
+
+  /* Random toolbox */
+  .random-toolbox { grid-template-columns: repeat(2, 1fr); }
+
+  /* Validation flow */
+  .vf-checks { flex-direction: column; align-items: center; }
+  .vf-check { max-width: 100%; }
+  .vf-auth-steps { flex-direction: column; }
+  .vf-astep { border-radius: 0; }
+  .vf-astep:first-child { border-radius: 8px 8px 0 0; }
+  .vf-astep:last-child { border-radius: 0 0 8px 8px; }
+
+  /* Badges */
+  #badge-container { padding: 6px 12px 10px; }
+  .badge { font-size: 0.6rem; padding: 3px 8px; }
+
+  /* Explain-it-back */
+  .explain-back { padding: 16px; }
+}

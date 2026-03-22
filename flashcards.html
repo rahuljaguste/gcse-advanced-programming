@@ -47,6 +47,18 @@
     .mastery-dot{width:10px;height:10px;border-radius:50%;background:var(--border);}
     .mastery-dot.filled{background:var(--green);box-shadow:0 0 6px rgba(0,255,136,0.4);}
     .done-msg{text-align:center;padding:60px;color:var(--green);font-size:1.2rem;font-weight:700;}
+    @media(max-width:768px){
+      body{padding:20px 12px;}
+      h1{font-size:1.5rem;}
+      .card-area{max-width:100%;}
+      .flashcard .front,.flashcard .back{padding:24px 16px;}
+      .flashcard .question{font-size:1.1rem;}
+      .flashcard .answer{font-size:0.95rem;}
+      .controls{gap:10px;}
+      .ctrl-btn{padding:12px 24px;font-size:0.9rem;}
+      .nav-bar{gap:6px;}
+      .nav-bar button{padding:6px 12px;font-size:0.72rem;}
+    }
   </style>
 </head>
 <body>

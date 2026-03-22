@@ -759,5 +759,41 @@ li { margin: 6px 0; }
   #sidebar { transform: translateX(-100%); }
   #sidebar.open { transform: translateX(0); }
   #menu-toggle { display: block; }
-  #content { margin-left: 0; padding: 70px 20px 40px; }
+  #content { margin-left: 0; padding: 70px 16px 40px; max-width: 100%; }
+
+  /* Typography */
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.1rem; }
+
+  /* Tables scroll horizontally */
+  table { display: block; overflow-x: auto; white-space: nowrap; }
+
+  /* Cards */
+  .card { padding: 16px; }
+
+  /* Welcome grid */
+  .welcome-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .welcome-card { padding: 16px 10px; }
+  .welcome-card .wc-emoji { font-size: 1.6rem; }
+
+  /* Code blocks */
+  pre, pre[class*="language-"] { font-size: 0.8rem !important; padding: 14px !important; }
+  .code-header { padding: 8px 12px; }
+  .code-header::before { display: none; } /* hide macOS dots on mobile */
+  .code-header span { margin-left: 0; }
+
+  /* Login overlay */
+  .login-box { padding: 32px 24px; }
+
+  /* Quiz */
+  .quiz { padding: 16px; }
+  .quiz-option { padding: 8px 12px; font-size: 0.85rem; }
+
+  /* Nav buttons */
+  .nav-buttons { flex-direction: column; gap: 8px; }
+  .nav-btn { width: 100%; text-align: center; }
+  .nav-btn.hidden { display: none; }
+
+  /* Sidebar logo */
+  #sidebar .logo h1 { font-size: 1rem; }
 }
