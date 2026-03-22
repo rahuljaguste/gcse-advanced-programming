@@ -7,6 +7,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
+  <!-- CodeMirror -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/theme/material-darker.min.css">
   <style>
     :root{--bg:#0f0f1a;--card:#1a1a2e;--border:#27273a;--blue:#00d4ff;--green:#00ff88;--purple:#a855f7;--orange:#ff9f43;--red:#ff4757;--text:#e4e4e7;--dim:#71717a;--code-bg:#0d1117;}
     *{margin:0;padding:0;box-sizing:border-box;}
@@ -47,11 +50,10 @@
     .btn-run:disabled{opacity:0.5;cursor:not-allowed;}
     .btn-stop{background:rgba(255,71,87,0.12);border:1px solid rgba(255,71,87,0.3);color:var(--red);font-weight:700;font-size:0.85rem;padding:6px 22px;display:none;}
     .btn-stop:hover{background:rgba(255,71,87,0.2);}
-    .editor-wrap{display:flex;flex:1;min-height:0;overflow:hidden;}
-    #line-nums{width:44px;background:rgba(0,0,0,0.2);border-right:1px solid #30363d;padding:20px 8px 20px 0;text-align:right;font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.7;color:#484f58;user-select:none;overflow:hidden;flex-shrink:0;}
-    #line-nums span{display:block;}
-    #code{width:100%;flex:1;background:var(--code-bg);border:none;padding:20px 20px;color:#c9d1d9;font-family:'JetBrains Mono',monospace;font-size:0.9rem;line-height:1.7;resize:none;outline:none;tab-size:4;}
-    #code::placeholder{color:#484f58;}
+    .editor-wrap{flex:1;min-height:0;overflow:hidden;}
+    .CodeMirror{height:100%!important;background:var(--code-bg)!important;font-family:'JetBrains Mono',monospace!important;font-size:0.88rem!important;line-height:1.7!important;}
+    .CodeMirror-gutters{background:rgba(0,0,0,0.2)!important;border-right:1px solid #30363d!important;}
+    .CodeMirror-linenumber{color:#484f58!important;font-size:0.78rem!important;}
 
     /* Terminal (right) */
     .terminal-pane{flex:1;display:flex;flex-direction:column;min-width:0;background:#0a0e14;}
@@ -131,8 +133,11 @@
         </div>
       </div>
       <div class="editor-wrap">
-        <div id="line-nums"><span>1</span></div>
-        <textarea id="code" spellcheck="false" placeholder="# Write your Python code here...&#10;# Pick a template above or start from scratch!&#10;&#10;name = input('What is your name? ')&#10;print(f'Hello, {name}!')"></textarea>
+        <textarea id="code"># Write your Python code here
+# Pick a template above or start from scratch!
+
+name = input('What is your name? ')
+print(f'Hello, {name}!')</textarea>
       </div>
     </div>
 
@@ -258,7 +263,7 @@ function showInputPrompt(promptText) {
 }
 
 async function startRun() {
-  const code = document.getElementById('code').value;
+  const code = (typeof editor !== 'undefined') ? editor.getValue() : document.getElementById('code').value;
   if (!code.trim()) return;
 
   // Reset state
@@ -279,7 +284,7 @@ async function startRun() {
 async function executeCode() {
   if (!isRunning) return;
 
-  const code = document.getElementById('code').value;
+  const code = (typeof editor !== 'undefined') ? editor.getValue() : document.getElementById('code').value;
   const startTime = performance.now();
 
   try {
@@ -393,45 +398,57 @@ document.getElementById('terminal').addEventListener('click', () => {
   if (input) input.focus();
 });
 
-// Line numbers
-const codeEl = document.getElementById('code');
-const lineNums = document.getElementById('line-nums');
+// CodeMirror loaded below — init after scripts
+</script>
 
-function updateLineNumbers() {
-  const lines = codeEl.value.split('\n').length;
-  lineNums.innerHTML = Array.from({length: lines}, (_, i) => `<span>${i + 1}</span>`).join('');
-}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/edit/closebrackets.min.js"></script>
 
-codeEl.addEventListener('input', updateLineNumbers);
-codeEl.addEventListener('scroll', function() {
-  lineNums.scrollTop = this.scrollTop;
+<script>
+// CodeMirror editor
+const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+  mode: 'python',
+  theme: 'material-darker',
+  lineNumbers: true,
+  indentUnit: 4,
+  tabSize: 4,
+  indentWithTabs: false,
+  matchBrackets: true,
+  autoCloseBrackets: true,
+  extraKeys: {
+    'Ctrl-Enter': function() { startRun(); },
+    'Cmd-Enter': function() { startRun(); },
+    'Tab': function(cm) {
+      cm.replaceSelection('    ', 'end');
+    }
+  }
 });
 
-// Update on template load
+// Override functions to use CodeMirror
 const origLoadTemplate = loadTemplate;
 loadTemplate = function(name, el) {
   origLoadTemplate(name, el);
-  updateLineNumbers();
+  editor.setValue(TEMPLATES[name] || '');
+  editor.focus();
 };
 
-// Initial
-updateLineNumbers();
+function clearCode() {
+  editor.setValue('');
+  document.querySelectorAll('.tmpl').forEach(b => b.classList.remove('active'));
+}
 
-// Keyboard shortcuts in editor
-codeEl.addEventListener('keydown', function(e) {
-  if (e.key === 'Tab') {
-    e.preventDefault();
-    const start = this.selectionStart;
-    const end = this.selectionEnd;
-    this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
-    this.selectionStart = this.selectionEnd = start + 4;
-    updateLineNumbers();
-  }
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-    e.preventDefault();
-    startRun();
-  }
-});
+// Override startRun to get code from CodeMirror
+const origStartRun = startRun;
+startRun = async function() {
+  // Sync CodeMirror content to textarea
+  editor.save();
+  document.getElementById('code').value = editor.getValue();
+  await origStartRun();
+};
 </script>
+</body>
+</html>
 </body>
 </html>
