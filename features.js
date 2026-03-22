@@ -316,9 +316,6 @@ function injectPlayground() {
     const label = header.textContent.toLowerCase();
     if (label.includes('pseudo')) return;
 
-    const codeText = block.querySelector('code')?.textContent || '';
-    const hasInput = /\binput\s*\(/.test(codeText);
-
     const copyBtn = block.querySelector('.copy-btn');
     if (!copyBtn) return;
     if (block.querySelector('.run-btn')) return;
@@ -326,18 +323,10 @@ function injectPlayground() {
     const runBtn = document.createElement('button');
     runBtn.className = 'run-btn';
     runBtn.textContent = '▶ Run';
-    runBtn.onclick = () => runCode(block, runBtn);
+    runBtn.onclick = () => startInlineRun(block, runBtn);
     copyBtn.parentElement.insertBefore(runBtn, copyBtn);
 
-    // Add stdin area for blocks with input()
-    if (hasInput) {
-      const stdinArea = document.createElement('div');
-      stdinArea.className = 'run-stdin';
-      stdinArea.innerHTML = `<div class="run-stdin-label">Test inputs <span>(one per line — fed to each input() call)</span></div>
-        <textarea class="run-stdin-input" rows="2" placeholder="Type test inputs here, one per line..."></textarea>`;
-      block.appendChild(stdinArea);
-    }
-
+    // Add interactive terminal output area
     const output = document.createElement('div');
     output.className = 'run-output';
     output.style.display = 'none';
@@ -345,16 +334,23 @@ function injectPlayground() {
   });
 }
 
-async function runCode(block, btn) {
-  const code = block.querySelector('code').textContent;
-  const output = block.querySelector('.run-output');
-  const stdinInput = block.querySelector('.run-stdin-input');
-  const stdin = stdinInput ? stdinInput.value : '';
+// Track per-block stdin state for interactive input
+const inlineStdin = new WeakMap();
 
+async function startInlineRun(block, btn) {
+  const output = block.querySelector('.run-output');
+  inlineStdin.set(block, '');
+  output.style.display = 'block';
+  output.innerHTML = '';
   btn.textContent = '⏳ Running...';
   btn.disabled = true;
-  output.style.display = 'block';
-  output.textContent = 'Running...';
+  await executeInlineCode(block, btn);
+}
+
+async function executeInlineCode(block, btn) {
+  const code = block.querySelector('code').textContent;
+  const output = block.querySelector('.run-output');
+  const stdin = inlineStdin.get(block) || '';
 
   try {
     const res = await fetch('/api/run', {
@@ -364,11 +360,34 @@ async function runCode(block, btn) {
     });
     const data = await res.json();
 
-    // If server says we need input, highlight the stdin area
-    if (data.needs_input && stdinInput) {
-      stdinInput.focus();
-      stdinInput.style.borderColor = '#ff9f43';
-      setTimeout(() => { stdinInput.style.borderColor = ''; }, 2000);
+    output.innerHTML = '';
+
+    if (data.needs_input) {
+      // Show output so far + inline input prompt
+      const lines = (data.stdout || '').split('\n');
+      const promptText = lines.pop();
+      const completeOutput = lines.join('\n');
+      if (completeOutput) {
+        output.innerHTML += `<span class="t-output">${escapeHtml(completeOutput)}\n</span>`;
+      }
+      // Inline input field
+      const line = document.createElement('div');
+      line.className = 'inline-input-line';
+      line.innerHTML = `<span class="t-prompt">${escapeHtml(promptText)}</span><input class="inline-term-input" type="text" autofocus>`;
+      output.appendChild(line);
+      const input = line.querySelector('input');
+      input.focus();
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const value = input.value;
+          line.innerHTML = `<span class="t-prompt">${escapeHtml(promptText)}</span><span class="t-user-input">${escapeHtml(value)}</span>`;
+          inlineStdin.set(block, (inlineStdin.get(block) || '') + value + '\n');
+          executeInlineCode(block, btn);
+        }
+      });
+      output.scrollTop = output.scrollHeight;
+      return;
     }
 
     if (data.stderr && data.returncode !== 0) {

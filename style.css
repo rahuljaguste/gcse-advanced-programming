@@ -400,6 +400,30 @@ code, code[class*="language-"] {
   text-shadow: none !important;
 }
 
+/* Line numbers on code blocks */
+.code-block pre {
+  counter-reset: line;
+  padding-left: 52px !important;
+  position: relative;
+}
+
+.code-block pre code {
+  display: block;
+}
+
+.line-number {
+  position: absolute;
+  left: 0;
+  width: 36px;
+  text-align: right;
+  color: #484f58;
+  font-size: 0.75rem;
+  user-select: none;
+  pointer-events: none;
+  padding-right: 12px;
+  border-right: 1px solid #30363d;
+}
+
 /* Inline code */
 p code, li code, td code {
   background: rgba(0,212,255,0.1) !important;

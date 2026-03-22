@@ -363,4 +363,22 @@ function setupSyntaxHighlighting() {
   if (typeof Prism !== 'undefined') {
     Prism.highlightAll();
   }
+
+  // Add line numbers
+  document.querySelectorAll('.code-block pre').forEach(pre => {
+    const codeEl = pre.querySelector('code');
+    if (!codeEl) return;
+    const lines = codeEl.textContent.split('\n');
+    // Remove trailing empty line
+    if (lines[lines.length - 1].trim() === '') lines.pop();
+
+    const lineNums = document.createElement('div');
+    lineNums.className = 'line-numbers-col';
+    lineNums.innerHTML = lines.map((_, i) =>
+      `<span class="line-number">${i + 1}</span>`
+    ).join('\n');
+    lineNums.style.cssText = 'position:absolute;left:0;top:20px;';
+    pre.style.position = 'relative';
+    pre.appendChild(lineNums);
+  });
 }

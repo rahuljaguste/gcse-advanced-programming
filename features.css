@@ -410,39 +410,32 @@
 }
 .run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.run-stdin {
-  background: #12161d;
-  padding: 8px 16px 10px;
-  border-top: 1px solid #30363d;
+/* Inline interactive terminal input */
+.inline-input-line {
+  display: flex;
+  align-items: center;
 }
-.run-stdin-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--accent-orange);
-  margin-bottom: 4px;
+.inline-input-line .t-prompt {
+  color: var(--text-primary);
+  white-space: pre;
 }
-.run-stdin-label span {
-  font-weight: 400;
-  color: var(--text-dim);
-}
-.run-stdin-input {
-  width: 100%;
-  background: var(--bg-code);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 8px 12px;
+.inline-term-input {
+  background: none;
+  border: none;
   color: var(--accent-orange);
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.82rem;
-  line-height: 1.4;
-  resize: none;
   outline: none;
-  transition: border-color 0.2s;
+  flex: 1;
+  caret-color: var(--accent-orange);
 }
-.run-stdin-input:focus { border-color: var(--accent-orange); }
-.run-stdin-input::placeholder { color: #484f58; }
+.t-output { color: var(--accent-green); }
+.t-user-input { color: var(--accent-orange); }
+
+.run-output .inline-input-line + .inline-input-line { margin-top: 0; }
 
 .run-output {
+  cursor: default;
   background: #0a0e14;
   padding: 14px 16px;
   font-family: 'JetBrains Mono', monospace;
