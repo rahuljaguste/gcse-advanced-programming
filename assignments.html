@@ -238,10 +238,12 @@ function renderTabs() {
 function showAssignment(id) {
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.id === id));
   document.querySelectorAll('.assignment-view').forEach(v => v.classList.toggle('active', v.id === 'a-' + id));
-  // Refresh CodeMirror after tab switch (needs visible container to render)
-  if (cmEditors[id]) {
-    setTimeout(() => cmEditors[id].refresh(), 10);
-  }
+
+  // Lazy-init CodeMirror on first show (container must be visible)
+  setTimeout(() => {
+    if (!cmEditors[id]) initSingleEditor(id);
+    else cmEditors[id].refresh();
+  }, 20);
 }
 
 function renderAssignments() {
@@ -326,35 +328,41 @@ function escapeForTextarea(s) {
 // CodeMirror editors stored per assignment
 const cmEditors = {};
 
-function initCodeMirrorEditors() {
+function initSingleEditor(id) {
   if (typeof CodeMirror === 'undefined') return;
+  const wrap = document.getElementById('editor-wrap-' + id);
+  if (!wrap || cmEditors[id]) return;
 
-  ASSIGNMENTS.forEach(a => {
-    const wrap = document.getElementById('editor-wrap-' + a.id);
-    if (!wrap || cmEditors[a.id]) return;
+  const code = savedCode[id] || STARTER_CODE[id] || '# Start coding here\n';
 
-    const code = savedCode[a.id] || STARTER_CODE[a.id] || '# Start coding here\n';
-    const id = a.id;
-
-    cmEditors[id] = CodeMirror(wrap, {
-      value: code,
-      mode: 'python',
-      theme: 'material-darker',
-      lineNumbers: true,
-      indentUnit: 4,
-      tabSize: 4,
-      indentWithTabs: false,
-      matchBrackets: true,
-      autoCloseBrackets: true,
-      extraKeys: {
-        'Tab': function(cm) { cm.replaceSelection('    ', 'end'); },
-        'Ctrl-Enter': function() { runAssignment(id); },
-        'Cmd-Enter': function() { runAssignment(id); },
-        'Ctrl-S': function() { saveAssignment(id); },
-        'Cmd-S': function() { saveAssignment(id); },
-      }
-    });
+  cmEditors[id] = CodeMirror(wrap, {
+    value: code,
+    mode: 'python',
+    theme: 'material-darker',
+    lineNumbers: true,
+    indentUnit: 4,
+    tabSize: 4,
+    indentWithTabs: false,
+    matchBrackets: true,
+    autoCloseBrackets: true,
+    extraKeys: {
+      'Tab': function(cm) { cm.replaceSelection('    ', 'end'); },
+      'Ctrl-Enter': function() { runAssignment(id); },
+      'Cmd-Enter': function() { runAssignment(id); },
+      'Ctrl-S': function() { saveAssignment(id); },
+      'Cmd-S': function() { saveAssignment(id); },
+    }
   });
+}
+
+function initCodeMirrorEditors() {
+  // Init only the first visible assignment; rest lazy-init on tab switch
+  if (ASSIGNMENTS.length > 0) {
+    const firstId = ASSIGNMENTS[0].id;
+    const hash = window.location.hash.replace('#', '');
+    const startId = ASSIGNMENTS.find(a => a.id === hash) ? hash : firstId;
+    setTimeout(() => initSingleEditor(startId), 50);
+  }
 }
 
 function getCmCode(id) {
