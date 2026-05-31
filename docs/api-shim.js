@@ -85,6 +85,52 @@
     BADGE_DEFINITIONS: BADGE_DEFINITIONS,
   };
 
+  // ---- pure logic (ported from server.py) ----
+  function sanitizeName(name) {
+    name = (name || '').trim().toLowerCase();
+    if (!name || !NAME_PATTERN.test(name)) return null;
+    return name;
+  }
+
+  function parseScore(s) {
+    if (typeof s !== 'string') return null;
+    var parts = s.split('/');
+    if (parts.length !== 2) return null;
+    var a = parseInt(parts[0], 10), b = parseInt(parts[1], 10);
+    if (isNaN(a) || isNaN(b)) return null;
+    return [a, b];
+  }
+
+  // Mirrors server.py check_badges. chapters/quizzes are plain objects.
+  function checkBadges(chapters, quizzes) {
+    var earned = [];
+    BADGE_DEFINITIONS.forEach(function (badge) {
+      var cond = badge.condition, met = false, p;
+      if (cond.type === 'chapters_min') {
+        var done = CHAPTERS.filter(function (ch) { return ch in chapters; }).length;
+        met = done >= cond.count;
+      } else if (cond.type === 'chapters_all') {
+        met = cond.chapters.every(function (ch) { return ch in chapters; });
+      } else if (cond.type === 'quizzes_good') {
+        var good = 0;
+        for (var ch in quizzes) {
+          p = parseScore(quizzes[ch]);
+          if (p && p[1] > 0 && (p[0] / p[1]) >= 0.8) good++;
+        }
+        met = good >= cond.count;
+      } else if (cond.type === 'quiz_perfect') {
+        var perfect = 0;
+        for (var ch2 in quizzes) {
+          p = parseScore(quizzes[ch2]);
+          if (p && p[0] === p[1] && p[1] > 0) perfect++;
+        }
+        met = perfect >= cond.count;
+      }
+      if (met) earned.push(badge.id);
+    });
+    return earned;
+  }
+
   // ---- shared fetch wrapper (idempotent; both shims reuse it) ----
   function installFetchWrapper() {
     const w = (typeof window !== 'undefined') ? window : global;
@@ -105,11 +151,13 @@
 
   // expose for browser
   if (typeof window !== 'undefined') {
-    window.__apiShim = { keyFor, readJSON, writeJSON, jsonResponse, CONST, installFetchWrapper };
+    window.__apiShim = { keyFor, readJSON, writeJSON, jsonResponse, CONST,
+      sanitizeName, parseScore, checkBadges, installFetchWrapper };
   }
 
   // expose for Node tests
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { keyFor, readJSON, writeJSON, jsonResponse, CONST, installFetchWrapper };
+    module.exports = { keyFor, readJSON, writeJSON, jsonResponse, CONST,
+      sanitizeName, parseScore, checkBadges, installFetchWrapper };
   }
 })();

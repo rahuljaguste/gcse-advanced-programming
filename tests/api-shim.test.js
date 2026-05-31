@@ -91,3 +91,38 @@ test('NAME_PATTERN accepts/rejects like server.py', () => {
   assert.ok(!shim.CONST.NAME_PATTERN.test('bad@name'));
   assert.ok(!shim.CONST.NAME_PATTERN.test('')); // empty rejected
 });
+
+test('sanitizeName lowercases and trims, rejects invalid', () => {
+  assert.strictEqual(shim.sanitizeName('  Alex  '), 'alex');
+  assert.strictEqual(shim.sanitizeName('Bad@Name'), null);
+  assert.strictEqual(shim.sanitizeName(''), null);
+});
+
+test('parseScore parses "3/4"', () => {
+  assert.deepStrictEqual(shim.parseScore('3/4'), [3, 4]);
+  assert.strictEqual(shim.parseScore('garbage'), null);
+});
+
+test('checkBadges awards first_steps + array_master', () => {
+  const chapters = { ch1: 't', ch2: 't', ch3: 't' };
+  const quizzes = {};
+  const earned = shim.checkBadges(chapters, quizzes);
+  assert.ok(earned.includes('first_steps'));
+  assert.ok(earned.includes('array_master'));
+  assert.ok(!earned.includes('halfway'));
+});
+
+test('checkBadges awards quiz badges from scores', () => {
+  const chapters = {};
+  const quizzes = { ch1: '4/4', ch2: '4/4', ch8: '4/4' };
+  const earned = shim.checkBadges(chapters, quizzes);
+  assert.ok(earned.includes('perfect_score'));   // 100% on a quiz
+  assert.ok(earned.includes('quiz_whiz'));        // 3 quizzes >= 80%
+});
+
+test('checkBadges awards python_pro at 10+ chapters', () => {
+  const chapters = {};
+  for (let i = 1; i <= 10; i++) chapters['ch' + i] = 't';
+  const earned = shim.checkBadges(chapters, {});
+  assert.ok(earned.includes('python_pro'));
+});
