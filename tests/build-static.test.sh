@@ -19,7 +19,9 @@ done
 
 # Shim injection per page
 grep -q 'api-shim.js' docs/index.html || fail "index.html missing api-shim"
-grep -q 'pyodide-runner.js' docs/index.html && fail "index.html should NOT have pyodide" || true
+# index.html has features.js inline "Live Demo" Run buttons -> needs the runner
+grep -q 'pyodide-runner.js' docs/index.html || fail "index.html missing pyodide-runner"
+grep -q 'cdn.jsdelivr.net/pyodide' docs/index.html || fail "index.html missing pyodide CDN"
 grep -q 'pyodide-runner.js' docs/playground.html || fail "playground missing pyodide-runner"
 grep -q 'cdn.jsdelivr.net/pyodide' docs/playground.html || fail "playground missing pyodide CDN"
 grep -q 'api-shim.js' docs/playground.html && fail "playground should NOT have api-shim" || true

@@ -64,7 +64,7 @@ page's current `fetch`/feature usage):
 
 | Page | `api-shim.js` | `pyodide-runner.js` + Pyodide CDN | Why |
 |---|:---:|:---:|---|
-| `index.html` | ✓ | — | progress/quiz/badges/explanations; no Run button |
+| `index.html` | ✓ | ✓ | progress/quiz/badges/explanations **and** `features.js`'s inline "Live Demo" Run buttons (POST `/api/run`) |
 | `flashcards.html` | ✓ | — | flashcard mastery only |
 | `playground.html` | — | ✓ | Run only; no `/api/*` storage calls |
 | `assignments.html` | ✓ | ✓ | assignments save/load **and** Run |

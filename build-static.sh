@@ -70,7 +70,11 @@ inject_before_head() {
 
 PYODIDE_CDN='  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>'
 
-# index.html: api-shim only
+# index.html: api-shim (storage) + pyodide-runner (+ CDN). features.js adds
+# inline "Live Demo" Run buttons that POST /api/run, so the runner is required
+# here too, not just on the playground/assignments pages.
+inject_before_head "$DOCS/index.html" "$PYODIDE_CDN"
+inject_before_head "$DOCS/index.html" '  <script src="pyodide-runner.js"></script>'
 inject_before_head "$DOCS/index.html" '  <script src="api-shim.js"></script>'
 
 # flashcards.html: api-shim only

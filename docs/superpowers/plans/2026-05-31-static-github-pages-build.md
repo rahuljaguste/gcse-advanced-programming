@@ -1361,7 +1361,7 @@ Per-page injection (from the spec):
 
 | Page | api-shim.js | pyodide-runner.js + CDN |
 |---|:---:|:---:|
-| index.html | ✓ | — |
+| index.html | ✓ | ✓ (features.js inline Run buttons) |
 | flashcards.html | ✓ | — |
 | playground.html | — | ✓ |
 | assignments.html | ✓ | ✓ |
@@ -1499,7 +1499,10 @@ inject_before_head() {
 
 PYODIDE_CDN='  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>'
 
-# index.html: api-shim only
+# index.html: api-shim + pyodide-runner (+ CDN). features.js adds inline
+# "Live Demo" Run buttons that POST /api/run, so the runner is needed here too.
+inject_before_head "$DOCS/index.html" "$PYODIDE_CDN"
+inject_before_head "$DOCS/index.html" '  <script src="pyodide-runner.js"></script>'
 inject_before_head "$DOCS/index.html" '  <script src="api-shim.js"></script>'
 
 # flashcards.html: api-shim only
