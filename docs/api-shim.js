@@ -327,6 +327,15 @@
     return jsonResponse({ error: 'Not found' }, 404);
   }
 
+  function installShim() {
+    var w = installFetchWrapper();
+    // avoid double-registering our route on repeat calls
+    if (!w.__apiShimRegistered) {
+      w.__apiShimRegistered = true;
+      w.__apiRoutes.push(function (url, opts) { return handleRoute(url, opts); });
+    }
+  }
+
   // ---- shared fetch wrapper (idempotent; both shims reuse it) ----
   function installFetchWrapper() {
     const w = (typeof window !== 'undefined') ? window : global;
@@ -348,12 +357,17 @@
   // expose for browser
   if (typeof window !== 'undefined') {
     window.__apiShim = { keyFor, readJSON, writeJSON, jsonResponse, CONST,
-      sanitizeName, parseScore, checkBadges, handleRoute, installFetchWrapper };
+      sanitizeName, parseScore, checkBadges, handleRoute, installShim, installFetchWrapper };
+  }
+
+  // Auto-install when loaded as a browser <script>
+  if (typeof window !== 'undefined' && typeof window.fetch === 'function') {
+    installShim();
   }
 
   // expose for Node tests
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = { keyFor, readJSON, writeJSON, jsonResponse, CONST,
-      sanitizeName, parseScore, checkBadges, handleRoute, installFetchWrapper };
+      sanitizeName, parseScore, checkBadges, handleRoute, installShim, installFetchWrapper };
   }
 })();

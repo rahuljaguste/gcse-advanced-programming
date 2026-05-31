@@ -264,3 +264,16 @@ test('assignments POST rejects invalid assignment id', async () => {
   const r = await call('POST', '/api/assignments/sam', { assignment: 'ch99', code: 'x' });
   assert.strictEqual(r.status, 400);
 });
+
+test('installed fetch wrapper services /api and passes others through', async () => {
+  // window.fetch was stubbed to return {__passthrough:true}
+  shim.installShim(); // idempotent install
+  localStorage.clear();
+
+  const apiRes = await global.window.fetch('/api/progress/sam', { method: 'GET' });
+  const body = await apiRes.json();
+  assert.ok('chapters' in body);
+
+  const through = await global.window.fetch('style.css', { method: 'GET' });
+  assert.strictEqual(through.__passthrough, true);
+});
