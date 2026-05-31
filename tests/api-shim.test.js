@@ -17,7 +17,7 @@ function installStorage() {
 function installWindow() {
   global.window = global.window || {};
   global.window.fetch = async () => ({ __passthrough: true });
-  if (!global.fetch) global.fetch = global.window.fetch;
+  global.fetch = global.window.fetch;
 }
 
 installStorage();
@@ -40,4 +40,21 @@ test('readJSON returns default on corrupt JSON', () => {
 
 test('keyFor builds namespaced key', () => {
   assert.strictEqual(shim.keyFor('alex', 'chapters'), 'gcse:alex:chapters');
+});
+
+test('installFetchWrapper installs once and dispatches routes', async () => {
+  const w = global.window;
+  shim.installFetchWrapper();
+  assert.strictEqual(w.__fetchPatched, true);
+  const f1 = w.fetch;
+  shim.installFetchWrapper();            // idempotent — must not re-wrap
+  assert.strictEqual(w.fetch, f1);
+  // a route returning a truthy value is used for a matching URL
+  w.__apiRoutes.push((url) => url === '/hit'
+    ? { json: async () => ({ ok: true }) } : null);
+  const hit = await w.fetch('/hit');
+  assert.deepStrictEqual(await hit.json(), { ok: true });
+  // a route returning null falls through to the real (stubbed) fetch
+  const miss = await w.fetch('/miss');
+  assert.strictEqual(miss.__passthrough, true);
 });

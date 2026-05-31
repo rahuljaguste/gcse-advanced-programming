@@ -11,6 +11,8 @@
   function readJSON(key, dflt) {
     try {
       const raw = localStorage.getItem(key);
+      // getItem returns string|null per spec; the undefined check is a
+      // defensive guard for non-conforming polyfills.
       if (raw === null || raw === undefined) return dflt;
       return JSON.parse(raw);
     } catch (e) {
@@ -32,7 +34,7 @@
   function installFetchWrapper() {
     const w = (typeof window !== 'undefined') ? window : global;
     w.__apiRoutes = w.__apiRoutes || [];
-    if (!w.__fetchPatched) {
+    if (!w.__fetchPatched && typeof w.fetch === 'function') {
       w.__fetchPatched = true;
       const realFetch = w.fetch.bind(w);
       w.fetch = function (url, opts) {
@@ -48,7 +50,7 @@
 
   // expose for browser
   if (typeof window !== 'undefined') {
-    window.__apiShim = { keyFor, readJSON, writeJSON };
+    window.__apiShim = { keyFor, readJSON, writeJSON, installFetchWrapper };
   }
 
   // expose for Node tests
