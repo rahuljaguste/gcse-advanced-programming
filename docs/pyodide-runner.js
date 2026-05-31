@@ -68,7 +68,113 @@
     ].join('\n');
   }
 
+  // ---- browser-only: load Pyodide lazily and run code ----
+  var _pyodide = null, _loading = null;
+
+  function loadPyodideOnce() {
+    if (_pyodide) return Promise.resolve(_pyodide);
+    if (_loading) return _loading;
+    _loading = new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      s.src = PYODIDE_BASE + 'pyodide.js';
+      s.onload = function () {
+        // global loadPyodide comes from the CDN script
+        loadPyodide({ indexURL: PYODIDE_BASE }).then(function (py) {
+          _pyodide = py;
+          resolve(py);
+        }).catch(reject);
+      };
+      s.onerror = function () { reject(new Error('Failed to load Pyodide script')); };
+      document.head.appendChild(s);
+    });
+    return _loading;
+  }
+
+  function runViaPyodide(code, stdinData) {
+    return loadPyodideOnce().then(function (py) {
+      var driver = buildDriver(code, stdinData);
+      // Watchdog: interrupt buffer (SharedArrayBuffer if available)
+      var interruptBuffer = null;
+      try {
+        if (typeof SharedArrayBuffer !== 'undefined' && py.setInterruptBuffer) {
+          interruptBuffer = new Uint8Array(new SharedArrayBuffer(1));
+          py.setInterruptBuffer(interruptBuffer);
+        }
+      } catch (e) { interruptBuffer = null; }
+
+      var timer = null;
+      if (interruptBuffer) {
+        timer = setTimeout(function () { interruptBuffer[0] = 2; /* SIGINT */ }, TIME_LIMIT_MS);
+      }
+
+      try {
+        py.runPython(driver);
+        var result = py.globals.get('_RESULT');
+        var stdout = result.get(0);
+        var rc = result.get(1);
+        result.destroy();
+        return shapeResult(stdout, '', rc);
+      } catch (err) {
+        var msg = String(err && err.message ? err.message : err);
+        if (msg.indexOf('KeyboardInterrupt') !== -1) {
+          return { stdout: '', stderr: 'Error: Code took too long (5s limit)', returncode: 1 };
+        }
+        return shapeResult('', msg, 1);
+      } finally {
+        if (timer) clearTimeout(timer);
+        if (interruptBuffer) interruptBuffer[0] = 0;
+      }
+    });
+  }
+
+  // /api/run route registered on the shared fetch wrapper
+  function runRoute(url, opts) {
+    var path = String(url).split('?')[0];
+    if (path.indexOf('/api/run') !== 0) return null;
+    if (!opts || (opts.method || 'GET').toUpperCase() !== 'POST') return null;
+    var body = {};
+    try { body = JSON.parse(opts.body || '{}'); } catch (e) { body = {}; }
+    var code = body.code || '';
+    var stdin = body.stdin || '';
+
+    var p = runViaPyodide(code, stdin)
+      .catch(function () {
+        return { stdout: '', stderr: 'Python engine failed to load — check your connection.', returncode: 1 };
+      })
+      .then(function (obj) {
+        return new Response(JSON.stringify(obj), {
+          status: 200, headers: { 'Content-Type': 'application/json' },
+        });
+      });
+    return p; // a Promise<Response> — await fetch(...) resolves it
+  }
+
+  function installRunner() {
+    var w = (typeof window !== 'undefined') ? window : global;
+    // reuse the shared wrapper from api-shim if present; else install here
+    w.__apiRoutes = w.__apiRoutes || [];
+    if (!w.__fetchPatched && typeof w.fetch === 'function') {
+      w.__fetchPatched = true;
+      var realFetch = w.fetch.bind(w);
+      w.fetch = function (u, o) {
+        for (var i = 0; i < w.__apiRoutes.length; i++) {
+          var r = w.__apiRoutes[i](u, o);
+          if (r) return r;
+        }
+        return realFetch(u, o);
+      };
+    }
+    if (!w.__runnerRegistered) {
+      w.__runnerRegistered = true;
+      w.__apiRoutes.push(runRoute);
+    }
+  }
+
+  if (typeof window !== 'undefined' && typeof window.fetch === 'function') {
+    installRunner();
+  }
+
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { shapeResult, buildDriver, PYODIDE_BASE, TIME_LIMIT_MS };
+    module.exports = { shapeResult, buildDriver, PYODIDE_BASE, TIME_LIMIT_MS, runRoute };
   }
 })();
