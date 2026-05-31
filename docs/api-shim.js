@@ -188,6 +188,47 @@
       }
     }
 
+    // /api/quiz/<student>
+    if (seg[1] === 'quiz' && method === 'POST') {
+      var qStudent = sanitizeName(seg[2]);
+      if (!qStudent) return jsonResponse({ error: 'Invalid student name' }, 400);
+      var qChapter = body.chapter || '';
+      if (!CONST.VALID_CHAPTERS.has(qChapter)) {
+        return jsonResponse({ error: 'Invalid chapter. Must be one of: ' + CHAPTERS.join(',') }, 400);
+      }
+      var score = parseInt(body.score, 10), total = parseInt(body.total, 10);
+      if (isNaN(score) || isNaN(total)) {
+        return jsonResponse({ error: 'Score and total must be integers' }, 400);
+      }
+      var expected = QUIZ_TOTALS[qChapter];
+      if (expected !== undefined && total !== expected) {
+        return jsonResponse({ error: 'Invalid total for ' + qChapter + '. Expected ' + expected }, 400);
+      }
+      if (score < 0 || score > total || total <= 0) {
+        return jsonResponse({ error: 'Invalid score/total range' }, 400);
+      }
+      // record attempt history
+      var histKey = keyFor(qStudent, 'quiz_history');
+      var hist = readJSON(histKey, {});
+      if (!hist[qChapter]) hist[qChapter] = [];
+      hist[qChapter].push({ score: score, total: total, ts: nowStamp() });
+      writeJSON(histKey, hist);
+      // best-score logic
+      var qKey = keyFor(qStudent, 'quizzes');
+      var quizzesMap = readJSON(qKey, {});
+      var existing = quizzesMap[qChapter];
+      if (existing) {
+        var pe = parseScore(existing);
+        if (pe && pe[0] >= score) {
+          return jsonResponse({ status: 'ok', chapter: qChapter, score: existing,
+            note: 'Previous best score kept', attempt_saved: true });
+        }
+      }
+      quizzesMap[qChapter] = score + '/' + total;
+      writeJSON(qKey, quizzesMap);
+      return jsonResponse({ status: 'ok', chapter: qChapter, score: score + '/' + total, attempt_saved: true });
+    }
+
     return jsonResponse({ error: 'Not found' }, 404);
   }
 

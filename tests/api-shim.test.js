@@ -172,3 +172,35 @@ test('progress POST rejects invalid chapter', async () => {
 test('handleRoute returns null for non-api url', () => {
   assert.strictEqual(shim.handleRoute('style.css', { method: 'GET' }), null);
 });
+
+test('quiz saves score and records attempt', async () => {
+  localStorage.clear();
+  const r = await call('POST', '/api/quiz/sam', { chapter: 'ch1', score: 3, total: 4 });
+  assert.strictEqual(r.status, 200);
+  assert.strictEqual(r.body.score, '3/4');
+  assert.strictEqual(r.body.attempt_saved, true);
+  const g = await call('GET', '/api/progress/sam');
+  assert.strictEqual(g.body.quizzes.ch1, '3/4');
+});
+
+test('quiz keeps previous best when new score is lower', async () => {
+  await call('POST', '/api/quiz/sam', { chapter: 'ch1', score: 2, total: 4 });
+  const g = await call('GET', '/api/progress/sam');
+  assert.strictEqual(g.body.quizzes.ch1, '3/4'); // unchanged
+});
+
+test('quiz updates when new score is higher', async () => {
+  await call('POST', '/api/quiz/sam', { chapter: 'ch1', score: 4, total: 4 });
+  const g = await call('GET', '/api/progress/sam');
+  assert.strictEqual(g.body.quizzes.ch1, '4/4');
+});
+
+test('quiz rejects wrong total for chapter', async () => {
+  const r = await call('POST', '/api/quiz/sam', { chapter: 'ch1', score: 1, total: 5 });
+  assert.strictEqual(r.status, 400);
+});
+
+test('quiz rejects out-of-range score', async () => {
+  const r = await call('POST', '/api/quiz/sam', { chapter: 'ch3', score: 9, total: 3 });
+  assert.strictEqual(r.status, 400);
+});
