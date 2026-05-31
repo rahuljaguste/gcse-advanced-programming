@@ -113,9 +113,22 @@ set is dropped (no cross-student view needed).
 
 ## Server-only bits the build rewrites
 
-1. **Dashboard link** — `index.html`'s sidebar links to the teacher dashboard.
-   The build strips that link; `dashboard.html` is not copied.
-2. **Pyodide preload tag** — the build injects the Pyodide CDN `<script>` into
+1. **Dashboard** — `dashboard.html` is simply not copied. (Verified: no page we
+   copy contains any link or reference to the dashboard, so there is no link to
+   strip — the original `index.html` sidebar links only to assignments,
+   flashcards, cheatsheet, and playground.)
+2. **Internal route links → relative file paths.** The pages link with clean
+   server routes (`href="/"`, `/assignments`, `/playground`, `/flashcards`,
+   `/cheatsheet`), and `app.js` generates `'/assignments#' + chapter.id` at
+   runtime. On GitHub Pages served from a project subpath
+   (`username.github.io/<repo>/`), absolute `/...` paths resolve to the **domain
+   root**, not the repo — so every nav link would break. The build rewrites
+   these to relative file paths that work at any subpath:
+   `/` → `index.html`, `/assignments` → `assignments.html`,
+   `/playground` → `playground.html`, `/flashcards` → `flashcards.html`,
+   `/cheatsheet` → `cheatsheet.html`. The `app.js` runtime link becomes
+   `'assignments.html#' + chapter.id`.
+3. **Pyodide preload tag** — the build injects the Pyodide CDN `<script>` into
    `playground.html` and `assignments.html` (the two pages with Run). Loaded but
    only initialized on first Run, so pages stay fast.
 3. **`/api/run` semantics** — the Flask runner enforced an import allowlist and
