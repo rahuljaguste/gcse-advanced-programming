@@ -70,3 +70,24 @@ test('jsonResponse defaults to status 200', async () => {
   const r = shim.jsonResponse({ a: 1 });
   assert.strictEqual(r.status, 200);
 });
+
+test('constants match server.py', () => {
+  const C = shim.CONST;
+  assert.strictEqual(C.CHAPTERS.length, 14);
+  assert.strictEqual(C.CHAPTERS[0], 'ch1');
+  assert.strictEqual(C.QUIZ_TOTALS.ch1, 4);
+  assert.strictEqual(C.QUIZ_TOTALS.ch3, 3);
+  assert.ok(!('ch10' in C.QUIZ_TOTALS)); // ch10 has no quiz
+  assert.strictEqual(C.BADGE_DEFINITIONS.length, 8);
+  assert.ok(C.VALID_CARD_IDS.has('ch1_1'));
+  assert.ok(C.VALID_CARD_IDS.has('ch9_9'));
+  assert.ok(!C.VALID_CARD_IDS.has('ch10_1'));
+  assert.ok(C.VALID_ASSIGNMENTS.has('proj5'));
+  assert.ok(C.VALID_ASSIGNMENTS.has('ch13'));
+});
+
+test('NAME_PATTERN accepts/rejects like server.py', () => {
+  assert.ok(shim.CONST.NAME_PATTERN.test('alex-1'));
+  assert.ok(!shim.CONST.NAME_PATTERN.test('bad@name'));
+  assert.ok(!shim.CONST.NAME_PATTERN.test('')); // empty rejected
+});

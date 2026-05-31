@@ -46,6 +46,45 @@
     };
   }
 
+  // ---- validation constants (ported from server.py) ----
+  var CHAPTERS = ['ch1','ch2','ch3','ch4','ch5','ch6','ch7','ch8','ch9','ch10',
+                  'ch11','ch12','ch13','ch14'];
+
+  var QUIZ_TOTALS = { ch1:4, ch2:4, ch3:3, ch4:3, ch5:3, ch6:3,
+                      ch7:3, ch8:4, ch9:4,
+                      ch11:4, ch12:3, ch13:4, ch14:4 };
+
+  var VALID_CARD_IDS = new Set();
+  for (var cn = 1; cn < 10; cn++) {
+    for (var k = 1; k < 10; k++) { VALID_CARD_IDS.add('ch' + cn + '_' + k); }
+  }
+
+  var VALID_ASSIGNMENTS = new Set(['ch1','ch2','ch3','ch4','ch5','ch6','ch7',
+    'ch8','ch10','proj1','proj2','proj3','proj5','ch13','ch14']);
+
+  var NAME_PATTERN = /^[a-zA-Z0-9 \-]{1,30}$/;
+
+  var BADGE_DEFINITIONS = [
+    {id:'first_steps',     name:'First Steps',     icon:'🐣', desc:'Complete your first chapter',       condition:{type:'chapters_min', count:1}},
+    {id:'halfway',         name:'Halfway There',   icon:'⚡', desc:'Complete 5 chapters',               condition:{type:'chapters_min', count:5}},
+    {id:'array_master',    name:'Array Master',    icon:'📦', desc:'Complete Ch 2 and Ch 3',            condition:{type:'chapters_all', chapters:['ch2','ch3']}},
+    {id:'file_wizard',     name:'File Wizard',     icon:'📁', desc:'Complete Ch 5 (External Files)',    condition:{type:'chapters_all', chapters:['ch5']}},
+    {id:'security_expert', name:'Security Expert', icon:'🔐', desc:'Complete Ch 8 (Validation & Auth)', condition:{type:'chapters_all', chapters:['ch8']}},
+    {id:'quiz_whiz',       name:'Quiz Whiz',       icon:'🧠', desc:'Score 80%+ on any 3 quizzes',       condition:{type:'quizzes_good', count:3}},
+    {id:'perfect_score',   name:'Perfectionist',   icon:'💯', desc:'Get 100% on any quiz',              condition:{type:'quiz_perfect', count:1}},
+    {id:'python_pro',      name:'Python Pro',      icon:'🐍', desc:'Complete ALL chapters',             condition:{type:'chapters_min', count:10}},
+  ];
+
+  var CONST = {
+    CHAPTERS: CHAPTERS,
+    VALID_CHAPTERS: new Set(CHAPTERS),
+    QUIZ_TOTALS: QUIZ_TOTALS,
+    VALID_CARD_IDS: VALID_CARD_IDS,
+    VALID_ASSIGNMENTS: VALID_ASSIGNMENTS,
+    NAME_PATTERN: NAME_PATTERN,
+    BADGE_DEFINITIONS: BADGE_DEFINITIONS,
+  };
+
   // ---- shared fetch wrapper (idempotent; both shims reuse it) ----
   function installFetchWrapper() {
     const w = (typeof window !== 'undefined') ? window : global;
@@ -66,11 +105,11 @@
 
   // expose for browser
   if (typeof window !== 'undefined') {
-    window.__apiShim = { keyFor, readJSON, writeJSON, jsonResponse, installFetchWrapper };
+    window.__apiShim = { keyFor, readJSON, writeJSON, jsonResponse, CONST, installFetchWrapper };
   }
 
   // expose for Node tests
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { keyFor, readJSON, writeJSON, jsonResponse, installFetchWrapper };
+    module.exports = { keyFor, readJSON, writeJSON, jsonResponse, CONST, installFetchWrapper };
   }
 })();
