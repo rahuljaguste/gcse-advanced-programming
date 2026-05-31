@@ -229,6 +229,101 @@
       return jsonResponse({ status: 'ok', chapter: qChapter, score: score + '/' + total, attempt_saved: true });
     }
 
+    // /api/badges/<student> (GET)
+    if (seg[1] === 'badges' && method === 'GET') {
+      var bStudent = sanitizeName(seg[2]);
+      if (!bStudent) return jsonResponse({ error: 'Invalid student name' }, 400);
+      var bChapters = readJSON(keyFor(bStudent, 'chapters'), {});
+      var bQuizzes = readJSON(keyFor(bStudent, 'quizzes'), {});
+      var earnedNow = checkBadges(bChapters, bQuizzes);
+      var prevKey = keyFor(bStudent, 'badges');
+      var prev = readJSON(prevKey, []);
+      var prevSet = new Set(prev);
+      var newOnes = earnedNow.filter(function (b) { return !prevSet.has(b); });
+      if (newOnes.length) { writeJSON(prevKey, prev.concat(newOnes)); }
+      return jsonResponse({ earned: earnedNow, new: newOnes, all_badges: BADGE_DEFINITIONS });
+    }
+
+    // /api/flashcards/<student> (GET/POST)
+    if (seg[1] === 'flashcards') {
+      var fStudent = sanitizeName(seg[2]);
+      if (!fStudent) return jsonResponse({ error: 'Invalid student name' }, 400);
+      var fKey = keyFor(fStudent, 'flashcards');
+      if (method === 'GET') {
+        return jsonResponse({ student: fStudent, mastery: readJSON(fKey, {}) });
+      }
+      if (method === 'POST') {
+        var cardId = body.card_id || '', result = body.result || '';
+        if (!cardId || (result !== 'correct' && result !== 'wrong')) {
+          return jsonResponse({ error: 'card_id and result (correct/wrong) required' }, 400);
+        }
+        if (!CONST.VALID_CARD_IDS.has(cardId)) {
+          return jsonResponse({ error: 'Invalid card_id' }, 400);
+        }
+        var fMap = readJSON(fKey, {});
+        var cur = parseInt(fMap[cardId], 10) || 0;
+        cur = result === 'correct' ? Math.min(cur + 1, 5) : Math.max(cur - 1, 0);
+        fMap[cardId] = cur;
+        writeJSON(fKey, fMap);
+        return jsonResponse({ status: 'ok', card_id: cardId, mastery: cur });
+      }
+    }
+
+    // /api/explanations/<student> (GET/POST)
+    if (seg[1] === 'explanations') {
+      var eStudent = sanitizeName(seg[2]);
+      if (!eStudent) return jsonResponse({ error: 'Invalid student name' }, 400);
+      var eKey = keyFor(eStudent, 'explanations');
+      if (method === 'GET') {
+        return jsonResponse({ student: eStudent, explanations: readJSON(eKey, {}) });
+      }
+      if (method === 'POST') {
+        var eChapter = body.chapter || '';
+        var text = (body.text || '').trim();
+        if (!CONST.VALID_CHAPTERS.has(eChapter)) {
+          return jsonResponse({ error: 'Invalid chapter' }, 400);
+        }
+        if (!text) return jsonResponse({ error: 'Explanation text required' }, 400);
+        if (text.length > 1000) text = text.slice(0, 1000);
+        var eMap = readJSON(eKey, {});
+        eMap[eChapter] = text;
+        writeJSON(eKey, eMap);
+        var etKey = keyFor(eStudent, 'explanation_times');
+        var etMap = readJSON(etKey, {});
+        etMap[eChapter] = nowStamp();
+        writeJSON(etKey, etMap);
+        return jsonResponse({ status: 'ok', chapter: eChapter });
+      }
+    }
+
+    // /api/assignments/<student> (GET/POST)
+    if (seg[1] === 'assignments') {
+      var aStudent = sanitizeName(seg[2]);
+      if (!aStudent) return jsonResponse({ error: 'Invalid student name' }, 400);
+      var aKey = keyFor(aStudent, 'assignments');
+      var atKey = keyFor(aStudent, 'assignment_times');
+      if (method === 'GET') {
+        return jsonResponse({ student: aStudent,
+          submissions: readJSON(aKey, {}), times: readJSON(atKey, {}) });
+      }
+      if (method === 'POST') {
+        var assignment = body.assignment || '';
+        var code = body.code || '';
+        if (!CONST.VALID_ASSIGNMENTS.has(assignment)) {
+          return jsonResponse({ error: 'Invalid assignment' }, 400);
+        }
+        if (!code.trim()) return jsonResponse({ error: 'No code provided' }, 400);
+        if (code.length > 10000) code = code.slice(0, 10000);
+        var aMap = readJSON(aKey, {});
+        aMap[assignment] = code;
+        writeJSON(aKey, aMap);
+        var atMap = readJSON(atKey, {});
+        atMap[assignment] = nowStamp();
+        writeJSON(atKey, atMap);
+        return jsonResponse({ status: 'ok', assignment: assignment });
+      }
+    }
+
     return jsonResponse({ error: 'Not found' }, 404);
   }
 

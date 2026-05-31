@@ -204,3 +204,63 @@ test('quiz rejects out-of-range score', async () => {
   const r = await call('POST', '/api/quiz/sam', { chapter: 'ch3', score: 9, total: 3 });
   assert.strictEqual(r.status, 400);
 });
+
+test('badges GET returns earned + all_badges', async () => {
+  localStorage.clear();
+  await call('POST', '/api/progress/sam', { chapter: 'ch1', completed: true });
+  const r = await call('GET', '/api/badges/sam');
+  assert.strictEqual(r.status, 200);
+  assert.ok(r.body.earned.includes('first_steps'));
+  assert.strictEqual(r.body.all_badges.length, 8);
+  // first call reports it as new
+  assert.ok(r.body.new.includes('first_steps'));
+  // second call: no longer new
+  const r2 = await call('GET', '/api/badges/sam');
+  assert.ok(!r2.body.new.includes('first_steps'));
+});
+
+test('flashcards POST clamps mastery 0..5', async () => {
+  localStorage.clear();
+  let r;
+  for (let i = 0; i < 7; i++) {
+    r = await call('POST', '/api/flashcards/sam', { card_id: 'ch1_1', result: 'correct' });
+  }
+  assert.strictEqual(r.body.mastery, 5); // capped
+  r = await call('POST', '/api/flashcards/sam', { card_id: 'ch1_1', result: 'wrong' });
+  assert.strictEqual(r.body.mastery, 4);
+});
+
+test('flashcards POST rejects bad card_id', async () => {
+  const r = await call('POST', '/api/flashcards/sam', { card_id: 'ch99_9', result: 'correct' });
+  assert.strictEqual(r.status, 400);
+});
+
+test('flashcards GET returns mastery map', async () => {
+  const r = await call('GET', '/api/flashcards/sam');
+  assert.strictEqual(r.status, 200);
+  assert.strictEqual(typeof r.body.mastery, 'object');
+});
+
+test('explanations POST then GET round-trips, truncates at 1000', async () => {
+  localStorage.clear();
+  await call('POST', '/api/explanations/sam', { chapter: 'ch1', text: 'hello' });
+  const g = await call('GET', '/api/explanations/sam');
+  assert.strictEqual(g.body.explanations.ch1, 'hello');
+  const long = 'x'.repeat(1500);
+  await call('POST', '/api/explanations/sam', { chapter: 'ch2', text: long });
+  const g2 = await call('GET', '/api/explanations/sam');
+  assert.strictEqual(g2.body.explanations.ch2.length, 1000);
+});
+
+test('assignments POST then GET round-trips', async () => {
+  localStorage.clear();
+  await call('POST', '/api/assignments/sam', { assignment: 'ch1', code: 'print(1)' });
+  const g = await call('GET', '/api/assignments/sam');
+  assert.strictEqual(g.body.submissions.ch1, 'print(1)');
+  assert.ok(g.body.times.ch1);
+});
+
+test('assignments POST rejects invalid assignment id', async () => {
+  const r = await call('POST', '/api/assignments/sam', { assignment: 'ch99', code: 'x' });
+  assert.strictEqual(r.status, 400);
+});
