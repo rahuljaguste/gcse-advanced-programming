@@ -126,3 +126,49 @@ test('checkBadges awards python_pro at 10+ chapters', () => {
   const earned = shim.checkBadges(chapters, {});
   assert.ok(earned.includes('python_pro'));
 });
+
+// helper to call a route and read JSON
+async function call(method, path, body) {
+  const opts = { method };
+  if (body) opts.body = JSON.stringify(body);
+  const res = shim.handleRoute(path, opts);
+  assert.ok(res, 'route should match: ' + path);
+  return { status: res.status, body: await res.json() };
+}
+
+test('register stores name and returns ok', async () => {
+  localStorage.clear();
+  const r = await call('POST', '/api/register', { name: 'Sam' });
+  assert.strictEqual(r.status, 200);
+  assert.deepStrictEqual(r.body, { status: 'ok', name: 'sam' });
+});
+
+test('register rejects invalid name', async () => {
+  const r = await call('POST', '/api/register', { name: 'no@good' });
+  assert.strictEqual(r.status, 400);
+  assert.ok(r.body.error);
+});
+
+test('progress POST then GET reflects completion', async () => {
+  localStorage.clear();
+  await call('POST', '/api/progress/sam', { chapter: 'ch1', completed: true });
+  const g = await call('GET', '/api/progress/sam');
+  assert.strictEqual(g.status, 200);
+  assert.ok('ch1' in g.body.chapters);
+  assert.deepStrictEqual(g.body.quizzes, {});
+});
+
+test('progress POST completed:false removes chapter', async () => {
+  await call('POST', '/api/progress/sam', { chapter: 'ch1', completed: false });
+  const g = await call('GET', '/api/progress/sam');
+  assert.ok(!('ch1' in g.body.chapters));
+});
+
+test('progress POST rejects invalid chapter', async () => {
+  const r = await call('POST', '/api/progress/sam', { chapter: 'ch99', completed: true });
+  assert.strictEqual(r.status, 400);
+});
+
+test('handleRoute returns null for non-api url', () => {
+  assert.strictEqual(shim.handleRoute('style.css', { method: 'GET' }), null);
+});

@@ -131,6 +131,66 @@
     return earned;
   }
 
+  // ---- route dispatch helpers ----
+  function nowStamp() {
+    // server used local time "%Y-%m-%d %H:%M:%S"; ISO slice is fine here
+    return new Date().toISOString().slice(0, 19).replace('T', ' ');
+  }
+
+  function parseBody(opts) {
+    if (!opts || !opts.body) return {};
+    try { return JSON.parse(opts.body); } catch (e) { return {}; }
+  }
+
+  function urlPath(url) {
+    // url may be absolute or relative; we only care about the pathname
+    try {
+      if (url.indexOf('http') === 0) return new URL(url).pathname;
+    } catch (e) { /* fall through */ }
+    return String(url).split('?')[0];
+  }
+
+  // Returns Response or null (null = not an api route, pass through)
+  function handleRoute(url, opts) {
+    var path = urlPath(url);
+    if (path.indexOf('/api/') !== 0) return null;
+    var method = (opts && opts.method ? opts.method : 'GET').toUpperCase();
+    var body = parseBody(opts);
+    var seg = path.split('/').filter(Boolean); // ['api','progress','sam']
+
+    // /api/register
+    if (seg[1] === 'register' && method === 'POST') {
+      var name = sanitizeName(body.name);
+      if (!name) return jsonResponse({ error: 'Name is required (letters, numbers, spaces, hyphens only)' }, 400);
+      return jsonResponse({ status: 'ok', name: name });
+    }
+
+    // /api/progress/<student>
+    if (seg[1] === 'progress') {
+      var student = sanitizeName(seg[2]);
+      if (!student) return jsonResponse({ error: 'Invalid student name' }, 400);
+      var chKey = keyFor(student, 'chapters');
+      if (method === 'GET') {
+        var chapters = readJSON(chKey, {});
+        var quizzes = readJSON(keyFor(student, 'quizzes'), {});
+        return jsonResponse({ student: student, chapters: chapters, quizzes: quizzes });
+      }
+      if (method === 'POST') {
+        var chapter = body.chapter || '';
+        if (!CONST.VALID_CHAPTERS.has(chapter)) {
+          return jsonResponse({ error: 'Invalid chapter. Must be one of: ' + CHAPTERS.join(',') }, 400);
+        }
+        var map = readJSON(chKey, {});
+        if (body.completed) { map[chapter] = nowStamp(); }
+        else { delete map[chapter]; }
+        writeJSON(chKey, map);
+        return jsonResponse({ status: 'ok', chapter: chapter, completed: !!body.completed });
+      }
+    }
+
+    return jsonResponse({ error: 'Not found' }, 404);
+  }
+
   // ---- shared fetch wrapper (idempotent; both shims reuse it) ----
   function installFetchWrapper() {
     const w = (typeof window !== 'undefined') ? window : global;
@@ -152,12 +212,12 @@
   // expose for browser
   if (typeof window !== 'undefined') {
     window.__apiShim = { keyFor, readJSON, writeJSON, jsonResponse, CONST,
-      sanitizeName, parseScore, checkBadges, installFetchWrapper };
+      sanitizeName, parseScore, checkBadges, handleRoute, installFetchWrapper };
   }
 
   // expose for Node tests
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = { keyFor, readJSON, writeJSON, jsonResponse, CONST,
-      sanitizeName, parseScore, checkBadges, installFetchWrapper };
+      sanitizeName, parseScore, checkBadges, handleRoute, installFetchWrapper };
   }
 })();
