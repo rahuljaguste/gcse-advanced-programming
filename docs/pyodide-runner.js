@@ -93,7 +93,17 @@
   function runViaPyodide(code, stdinData) {
     return loadPyodideOnce().then(function (py) {
       var driver = buildDriver(code, stdinData);
-      // Watchdog: interrupt buffer (SharedArrayBuffer if available)
+      // Watchdog. Pyodide runs on the main thread, so the only way to pre-empt a
+      // runaway loop is the interrupt buffer — which requires SharedArrayBuffer.
+      // SharedArrayBuffer is only available in a cross-origin-isolated context
+      // (COOP+COEP response headers). GitHub Pages does NOT send those headers,
+      // so on a stock Pages deploy this watchdog CANNOT interrupt a tight loop
+      // like `while True: pass` — that program will hang the tab until reload.
+      // (Verified empirically: crossOriginIsolated=false on `python3 -m http.server`
+      // and on github.io.) When SharedArrayBuffer IS available (e.g. a host that
+      // sends COOP/COEP, or a future Web-Worker port), the 5s SIGINT below fires
+      // and surfaces "Code took too long". Programs that finish, error, or block
+      // on input() are unaffected — only an infinite compute loop is at risk.
       var interruptBuffer = null;
       try {
         if (typeof SharedArrayBuffer !== 'undefined' && py.setInterruptBuffer) {

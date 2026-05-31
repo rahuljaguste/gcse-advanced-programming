@@ -169,6 +169,13 @@ bash tests/run-all.sh    # run the unit + build tests
   (localStorage) — no central store, no cross-device sync.
 - The **teacher dashboard is not included** (it needs a central server).
 - The **Run** button uses Pyodide; first run downloads ~6–10 MB (cached after).
+- **Infinite-loop caveat:** Python runs on the page's main thread. The 5-second
+  timeout relies on `SharedArrayBuffer`, which browsers only expose in a
+  cross-origin-isolated context (COOP/COEP headers). GitHub Pages does not send
+  those headers, so a genuine infinite compute loop (e.g. `while True: pass`)
+  will freeze the tab until it is reloaded. Programs that finish, raise an error,
+  or wait for `input()` are unaffected. (A future Web-Worker port would remove
+  this limitation; the Flask version ran code server-side and was not affected.)
 
 The Flask + Redis app (`server.py`, `start.sh`, Railway config) is unchanged and
 still works for full multi-student tracking.
