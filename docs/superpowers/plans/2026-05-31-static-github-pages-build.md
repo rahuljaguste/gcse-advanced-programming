@@ -1072,6 +1072,15 @@ test('shapeResult flags needs_input when stderr has EOFError', () => {
   assert.strictEqual(out.stderr, ''); // cleared when needs_input
 });
 
+test('shapeResult detects EOFError in STDOUT (the real driver path) and strips marker', () => {
+  // The driver merges stdout+stderr into one stream, so the runner calls
+  // shapeResult(output, '', rc) with the EOF marker living in stdout.
+  const out = R.shapeResult('What is your name? EOFError: EOF when reading a line', '', 1);
+  assert.strictEqual(out.needs_input, true);
+  assert.strictEqual(out.returncode, 0);
+  assert.strictEqual(out.stdout, 'What is your name? ');
+});
+
 test('shapeResult success path passes returncode 0', () => {
   const out = R.shapeResult('hello\n', '', 0);
   assert.strictEqual(out.returncode, 0);
@@ -1103,12 +1112,19 @@ Create `docs/pyodide-runner.js`:
   var PYODIDE_BASE = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/';
   var STDOUT_CAP = 5000, STDERR_CAP = 2000, TIME_LIMIT_MS = 5000;
 
-  // Shape Pyodide output into the JSON the frontend expects (mirrors server.py)
+  // Shape Pyodide output into the JSON the frontend expects (mirrors server.py).
+  // The driver merges stdout+stderr into one stream, so an EOFError marker can
+  // appear in EITHER argument — check both, and strip the marker from the
+  // visible output when signalling needs_input.
   function shapeResult(stdout, stderr, returncode) {
     stdout = stdout || '';
     stderr = stderr || '';
-    if (stderr.indexOf('EOFError') !== -1) {
-      return { stdout: stdout.slice(0, STDOUT_CAP), stderr: '', returncode: 0, needs_input: true };
+    var EOF_MARK = 'EOFError';
+    if (stdout.indexOf(EOF_MARK) !== -1 || stderr.indexOf(EOF_MARK) !== -1) {
+      var cleaned = stdout
+        .replace(/EOFError: EOF when reading a line\n?/g, '')
+        .replace(/EOFError\n?/g, '');
+      return { stdout: cleaned.slice(0, STDOUT_CAP), stderr: '', returncode: 0, needs_input: true };
     }
     return {
       stdout: stdout.slice(0, STDOUT_CAP),
