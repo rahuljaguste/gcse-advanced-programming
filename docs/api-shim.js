@@ -324,7 +324,11 @@
       }
     }
 
-    return jsonResponse({ error: 'Not found' }, 404);
+    // Unrecognized /api/* path: this shim does not own it (e.g. /api/run is
+    // handled by pyodide-runner.js). Return null so the shared fetch wrapper
+    // tries the next registered route, then the real fetch. Returning a 404
+    // Response here would short-circuit the chain and break those handlers.
+    return null;
   }
 
   function installShim() {

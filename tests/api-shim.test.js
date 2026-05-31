@@ -277,3 +277,28 @@ test('installed fetch wrapper services /api and passes others through', async ()
   const through = await global.window.fetch('style.css', { method: 'GET' });
   assert.strictEqual(through.__passthrough, true);
 });
+
+test('handleRoute returns null (not a 404 Response) for /api paths it does not own', () => {
+  // Regression: a localStorage shim must NOT own /api/run — pyodide-runner does.
+  // Returning a truthy 404 here would short-circuit the shared fetch chain and
+  // stop the next registered route (the code runner) from ever running.
+  assert.strictEqual(shim.handleRoute('/api/run', { method: 'POST', body: '{}' }), null);
+  assert.strictEqual(shim.handleRoute('/api/students', { method: 'GET' }), null);
+});
+
+test('a second router can own /api/run after api-shim is installed', async () => {
+  // Simulates pyodide-runner registering its /api/run route on the shared
+  // wrapper AFTER api-shim. api-shim must pass through so the runner wins.
+  shim.installShim();
+  const w = global.window;
+  w.__apiRoutes.push((url) => {
+    const path = String(url).split('?')[0];
+    if (path === '/api/run') {
+      return { status: 200, json: async () => ({ stdout: 'ran', returncode: 0 }) };
+    }
+    return null;
+  });
+  const res = await w.fetch('/api/run', { method: 'POST', body: '{}' });
+  const out = await res.json();
+  assert.strictEqual(out.stdout, 'ran'); // the runner handled it, not api-shim
+});

@@ -620,11 +620,23 @@ In `docs/api-shim.js`, add inside the IIFE (after `checkBadges`):
       }
     }
 
-    return jsonResponse({ error: 'Not found' }, 404);
+    // Unrecognized /api/* path: this shim does not own it (e.g. /api/run is
+    // handled by pyodide-runner.js). Return null so the shared fetch wrapper
+    // tries the next registered route, then the real fetch. Returning a 404
+    // Response here would short-circuit the chain and break those handlers.
+    return null;
   }
 ```
 
 Add `handleRoute` to BOTH `window.__apiShim` and `module.exports`.
+
+> **Important (cross-router contract):** `handleRoute` MUST return `null` — not a
+> 404 `Response` — for any `/api/*` path it doesn't recognize. The shared fetch
+> wrapper returns the first *truthy* route result, and on `assignments.html` /
+> `playground.html` the pyodide-runner registers `/api/run` as a second route.
+> A truthy 404 here would short-circuit the chain and stop the code runner from
+> ever executing. Later tasks/blocks that add more `/api/*` handlers to the
+> dispatcher must keep this final `return null;` as the fallthrough.
 
 - [ ] **Step 4: Run test to verify it passes**
 
@@ -690,12 +702,12 @@ test('quiz rejects out-of-range score', async () => {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `node tests/api-shim.test.js`
-Expected: FAIL — quiz POST currently falls through to 404.
+Expected: FAIL — quiz POST currently falls through (returns null).
 
 - [ ] **Step 3: Write minimal implementation**
 
 In `docs/api-shim.js`, inside `handleRoute`, add this block **before** the
-final `return jsonResponse({ error: 'Not found' }, 404);`:
+final `return null;` fallthrough:
 
 ```js
     // /api/quiz/<student>
@@ -831,12 +843,12 @@ test('assignments POST rejects invalid assignment id', async () => {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `node tests/api-shim.test.js`
-Expected: FAIL — these routes fall through to 404.
+Expected: FAIL — these routes fall through (return null).
 
 - [ ] **Step 3: Write minimal implementation**
 
 In `docs/api-shim.js`, inside `handleRoute`, add these blocks **before** the
-final 404 return:
+final `return null;` fallthrough:
 
 ```js
     // /api/badges/<student> (GET)
