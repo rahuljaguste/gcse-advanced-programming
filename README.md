@@ -143,6 +143,36 @@ Browser ──→ Flask (server.py) ──→ Redis
 - Student names sanitized (alphanumeric + spaces/hyphens, max 30 chars)
 - Quiz scores validated against expected totals, best score preserved
 
+## Static GitHub Pages Build
+
+A backend-free version of this site (no Flask, no Redis) can be deployed to
+GitHub Pages. It stores progress in the browser (localStorage) and runs Python
+in-browser via Pyodide (WebAssembly).
+
+### Build
+
+```bash
+./build-static.sh        # generates ./docs
+bash tests/run-all.sh    # run the unit + build tests
+```
+
+### Deploy
+
+1. Commit the generated `docs/` folder.
+2. GitHub repo → Settings → Pages → Source: **Deploy from a branch** →
+   `main` / `/docs`.
+3. Site goes live at `https://<user>.github.io/<repo>/`.
+
+### Differences from the Flask version
+
+- Progress, quizzes, flashcards, badges, and explanations are **per-browser**
+  (localStorage) — no central store, no cross-device sync.
+- The **teacher dashboard is not included** (it needs a central server).
+- The **Run** button uses Pyodide; first run downloads ~6–10 MB (cached after).
+
+The Flask + Redis app (`server.py`, `start.sh`, Railway config) is unchanged and
+still works for full multi-student tracking.
+
 ## License
 
 Built for personal educational use.
