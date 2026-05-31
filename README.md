@@ -169,6 +169,10 @@ bash tests/run-all.sh    # run the unit + build tests
   (localStorage) — no central store, no cross-device sync.
 - The **teacher dashboard is not included** (it needs a central server).
 - The **Run** button uses Pyodide; first run downloads ~6–10 MB (cached after).
+- **Sandboxing:** the Flask runner enforced an import allowlist and blocked
+  dangerous `os`/`open` calls. Pyodide needs none of that — it is a per-tab
+  WebAssembly sandbox with no real filesystem, OS, network, or `subprocess`
+  access — so code runs unrestricted within that sandbox.
 - **Infinite-loop caveat:** Python runs on the page's main thread. The 5-second
   timeout relies on `SharedArrayBuffer`, which browsers only expose in a
   cross-origin-isolated context (COOP/COEP headers). GitHub Pages does not send

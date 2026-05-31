@@ -38,6 +38,18 @@ for f in "${HTML_FILES[@]}"; do
     -e "s|href='/flashcards'|href='flashcards.html'|g" \
     -e "s|href='/cheatsheet'|href='cheatsheet.html'|g" \
     "$p"
+  # JS navigations: window.location.href = '/route' (optional spaces, either
+  # quote style). index.html uses these in onclick handlers; flashcards.html
+  # uses location.href = '/' for its not-logged-in redirect. Absolute '/'
+  # paths break on a GitHub Pages project subpath, so map them to files.
+  # [[:space:]]* tolerates the spacing variations across pages.
+  sed -i.bak -E \
+    -e "s|location\\.href([[:space:]]*=[[:space:]]*)'/assignments'|location.href\\1'assignments.html'|g" \
+    -e "s|location\\.href([[:space:]]*=[[:space:]]*)'/playground'|location.href\\1'playground.html'|g" \
+    -e "s|location\\.href([[:space:]]*=[[:space:]]*)'/flashcards'|location.href\\1'flashcards.html'|g" \
+    -e "s|location\\.href([[:space:]]*=[[:space:]]*)'/cheatsheet'|location.href\\1'cheatsheet.html'|g" \
+    -e "s|location\\.href([[:space:]]*=[[:space:]]*)'/'|location.href\\1'index.html'|g" \
+    "$p"
   rm -f "$p.bak"
 done
 

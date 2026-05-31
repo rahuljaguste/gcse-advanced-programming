@@ -172,7 +172,7 @@ let studentName = localStorage.getItem('student-name') || '';
 async function init() {
   if (!studentName) {
     document.querySelector('.subtitle').textContent = 'Please log in first. Redirecting...';
-    setTimeout(() => { window.location.href = '/'; }, 1500);
+    setTimeout(() => { window.location.href = 'index.html'; }, 1500);
     return;
   }
   // Load mastery

@@ -38,6 +38,16 @@ done
 grep -q "assignments.html#" docs/app.js || fail "app.js link not rewritten"
 grep -q "'/assignments#'" docs/app.js && fail "app.js still has /assignments#" || true
 
+# JS location.href navigations to absolute routes rewritten (would break on a
+# Pages project subpath). Covers index.html onclick nav + flashcards redirect.
+for f in index.html assignments.html flashcards.html cheatsheet.html playground.html; do
+  grep -Eq "location\.href[[:space:]]*=[[:space:]]*'/(assignments|playground|flashcards|cheatsheet)?'" "docs/$f" \
+    && fail "absolute location.href left in docs/$f" || true
+done
+# flashcards not-logged-in redirect now points at index.html
+grep -q "location.href = 'index.html'" docs/flashcards.html \
+  || fail "flashcards.html redirect not rewritten to index.html"
+
 # Shim files preserved (not clobbered): they export module
 grep -q "module.exports" docs/api-shim.js || fail "api-shim.js was clobbered"
 
