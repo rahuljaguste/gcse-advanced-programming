@@ -58,3 +58,15 @@ test('installFetchWrapper installs once and dispatches routes', async () => {
   const miss = await w.fetch('/miss');
   assert.strictEqual(miss.__passthrough, true);
 });
+
+test('jsonResponse exposes json() resolving to the object', async () => {
+  const r = shim.jsonResponse({ ok: true, n: 3 }, 200);
+  assert.strictEqual(r.status, 200);
+  const body = await r.json();
+  assert.deepStrictEqual(body, { ok: true, n: 3 });
+});
+
+test('jsonResponse defaults to status 200', async () => {
+  const r = shim.jsonResponse({ a: 1 });
+  assert.strictEqual(r.status, 200);
+});

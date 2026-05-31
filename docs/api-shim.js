@@ -30,6 +30,22 @@
     }
   }
 
+  function jsonResponse(obj, status) {
+    status = status || 200;
+    if (typeof Response !== 'undefined') {
+      return new Response(JSON.stringify(obj), {
+        status: status,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    // Node test fallback — duck-typed Response
+    return {
+      status: status,
+      ok: status >= 200 && status < 300,
+      json: async function () { return obj; },
+    };
+  }
+
   // ---- shared fetch wrapper (idempotent; both shims reuse it) ----
   function installFetchWrapper() {
     const w = (typeof window !== 'undefined') ? window : global;
@@ -50,11 +66,11 @@
 
   // expose for browser
   if (typeof window !== 'undefined') {
-    window.__apiShim = { keyFor, readJSON, writeJSON, installFetchWrapper };
+    window.__apiShim = { keyFor, readJSON, writeJSON, jsonResponse, installFetchWrapper };
   }
 
   // expose for Node tests
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { keyFor, readJSON, writeJSON, installFetchWrapper };
+    module.exports = { keyFor, readJSON, writeJSON, jsonResponse, installFetchWrapper };
   }
 })();
