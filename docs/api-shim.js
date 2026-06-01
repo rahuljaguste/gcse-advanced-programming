@@ -156,7 +156,13 @@
     if (path.indexOf('/api/') !== 0) return null;
     var method = (opts && opts.method ? opts.method : 'GET').toUpperCase();
     var body = parseBody(opts);
-    var seg = path.split('/').filter(Boolean); // ['api','progress','sam']
+    // Decode each path segment: the browser percent-encodes the <student>
+    // segment (e.g. a space in "jon smith" -> "jon%20smith"), and NAME_PATTERN
+    // would otherwise reject the '%'. decodeURIComponent throws on a malformed
+    // '%' sequence, so fall back to the raw segment in that case.
+    var seg = path.split('/').filter(Boolean).map(function (s) {
+      try { return decodeURIComponent(s); } catch (e) { return s; }
+    }); // ['api','progress','jon smith']
 
     // /api/register
     if (seg[1] === 'register' && method === 'POST') {

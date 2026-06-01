@@ -302,3 +302,21 @@ test('a second router can own /api/run after api-shim is installed', async () =>
   const out = await res.json();
   assert.strictEqual(out.stdout, 'ran'); // the runner handled it, not api-shim
 });
+
+test('multi-word student name works via percent-encoded path (browser sends %20)', async () => {
+  localStorage.clear();
+  // NAME_PATTERN allows spaces, so "Jon Smith" registers and is stored as "jon smith".
+  const reg = await call('POST', '/api/register', { name: 'Jon Smith' });
+  assert.strictEqual(reg.status, 200);
+  assert.strictEqual(reg.body.name, 'jon smith');
+  // The browser encodes the space, so subsequent calls hit "/api/.../jon%20smith".
+  // The shim must decode the segment, not 400 on the '%'.
+  const enc = await call('GET', '/api/flashcards/jon%20smith');
+  assert.strictEqual(enc.status, 200);
+  assert.strictEqual(enc.body.student, 'jon smith');
+  // And a write round-trips under the encoded path.
+  const w = await call('POST', '/api/progress/jon%20smith', { chapter: 'ch1', completed: true });
+  assert.strictEqual(w.status, 200);
+  const g = await call('GET', '/api/progress/jon%20smith');
+  assert.ok('ch1' in g.body.chapters, 'progress stored under decoded name');
+});

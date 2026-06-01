@@ -7,20 +7,19 @@
   var STDOUT_CAP = 5000, STDERR_CAP = 2000, TIME_LIMIT_MS = 5000;
 
   // Shape Pyodide output into the JSON the frontend expects (mirrors server.py).
-  // The driver merges stdout+stderr into one stream, so an EOFError marker can
-  // appear in EITHER argument — check both. When the program ran out of stdin
-  // (it called input() with nothing left), the frontend protocol expects
-  // needs_input:true plus stdout-so-far (which already includes the prompt),
-  // and the EOF marker stripped from the visible output.
-  function shapeResult(stdout, stderr, returncode) {
+  // `needsInput` is reported out-of-band by the driver (it ran out of stdin on
+  // an input() call) — we do NOT infer it by scanning the output, so a program
+  // that legitimately prints "EOFError" is never misclassified or corrupted.
+  // When needsInput is true the frontend protocol expects needs_input:true plus
+  // the stdout-so-far (which already ends with the input prompt).
+  function shapeResult(stdout, stderr, returncode, needsInput) {
     stdout = stdout || '';
     stderr = stderr || '';
-    var EOF_MARK = 'EOFError';
-    if (stdout.indexOf(EOF_MARK) !== -1 || stderr.indexOf(EOF_MARK) !== -1) {
-      var cleaned = stdout
-        .replace(/EOFError: EOF when reading a line\n?/g, '')
-        .replace(/EOFError\n?/g, '');
-      return { stdout: cleaned.slice(0, STDOUT_CAP), stderr: '', returncode: 0, needs_input: true };
+    if (needsInput) {
+      // Keep the TAIL: the frontend treats the last stdout line as the prompt,
+      // so when capping we must not drop the end where the prompt lives.
+      var capped = stdout.length > STDOUT_CAP ? stdout.slice(stdout.length - STDOUT_CAP) : stdout;
+      return { stdout: capped, stderr: '', returncode: 0, needs_input: true };
     }
     return {
       stdout: stdout.slice(0, STDOUT_CAP),
@@ -40,7 +39,7 @@
       '_out = io.StringIO()',
       'sys.stdout = _out',
       'sys.stderr = _out',
-      '_orig_input = None',
+      '_needs_input = False',
       'def _echo(prompt=""):',
       '    if prompt:',
       '        _out.write(str(prompt))',
@@ -58,13 +57,13 @@
       'except SystemExit:',
       '    pass',
       'except EOFError:',
-      '    _out.write("EOFError: EOF when reading a line")',
+      '    _needs_input = True',  // signalled out-of-band; nothing written to stdout
       '    _rc = 1',
       'except Exception:',
       '    import traceback',
       '    traceback.print_exc()',
       '    _rc = 1',
-      '_RESULT = (_out.getvalue(), _rc)',
+      '_RESULT = (_out.getvalue(), _rc, _needs_input)',
     ].join('\n');
   }
 
@@ -77,14 +76,22 @@
     _loading = new Promise(function (resolve, reject) {
       var s = document.createElement('script');
       s.src = PYODIDE_BASE + 'pyodide.js';
+      // On failure, clear _loading (and remove the dead <script>) so the NEXT
+      // Run retries from scratch instead of returning this rejected promise
+      // forever (e.g. a flaky first load while the CDN is briefly unreachable).
+      function fail(err) {
+        _loading = null;
+        if (s.parentNode) s.parentNode.removeChild(s);
+        reject(err);
+      }
       s.onload = function () {
         // global loadPyodide comes from the CDN script
         loadPyodide({ indexURL: PYODIDE_BASE }).then(function (py) {
           _pyodide = py;
           resolve(py);
-        }).catch(reject);
+        }).catch(fail);
       };
-      s.onerror = function () { reject(new Error('Failed to load Pyodide script')); };
+      s.onerror = function () { fail(new Error('Failed to load Pyodide script')); };
       document.head.appendChild(s);
     });
     return _loading;
@@ -120,16 +127,20 @@
       try {
         py.runPython(driver);
         var result = py.globals.get('_RESULT');
-        var stdout = result.get(0);
-        var rc = result.get(1);
-        result.destroy();
-        return shapeResult(stdout, '', rc);
+        try {
+          var stdout = result.get(0);
+          var rc = result.get(1);
+          var needsInput = result.get(2);   // out-of-band EOF flag from the driver
+          return shapeResult(stdout, '', rc, needsInput);
+        } finally {
+          result.destroy();                 // always release the PyProxy
+        }
       } catch (err) {
         var msg = String(err && err.message ? err.message : err);
         if (msg.indexOf('KeyboardInterrupt') !== -1) {
           return { stdout: '', stderr: 'Error: Code took too long (5s limit)', returncode: 1 };
         }
-        return shapeResult('', msg, 1);
+        return shapeResult('', msg, 1, false);
       } finally {
         if (timer) clearTimeout(timer);
         if (interruptBuffer) interruptBuffer[0] = 0;
